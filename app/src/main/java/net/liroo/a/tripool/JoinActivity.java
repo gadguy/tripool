@@ -68,6 +68,12 @@ public class JoinActivity extends BaseActivity {
     public void onBackPressed()
     {
         super.onBackPressed();
+        //TODO
+        //뒤로가기 한번 누르면 토스트로 '뒤로가기를 한 번더 누르면 앱이 종료됩니다' 띄우고
+        //뒤로가기 두번 누르면 앱 종료 시키기
+        //뒤로가기 두번 누르는 것은 핸들러를 통해서 할 수 있다
+
+
 
         //  앱 아예 종료
         killAll();
@@ -83,6 +89,7 @@ public class JoinActivity extends BaseActivity {
     }
 
     private void insertToDatabase(String u_id, String u_pw) {
+
         class InsertData extends AsyncTask<String, Void, String> {
             ProgressDialog loading;
             @Override
@@ -94,10 +101,20 @@ public class JoinActivity extends BaseActivity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 loading.dismiss();
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
 
-                if ( s.equals("1") ) {
+                if ( s.equals("done") ) {
                     // 지도 페이지로 이동
+
+
+
+                } else if ( s.equals("no_id") ) {
+                    Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();
+                } else if ( s.equals("same_id") ) {
+                    Toast.makeText(getApplicationContext(), "같은 ID가 존재합니다.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "회원 가입 오류, 다시 시도해 주십시오.", Toast.LENGTH_LONG).show();
+
                 }
             }
             @Override
@@ -106,6 +123,10 @@ public class JoinActivity extends BaseActivity {
                 try {
                     String u_id = (String) params[0];
                     String u_pw = (String) params[1];
+
+                    if ( u_id == null || u_pw == null ) {
+                        Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();
+                    }
 
                     String link = "http://a.liroo.net/android/member_join.php";
                     String data = URLEncoder.encode("u_id", "UTF-8") + "=" + URLEncoder.encode(u_id, "UTF-8");
