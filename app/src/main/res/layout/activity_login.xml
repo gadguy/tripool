@@ -28,6 +28,7 @@
             android:layout_height="50dp"
             android:layout_below="@+id/emailInput"
             android:layout_centerHorizontal="true"
+            android:inputType="textPassword"
             android:hint="Password" />
 
         <Button

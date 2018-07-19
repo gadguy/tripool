@@ -27,7 +27,7 @@ public class LoginActivity extends BaseActivity {
 
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);
-            }
+    }
 
     public void btnLogin(View view) {
         sId = et_id.getText().toString();
