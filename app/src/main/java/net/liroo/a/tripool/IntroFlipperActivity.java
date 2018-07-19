@@ -78,7 +78,7 @@ public class IntroFlipperActivity extends BaseActivity implements ViewFlipperAct
 
     public void btnToMain(View v) {
         //여기에다 할 일을 적어주세요.
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
 
     }

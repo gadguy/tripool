@@ -112,7 +112,7 @@ public class JoinActivity extends BaseActivity {
 
                 if ( s.equals("done") ) {
                     // 지도 페이지로 이동
-
+                    Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
 
 
                 } else if ( s.equals("no_id") ) {
