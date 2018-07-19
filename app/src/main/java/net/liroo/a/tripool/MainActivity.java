@@ -1,6 +1,7 @@
 package net.liroo.a.tripool;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         mapViewContainer.addView(mapView);
 
 
+
+
+        //길찾기 url scheme 관련, 안될 경우 위치 표시만 한다
 //        String url = "daummaps://route?sp="+USER Latitude+","+USER Longitude+"&ep="+ARRIVAL Latitude+","+ARRIVAL Longitude+"&by=CAR";
 //        String url = "daummaps://route?sp=37.537229,127.005515&ep=37.4979502,127.0276368&by=CAR";
 //        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -51,6 +55,31 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
     }
+
+    public void btnLayerFrom(View view) {
+
+        // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
+        final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
+        layerForm.setTitle("목적지 검색");
+        layerForm.setContentView(R.layout.map_find); // 다이얼로그 화면 등록
+        layerForm.show(); // 다이얼로그 띄우기
+
+        // Activity 에 Dialog 를 등록하기
+        layerForm.setOwnerActivity(MainActivity.this);
+
+        //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
+//        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
+
+
+        Toast.makeText(getApplicationContext(), "출발 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
+    }
+    public void btnLayerTo(View view) {
+
+        Toast.makeText(getApplicationContext(), "도착 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
+    }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

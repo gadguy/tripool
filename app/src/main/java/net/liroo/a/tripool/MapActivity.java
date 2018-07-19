@@ -29,10 +29,10 @@ public class MapActivity extends BaseActivity {
 
         getAppKeyHash();
 
-        MapView mapView = new MapView(this);
-        mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
-        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
-        mapViewContainer.addView(mapView);
+//        MapView mapView = new MapView(this);
+//        mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
+//        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+//        mapViewContainer.addView(mapView);
 
 
 
