@@ -1,6 +1,8 @@
 package net.liroo.a.tripool;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -111,8 +113,14 @@ public class JoinActivity extends BaseActivity {
 //                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
 
                 if ( s.equals("done") ) {
-                    // 지도 페이지로 이동
                     Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show();
+                    //sharedpreference로 로그인 유지하고 지도 페이지 이동
+                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor userEdit = userInfo.edit();
+                    userEdit.putString("u_id", sId);
+                    userEdit.putString("chk_autologin", "auto_login");
+                    userEdit.commit();
+                    // 지도 페이지로 이동
 
 
                 } else if ( s.equals("no_id") ) {

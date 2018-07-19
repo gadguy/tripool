@@ -2,9 +2,11 @@ package net.liroo.a.tripool;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 public class intro extends Activity {
 
@@ -16,22 +18,28 @@ public class intro extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.intro);
 
-        //자동로그인 되어있으면 지도페이지로 바로 넘어가기
-
-
-
-        //로그인이 안되어 있는 경우 프리뷰
+        //2초 뒤에 다음화면(MainActivity)으로 넘어가기 Handler 사용
         handler = new Handler();
         r = new Runnable() {
             @Override
             public void run() {
-                //4초 뒤에 다음화면(MainActivity)으로 넘어가기 Handler 사용
-                Intent intent = new Intent(getApplicationContext(), PreviewActivity.class);
-                startActivity(intent);  //다음 화면으로 넘어가기
+                //자동로그인 되어있으면 지도페이지로 바로 넘어가기
+                SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+                String u_id = userInfo.getString("u_id", "");
+
+                if ( u_id.isEmpty() ) {
+                    //로그아웃 상태면 소개페이지
+                    Intent intent = new Intent(getApplicationContext(), IntroFlipperActivity.class);
+                    startActivity(intent);  //다음 화면으로 넘어가기
+                } else {
+                    //로그인 되어 있으면 바로 지도 페이지
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);  //다음 화면으로 넘어가기
+                }
                 finish();
+
             }
         };
-
     }
 
     @Override

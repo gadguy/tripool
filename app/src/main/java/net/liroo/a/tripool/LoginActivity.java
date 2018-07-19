@@ -1,11 +1,14 @@
 package net.liroo.a.tripool;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -27,6 +30,7 @@ public class LoginActivity extends BaseActivity {
 
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);
+
     }
 
     public void btnLogin(View view) {
@@ -53,7 +57,7 @@ public class LoginActivity extends BaseActivity {
         startActivity(intent);  //다음 화면으로 넘어가기
     }
     private void loginToDB(String u_id, String u_pw) {
-        class InsertData extends AsyncTask<String, Void, String> {
+        class loginData extends AsyncTask<String, Void, String> {
             ProgressDialog loading;
             @Override
             protected void onPreExecute() {
@@ -67,9 +71,19 @@ public class LoginActivity extends BaseActivity {
 //                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
 
                 if ( s.equals("auth_login") ) {
-                    // 지도 페이지로 이동
 
-                    Toast.makeText(getApplicationContext(), "로그인 성공!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "로그인 완료", Toast.LENGTH_LONG).show();
+                    //sharedpreference로 로그인 유지하고 지도 페이지 이동
+                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor userEdit = userInfo.edit();
+                    userEdit.putString("u_id", sId);
+                    userEdit.putString("chk_autologin", "auto_login");
+                    userEdit.commit();
+                    //지도 페이지로 이동
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);  //다음 화면으로 넘어가기
+
+
                 } else if ( s.equals("no_id") ) {
 
                     Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();
@@ -77,6 +91,9 @@ public class LoginActivity extends BaseActivity {
                 } else if ( s.equals("wrong_id") ) {
 
                     Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 틀립니다. 비밀번호는 대소문자를 구분합니다.", Toast.LENGTH_LONG).show();
+                } else {
+
+                    Toast.makeText(getApplicationContext(), "로그인 실패, 다시 시도해 주십시오.", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
@@ -90,7 +107,7 @@ public class LoginActivity extends BaseActivity {
                         Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();
                     }
 
-                    String link = "http://a.liroo.net/android/member_join.php";
+                    String link = "http://a.liroo.net/android/member_login.php";
                     String data = URLEncoder.encode("u_id", "UTF-8") + "=" + URLEncoder.encode(u_id, "UTF-8");
                     data += "&" + URLEncoder.encode("u_pw", "UTF-8") + "=" + URLEncoder.encode(u_pw, "UTF-8");
 
@@ -119,7 +136,7 @@ public class LoginActivity extends BaseActivity {
                 }
             }
         }
-        InsertData task = new InsertData();
+        loginData task = new loginData();
         task.execute(u_id, u_pw);
     }
 

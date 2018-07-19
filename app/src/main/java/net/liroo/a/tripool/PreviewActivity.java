@@ -1,7 +1,9 @@
 package net.liroo.a.tripool;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,8 +47,6 @@ public class PreviewActivity extends AppCompatActivity {
 
         init();
         expandableList();
-
-
 
     }
 
@@ -94,12 +94,12 @@ public class PreviewActivity extends AppCompatActivity {
                             //권한이 다 있는 경우 소개 페이지(뷰 플리퍼)로 넘어감
 
                             if ( chk_login == true ) {
-                                Intent intent = new Intent(getApplicationContext(), IntroFlipperActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                 startActivity(intent);  //다음 화면으로 넘어가기
                             }
                             else {
                                 //추후 자동 로그인 시에는 바로 메인으로, 로그 아웃 상태일 때만 뷰 플리퍼로 넘어가야 함
-                                Intent intent = new Intent(getApplicationContext(), IntroFlipperActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                 startActivity(intent);  //다음 화면으로 넘어가기
                             }
 
@@ -215,7 +215,7 @@ public class PreviewActivity extends AppCompatActivity {
                     }
                     else {
                         //추후 자동 로그인 시에는 바로 메인으로, 로그 아웃 상태일 때만 뷰 플리퍼로 넘어가야 함
-                        Intent intent = new Intent(getApplicationContext(), IntroFlipperActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(intent);  //다음 화면으로 넘어가기
                     }
                     //권한이 다 있는 경우 소개 페이지(뷰 플리퍼)로 넘어감
