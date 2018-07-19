@@ -33,6 +33,16 @@ public class LoginActivity extends BaseActivity {
         sId = et_id.getText().toString();
         sPw = et_pw.getText().toString();
 
+        if ( sId.isEmpty() ) {
+            Toast.makeText(getApplicationContext(), "ID를 입력하여 주십시오.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if ( sPw.isEmpty() ) {
+            Toast.makeText(getApplicationContext(), "비밀번호를 입력하여 주십시오.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        loginToDB(sId, sPw);
         //서버로 데이터 전송
 //        registDB rdb = new registDB(sId, sPw);
 //        rdb.execute();
@@ -59,7 +69,7 @@ public class LoginActivity extends BaseActivity {
                 if ( s.equals("auth_login") ) {
                     // 지도 페이지로 이동
 
-
+                    Toast.makeText(getApplicationContext(), "로그인 성공!", Toast.LENGTH_LONG).show();
                 } else if ( s.equals("no_id") ) {
 
                     Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();

@@ -35,10 +35,17 @@ public class JoinActivity extends BaseActivity {
         sPw_chk = et_pw_chk.getText().toString();
 
         if ( sId.isEmpty() ) {
-            Toast.makeText(getApplicationContext(), "msg", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "ID를 입력하여 주십시오.", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        if ( sPw.isEmpty() ) {
+            Toast.makeText(getApplicationContext(), "비밀번호를 입력하여 주십시오.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if ( sPw_chk.isEmpty() ) {
+            Toast.makeText(getApplicationContext(), "비밀번호를 확인하여 주십시오.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
         //pw와 pw_chk이 같으면
