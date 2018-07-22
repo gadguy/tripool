@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -69,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
 
         //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
 //        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
+        Button btnClose;
+
+        btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Toast.makeText(getContext(), ed1.getText().toString() + ed2.getText().toString(), Toast.LENGTH_LONG).show();
+                layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
+            }
+        });
 
 
         Toast.makeText(getApplicationContext(), "출발 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
@@ -77,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(getApplicationContext(), "도착 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
     }
-
-
 
 
     @Override
