@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 //        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
 
 //        btnCloseForm
-        Button btnClose = (Button) findViewById(R.id.btnCancel);
+        Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -143,7 +143,7 @@ public class JoinActivity extends BaseActivity {
                         Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();
                     }
 
-                    String link = "http://a.liroo.net/android/member_join.php";
+                    String link = "http://a.liroo.net/tripool/member_join.php";
                     String data = URLEncoder.encode("u_id", "UTF-8") + "=" + URLEncoder.encode(u_id, "UTF-8");
                     data += "&" + URLEncoder.encode("u_pw", "UTF-8") + "=" + URLEncoder.encode(u_pw, "UTF-8");
 
