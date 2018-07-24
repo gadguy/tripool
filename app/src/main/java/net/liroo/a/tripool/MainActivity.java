@@ -64,15 +64,11 @@ public class MainActivity extends AppCompatActivity {
         mapViewContainer.addView(mapView);
 
 
-
-
         //길찾기 url scheme 관련, 안될 경우 위치 표시만 한다
 //        String url = "daummaps://route?sp="+USER Latitude+","+USER Longitude+"&ep="+ARRIVAL Latitude+","+ARRIVAL Longitude+"&by=CAR";
 //        String url = "daummaps://route?sp=37.537229,127.005515&ep=37.4979502,127.0276368&by=CAR";
 //        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 //        startActivity(intent);
-
-
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
     }
-
+    //출발지 입력하는 다이얼로그
     public void btnLayerFrom(View view) {
 
         Spinner dept_spinner;
@@ -98,9 +94,6 @@ public class MainActivity extends AppCompatActivity {
 //        data.add("가짜 데이터 1"); data.add("가짜 데이터 2"); data.add("가짜 데이터 3"); data.add("가짜 데이터 4"); data.add("가짜 데이터 5");
 //        data.add("가짜 데이터 6"); data.add("가짜 데이터 7"); data.add("가짜 데이터 8"); data.add("가짜 데이터 9"); data.add("가짜 데이터 10");
 
-
-
-
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
         dept_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
         dept_spinner.setAdapter(adapter);
@@ -108,47 +101,17 @@ public class MainActivity extends AppCompatActivity {
         dept_station_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept_station);
         dept_station_spinner.setAdapter(adapter2);
 
-
-
         layerForm.show(); // 다이얼로그 띄우기
 
         //json 데이터를 활용한 스피너 생성
         TextView main_addr, station;
-
-
         getData("http://a.liroo.net/tripool/json_dept_list.php", "dept_list");
-
-
 
         // Activity 에 Dialog 를 등록하기
         layerForm.setOwnerActivity(MainActivity.this);
 
         //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
 //        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
-
-
-
-//        try {
-//            JSONObject jsonObj = new JSONObject(myJSON);
-//            JSONArray arrayList = jsonObj.getJSONArray(TAG_RESULTS);
-//
-//            Log.e("arrayList", String.valueOf(arrayList));
-
-//            dept_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
-//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.map_find, R.id.spinner_dept, (List<String>) arrayList);
-//            dept_spinner.setAdapter(adapter);
-
-//            dept_spinner.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayList));
-
-//            ArrayAdapter deptAdapter = ArrayAdapter.createFromResource(this, R.array.dept_list, android.R.layout.simple_spinner_item);
-//            deptAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//            dept_spinner.setAdapter(deptAdapter);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-
-
 
         //다이얼로그 닫기 버튼
         Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
@@ -159,54 +122,108 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    //도착 다이얼로그
     public void btnLayerTo(View view) {
 
         Toast.makeText(getApplicationContext(), "도착 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
     }
-    public void btnSearch() {
+
+    //검색 결과 db에서 가져오고 액티비티 이동
+    public void btnSearch(View view) {
 
 
+
+
+
+
+        Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
 
 
     }
+    //검색결과 DB에서 가져옴
+    public void searchData(String url, String main_addr, String sub_addr, String station) {
+        class GetDataJSON extends AsyncTask<String, Void, String>{
+
+            ProgressDialog loading;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+            }
+            @Override
+            protected void onPostExecute(String result){
+                myJSON=result;
+                try {
+                    JSONObject jsonObj = new JSONObject(myJSON);
+                    json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
+//                    for(int i=0;i<json_dept_list.length();i++){
+//                        JSONObject item = json_dept_list.getJSONObject(i);
+//
+//                        String main_addr = item.getString("main_addr");
+//                        String sub_addr = item.getString("sub_addr");
+//                        String station = item.getString("station");
+//
+//                        dept_list.add(main_addr+ " " + sub_addr);
+//                        dept_station_list.add(station);
+//                    }
+
+                    //검색 결과 페이지로 이동
+                    Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
+                    intent.putExtra("search_list", String.valueOf(json_dept_list));
+                    startActivity(intent);  //다음 화면으로 넘어가기
 
 
 
 
-    protected void showList(){
-//        try {
-//            JSONObject jsonObj = new JSONObject(myJSON);
-//            dept_list = jsonObj.getJSONArray(TAG_RESULTS);
-//            Log.e("arrayList", String.valueOf(dept_list));
-//
-//            for(int i=0;i<peoples.length();i++){
-//                JSONObject c = peoples.getJSONObject(i);
-//                String id = c.getString(TAG_ID);
-//                String name = c.getString(TAG_NAME);
-//                String address = c.getString(TAG_ADD);
-//
-//                HashMap<String,String> persons = new HashMap<String,String>();
-//
-//                persons.put(TAG_ID,id);
-//                persons.put(TAG_NAME,name);
-//                persons.put(TAG_ADD,address);
-//
-//                personList.add(persons);
-//            }
-//
-//            ListAdapter adapter = new SimpleAdapter(
-//                    MainActivity.this, personList, R.layout.list_item,
-//                    new String[]{TAG_ID,TAG_NAME,TAG_ADD},
-//                    new int[]{R.id.id, R.id.name, R.id.address}
-//            );
-//
-//            list.setAdapter(adapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                Log.e("json_arrayList", String.valueOf(dept_list));
+                loading.dismiss();
+            }
+            @Override
+            protected String doInBackground(String... params) {
 
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+                String uri = params[0];
+                String main_addr = params[1];
+                String sub_addr = params[2];
+                String station = params[3];
 
+                BufferedReader bufferedReader = null;
+                try {
+
+                    String data = URLEncoder.encode("main_addr", "UTF-8") + "=" + URLEncoder.encode(main_addr, "UTF-8");
+                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
+                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
+
+                    URL url = new URL(uri);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    StringBuilder sb = new StringBuilder();
+
+                    conn.setDoOutput(true);
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                    wr.write(data);
+                    wr.flush();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    return sb.toString().trim();
+                } catch(Exception e) {
+                    return null;
+                }
+            }
+        }
+        GetDataJSON g = new GetDataJSON();
+        g.execute(url, main_addr, sub_addr, station);
     }
+
     public void getData(String url, final String type){
         class GetDataJSON extends AsyncTask<String, Void, String>{
 
@@ -232,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 //                Log.e("json_arrayList", String.valueOf(dept_list));
                 loading.dismiss();
-//                showList();
             }
             @Override
             protected String doInBackground(String... params) {
