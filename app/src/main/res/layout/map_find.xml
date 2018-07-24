@@ -1,63 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="20dp"
+    >
 
-    <TextView
-        android:id="@+id/textView7"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="63dp"
-        android:layout_marginTop="170dp"
-        android:text="지역명" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView8"
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="지역명" />
+
+        <Spinner
+            android:id="@+id/spinner_dept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="탑승 지역 선택" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/textView7"
-        android:layout_marginBottom="260dp"
-        android:text="탑승지" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="탑승지" />
+        <Spinner
+            android:id="@+id/spinner_dept_station"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="탑승지 선택" />
+    </LinearLayout>
 
-    <AutoCompleteTextView
-        android:id="@+id/multiAutoCompleteTextView"
-        android:layout_width="228dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="213dp"
-        android:text="AutoCompleteTextView" />
-
-    <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView"
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/textView7"
-        android:layout_marginBottom="190dp"
-        android:text="AutoCompleteTextView" />
-
-    <Button
-        android:id="@+id/btnInput"
-        android:layout_width="103dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/textView7"
-        android:layout_marginBottom="108dp"
-        android:text="입력" />
-
-    <Button
-        android:id="@+id/btnCancel"
-        android:layout_width="103dp"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/multiAutoCompleteTextView"
-        android:layout_alignTop="@+id/btnInput"
-        android:onClick="btnCloseFrom"
-        android:text="취소" />
-
-</RelativeLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="btnInput"
+            android:text="입력" />
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="btnCloseForm"
+            android:text="취소" />
+    </LinearLayout>
+</LinearLayout>
