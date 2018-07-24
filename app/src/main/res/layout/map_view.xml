@@ -60,4 +60,14 @@
         android:layout_marginTop="160dp"
         android:layout_marginBottom="0dp"></RelativeLayout>
 
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="365dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:onClick="btnSearch"
+        android:text="검색" />
+
+
 </RelativeLayout>

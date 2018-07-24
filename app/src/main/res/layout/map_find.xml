@@ -18,11 +18,11 @@
             android:layout_height="wrap_content"
             android:text="지역명" />
 
-        <AutoCompleteTextView
-            android:id="@+id/multiAutoCompleteTextView"
+        <Spinner
+            android:id="@+id/spinner_dept"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AutoCompleteTextView" />
+            android:text="탑승 지역 선택" />
     </LinearLayout>
 
     <LinearLayout
@@ -33,11 +33,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="탑승지" />
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
+        <Spinner
+            android:id="@+id/spinner_dept_station"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="AutoCompleteTextView" />
+            android:text="탑승지 선택" />
     </LinearLayout>
 
     <LinearLayout
