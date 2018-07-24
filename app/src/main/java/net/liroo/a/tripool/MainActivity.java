@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> dept_list = new ArrayList<>();
     ArrayList<String> dept_station_list = new ArrayList<>();
 
+    private EditText editTextFrom, editTextTo;
+    private Button searchBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +61,24 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        editTextFrom = findViewById(R.id.editTextFrom);
+        editTextTo = findViewById(R.id.editTextTo);
+        searchBtn = findViewById(R.id.btn_search);
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                searchData("http://a.liroo.net/tripool/json_search_result.php");
+                Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         MapView mapView = new MapView(this);
         mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
         mapViewContainer.addView(mapView);
 
+        getData("http://a.liroo.net/tripool/json_dept_list.php", "dept_list");
 
         //길찾기 url scheme 관련, 안될 경우 위치 표시만 한다
 //        String url = "daummaps://route?sp="+USER Latitude+","+USER Longitude+"&ep="+ARRIVAL Latitude+","+ARRIVAL Longitude+"&by=CAR";
@@ -82,8 +98,8 @@ public class MainActivity extends AppCompatActivity {
     //출발지 입력하는 다이얼로그
     public void btnLayerFrom(View view) {
 
-        Spinner dept_spinner;
-        Spinner dept_station_spinner;
+        final Spinner dept_spinner;
+        final Spinner dept_station_spinner;
 
         // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
         final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
@@ -105,13 +121,25 @@ public class MainActivity extends AppCompatActivity {
 
         //json 데이터를 활용한 스피너 생성
         TextView main_addr, station;
-        getData("http://a.liroo.net/tripool/json_dept_list.php", "dept_list");
+
 
         // Activity 에 Dialog 를 등록하기
         layerForm.setOwnerActivity(MainActivity.this);
 
         //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
 //        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
+
+        Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
+        btnInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                editTextFrom.setText(dept_spinner.getSelectedItem().toString().trim() + " " + dept_station_spinner.getSelectedItem().toString().trim());
+
+                layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
+            }
+        });
 
         //다이얼로그 닫기 버튼
         Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
@@ -128,20 +156,8 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "도착 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
     }
 
-    //검색 결과 db에서 가져오고 액티비티 이동
-    public void btnSearch(View view) {
-
-
-//        searchData();
-
-
-
-        Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
-
-
-    }
     //검색결과 DB에서 가져옴
-    public void searchData(String url, String main_addr, String sub_addr, String station) {
+    public void searchData(String url) {
         class GetDataJSON extends AsyncTask<String, Void, String>{
 
             ProgressDialog loading;
@@ -153,9 +169,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
+                Log.e("test", "result : "+result);
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
+
+                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+
+                    ArrayList<SearchItem> searchList = new ArrayList<>();
+                    for ( int i=0; i<json_dept_list.length(); i++ ) {
+                        JSONObject obj = json_dept_list.getJSONObject(i);
+                        searchList.add(new SearchItem(obj));
+                    }
+
 //                    for(int i=0;i<json_dept_list.length();i++){
 //                        JSONObject item = json_dept_list.getJSONObject(i);
 //
@@ -169,7 +195,8 @@ public class MainActivity extends AppCompatActivity {
 
                     //검색 결과 페이지로 이동
                     Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
-                    intent.putExtra("search_list", String.valueOf(json_dept_list));
+                    intent.putParcelableArrayListExtra("search_list", searchList);
+//                    intent.putExtra("search_list", String.valueOf(json_dept_list));
                     startActivity(intent);  //다음 화면으로 넘어가기
 
 
@@ -185,16 +212,16 @@ public class MainActivity extends AppCompatActivity {
             protected String doInBackground(String... params) {
 
                 String uri = params[0];
-                String main_addr = params[1];
-                String sub_addr = params[2];
-                String station = params[3];
+//                String main_addr = params[1];
+//                String sub_addr = params[2];
+//                String station = params[3];
 
                 BufferedReader bufferedReader = null;
                 try {
 
-                    String data = URLEncoder.encode("main_addr", "UTF-8") + "=" + URLEncoder.encode(main_addr, "UTF-8");
-                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
-                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
+//                    String data = URLEncoder.encode("main_addr", "UTF-8") + "=" + URLEncoder.encode(main_addr, "UTF-8");
+//                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
+//                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
 
                     URL url = new URL(uri);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -204,8 +231,8 @@ public class MainActivity extends AppCompatActivity {
                     conn.setDoOutput(true);
                     OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 
-                    wr.write(data);
-                    wr.flush();
+//                    wr.write(data);
+//                    wr.flush();
 
                     bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
@@ -221,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         GetDataJSON g = new GetDataJSON();
-        g.execute(url, main_addr, sub_addr, station);
+        g.execute(url);
     }
 
     public void getData(String url, final String type){
@@ -282,6 +309,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setData(JSONArray list) throws JSONException {
+        dept_list.clear();
+        dept_station_list.clear();
         for(int i=0;i<list.length();i++){
             JSONObject item = list.getJSONObject(i);
 
