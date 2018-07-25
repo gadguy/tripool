@@ -1,15 +1,23 @@
 package net.liroo.a.tripool;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.PointF;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,7 +33,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapView;
+
 import net.daum.mf.map.api.MapView;
+import net.daum.mf.map.common.MapEvent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText editTextFrom, editTextTo;
     private Button searchBtn;
+    TMapView tMapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +86,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        MapView mapView = new MapView(this);
-        mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
-        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
-        mapViewContainer.addView(mapView);
+//        MapView mapView = new MapView(this);
+//        mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
+//        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+//        mapViewContainer.addView(mapView);
+
+
+        tMapView = new TMapView(this);
+        tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
+        ViewGroup linearLayoutTmap = (ViewGroup)findViewById(R.id.map_view);
+        tMapView.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
+        linearLayoutTmap.addView(tMapView);
+        setGps();
+
+
+
+
+
+
 
         getData("http://a.liroo.net/tripool/json_dept_list.php", "dept_list");
 
@@ -94,7 +121,42 @@ public class MainActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+
     }
+    private final LocationListener mLocationListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                tMapView.setLocationPoint(longitude, latitude);
+                tMapView.setCenterPoint(longitude, latitude);
+
+            }
+
+        }
+
+        public void onProviderDisabled(String provider) {
+        }
+
+        public void onProviderEnabled(String provider) {
+        }
+
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+    };
+    public void setGps() {
+        final LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자(실내에선 NETWORK_PROVIDER 권장)
+                1000, // 통지사이의 최소 시간간격 (miliSecond)
+                1, // 통지사이의 최소 변경거리 (m)
+                mLocationListener);
+    }
+
+
     //출발지 입력하는 다이얼로그
     public void btnLayerFrom(View view) {
 
