@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,10 +59,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     String myJSON;
-    private static final String TAG_RESULTS="result";
-    JSONArray json_dept_list = new JSONArray();
-    ArrayList<String> dept_list = new ArrayList<>();
-    ArrayList<String> dept_station_list = new ArrayList<>();
+    private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
+    JSONArray json_dept_list = new JSONArray();                             //지역 DB에서 가져온 값
+    ArrayList<String> dept_list = new ArrayList<>();                        //지역 spinner에서 쓰임
+    ArrayList<String> dept_station_list = new ArrayList<>();                //장소 spinner에서 쓰임
 
     private EditText editTextFrom, editTextTo;
     private Button searchBtn;
@@ -86,65 +87,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //다음 지도 api
 //        MapView mapView = new MapView(this);
 //        mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
 //        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
 //        mapViewContainer.addView(mapView);
 
-
+        //Tmap 지도 api
         tMapView = new TMapView(this);
         tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
         ViewGroup linearLayoutTmap = (ViewGroup)findViewById(R.id.map_view);
         tMapView.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
         linearLayoutTmap.addView(tMapView);
+        //지도에서 현재위치를 표시
         setGps();
-
-
-
-
-
-
-
-        getData("http://a.liroo.net/tripool/json_dept_list.php", "dept_list");
-
-        //길찾기 url scheme 관련, 안될 경우 위치 표시만 한다
-//        String url = "daummaps://route?sp="+USER Latitude+","+USER Longitude+"&ep="+ARRIVAL Latitude+","+ARRIVAL Longitude+"&by=CAR";
-//        String url = "daummaps://route?sp=37.537229,127.005515&ep=37.4979502,127.0276368&by=CAR";
-//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//        startActivity(intent);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
+        //장소 목록을 php에서 가져옴
+        getData("http://a.liroo.net/tripool/json_region_list.php", "region_list");
     }
+    //Tmap 현재위치로 이동
     private final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
-
             if (location != null) {
                 double latitude = location.getLatitude();
                 double longitude = location.getLongitude();
                 tMapView.setLocationPoint(longitude, latitude);
                 tMapView.setCenterPoint(longitude, latitude);
-
             }
-
         }
-
         public void onProviderDisabled(String provider) {
         }
-
         public void onProviderEnabled(String provider) {
         }
-
         public void onStatusChanged(String provider, int status, Bundle extras) {
         }
     };
+    //Tmap 현재 위치 잡음
     public void setGps() {
         final LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -156,8 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 mLocationListener);
     }
 
-
-    //출발지 입력하는 다이얼로그
+    //출발지 입력하는 다이얼로그 띄움
     public void btnLayerFrom(View view) {
 
         final Spinner dept_spinner;
@@ -168,22 +144,34 @@ public class MainActivity extends AppCompatActivity {
         layerForm.setTitle("목적지 검색");
         layerForm.setContentView(R.layout.map_find); // 다이얼로그 화면 등록
 
-//        List<String> data = new ArrayList<>();
-//        data.add("가짜 데이터 1"); data.add("가짜 데이터 2"); data.add("가짜 데이터 3"); data.add("가짜 데이터 4"); data.add("가짜 데이터 5");
-//        data.add("가짜 데이터 6"); data.add("가짜 데이터 7"); data.add("가짜 데이터 8"); data.add("가짜 데이터 9"); data.add("가짜 데이터 10");
-
+        //출발 지역 스피너
+        //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
         ArrayAdapter adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
         dept_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
         dept_spinner.setAdapter(adapter);
+
+        //출발 지역 스피너
+        dept_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //출발 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
+                getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dept_spinner.getItemAtPosition(position)));
+                ArrayAdapter after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
+                Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
+                after_spinner.setAdapter(after_adapter);
+//                Toast.makeText(MainActivity.this,"선택된 아이템 : "+dept_spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        //출발 장소 스피너
         ArrayAdapter adapter2 = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
         dept_station_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept_station);
         dept_station_spinner.setAdapter(adapter2);
 
         layerForm.show(); // 다이얼로그 띄우기
-
-        //json 데이터를 활용한 스피너 생성
-        TextView main_addr, station;
-
 
         // Activity 에 Dialog 를 등록하기
         layerForm.setOwnerActivity(MainActivity.this);
@@ -191,18 +179,15 @@ public class MainActivity extends AppCompatActivity {
         //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
 //        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
 
+        //다이얼로그에서 입력 버튼
         Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
         btnInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 editTextFrom.setText(dept_spinner.getSelectedItem().toString().trim() + " " + dept_station_spinner.getSelectedItem().toString().trim());
-
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
         });
-
         //다이얼로그 닫기 버튼
         Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
         btnClose.setOnClickListener(new View.OnClickListener() {
@@ -212,10 +197,68 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    //도착 다이얼로그
+    //도착지 입력하는 다이얼로그 띄우기
     public void btnLayerTo(View view) {
+        final Spinner dest_spinner;
+        final Spinner dest_station_spinner;
 
-        Toast.makeText(getApplicationContext(), "도착 다이얼로그 레이아웃 할거임", Toast.LENGTH_SHORT).show();
+        // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
+        final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
+        layerForm.setTitle("목적지 검색");
+        layerForm.setContentView(R.layout.map_find); // 다이얼로그 화면 등록
+
+        //출발 지역 스피너
+        //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
+        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
+        dest_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
+        dest_spinner.setAdapter(adapter);
+
+        //출발 지역 스피너
+        dest_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                //출발 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
+                getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dest_spinner.getItemAtPosition(position)));
+                ArrayAdapter after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
+                Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
+                after_spinner.setAdapter(after_adapter);
+//                Toast.makeText(MainActivity.this,"선택된 아이템 : "+dept_spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        //출발 장소 스피너
+        ArrayAdapter adapter2 = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
+        dest_station_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept_station);
+        dest_station_spinner.setAdapter(adapter2);
+
+        layerForm.show(); // 다이얼로그 띄우기
+
+        // Activity 에 Dialog 를 등록하기
+        layerForm.setOwnerActivity(MainActivity.this);
+
+        //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
+//        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
+
+        //다이얼로그에서 입력 버튼
+        Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
+        btnInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTextTo.setText(dest_spinner.getSelectedItem().toString().trim() + " " + dest_station_spinner.getSelectedItem().toString().trim());
+                layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
+            }
+        });
+        //다이얼로그 닫기 버튼
+        Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
+            }
+        });
     }
 
     //검색결과 DB에서 가져옴
@@ -231,12 +274,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
-                Log.e("test", "result : "+result);
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
 
-                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+//                    Log.e("test", "json_dept_list : "+json_dept_list.length());
 
                     ArrayList<SearchItem> searchList = new ArrayList<>();
                     for ( int i=0; i<json_dept_list.length(); i++ ) {
@@ -244,25 +286,11 @@ public class MainActivity extends AppCompatActivity {
                         searchList.add(new SearchItem(obj));
                     }
 
-//                    for(int i=0;i<json_dept_list.length();i++){
-//                        JSONObject item = json_dept_list.getJSONObject(i);
-//
-//                        String main_addr = item.getString("main_addr");
-//                        String sub_addr = item.getString("sub_addr");
-//                        String station = item.getString("station");
-//
-//                        dept_list.add(main_addr+ " " + sub_addr);
-//                        dept_station_list.add(station);
-//                    }
-
                     //검색 결과 페이지로 이동
                     Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
                     intent.putParcelableArrayListExtra("search_list", searchList);
 //                    intent.putExtra("search_list", String.valueOf(json_dept_list));
                     startActivity(intent);  //다음 화면으로 넘어가기
-
-
-
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -290,9 +318,8 @@ public class MainActivity extends AppCompatActivity {
 
                     StringBuilder sb = new StringBuilder();
 
-                    conn.setDoOutput(true);
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-
+//                    conn.setDoOutput(true);
+//                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
 //                    wr.write(data);
 //                    wr.flush();
 
@@ -312,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
         GetDataJSON g = new GetDataJSON();
         g.execute(url);
     }
-
+    //지역, 장소를 json타입으로 php DB에서 가져옴
     public void getData(String url, final String type){
         class GetDataJSON extends AsyncTask<String, Void, String>{
 
@@ -328,29 +355,37 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
-                    if ( type.equals("dept_list") ) {
+                    if ( type.equals("region_list") ) {
                         setData(json_dept_list);
+                    } else {
+                        setPlaceData(json_dept_list);
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-//                Log.e("json_arrayList", String.valueOf(dept_list));
+//                Log.e("json_arrayList", String.valueOf(json_dept_list));
                 loading.dismiss();
             }
             @Override
             protected String doInBackground(String... params) {
-
                 String uri = params[0];
+                String region = params[1];
 
                 BufferedReader bufferedReader = null;
                 try {
+                    //php로 보낼 데이터 세팅
+                    String data = URLEncoder.encode("region", "UTF-8") + "=" + URLEncoder.encode(region, "UTF-8");
+
                     URL url = new URL(uri);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     StringBuilder sb = new StringBuilder();
 
-                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    conn.setDoOutput(true);
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                    wr.write(data);
+                    wr.flush();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                     String json;
                     while((json = bufferedReader.readLine())!= null){
@@ -363,24 +398,34 @@ public class MainActivity extends AppCompatActivity {
                     return null;
                 }
             }
-
-
         }
         GetDataJSON g = new GetDataJSON();
         g.execute(url, type);
     }
-
+    //출발 지역 세팅
     public void setData(JSONArray list) throws JSONException {
         dept_list.clear();
+        dept_list.add("어느 지역 인가요?");
         dept_station_list.clear();
+        dept_station_list.add("어디로 가시나요?");
         for(int i=0;i<list.length();i++){
             JSONObject item = list.getJSONObject(i);
 
             String main_addr = item.getString("main_addr");
             String sub_addr = item.getString("sub_addr");
-            String station = item.getString("station");
+//            String station = item.getString("station");
 
             dept_list.add(main_addr+ " " + sub_addr);
+//            dept_station_list.add(station);
+        }
+    }
+    //출발 장소 세팅
+    public void setPlaceData(JSONArray list) throws JSONException {
+        dept_station_list.clear();
+        dept_station_list.add("어디로 가시나요?");
+        for(int i=0;i<list.length();i++){
+            JSONObject item = list.getJSONObject(i);
+            String station = item.getString("place");
             dept_station_list.add(station);
         }
     }
@@ -402,11 +447,9 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
 //            Toast.makeText(getApplicationContext(), "세팅버튼 입니다. 추후 개발 예정", Toast.LENGTH_LONG).show();
-
             SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
             String u_id = userInfo.getString("u_id", "");
             Toast.makeText(getApplicationContext(), u_id, Toast.LENGTH_SHORT).show();
-
             return true;
         }
         if (id == R.id.action_logout) {
@@ -419,10 +462,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);  //다음 화면으로 넘어가기
         }
-
-
-
-
         return super.onOptionsItemSelected(item);
     }
 }
