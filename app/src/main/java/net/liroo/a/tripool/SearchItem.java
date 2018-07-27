@@ -13,7 +13,8 @@ public class SearchItem implements Serializable, Parcelable
 {
     private static final long serialVersionUID = 3467427543832512425L;
 
-    private String no, deptMain, deptSub, departure;
+    private String no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate;
+    private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
 
     @SuppressWarnings("unchecked")
     public SearchItem(JSONObject data)
@@ -23,12 +24,22 @@ public class SearchItem implements Serializable, Parcelable
             deptMain = data.getString("dept_main");
             deptSub = data.getString("dept_sub");
             departure = data.getString("departure");
+            destMain = data.getString("dest_main");
+            destSub = data.getString("dest_sub");
+            destination = data.getString("destination");
+            deptDate = data.getString("dept_date");
         } catch ( Exception e ) {
 
         }
     }
 
     public String getDeptMain() { return deptMain; }
+    public String getDeptSub() { return deptSub; }
+    public String getDeparture() { return departure; }
+    public String getDestMain() { return deptMain; }
+    public String getDestSub() { return destSub; }
+    public String getDestination() { return destination; }
+    public String getDeptDate() { return deptDate; }
 
     // Parcelable
     @Override
@@ -43,6 +54,10 @@ public class SearchItem implements Serializable, Parcelable
         bundle.putString("deptMain", deptMain);
         bundle.putString("deptSub", deptSub);
         bundle.putString("departure", departure);
+        bundle.putString("destMain", destMain);
+        bundle.putString("destSub", destSub);
+        bundle.putString("destination", destination);
+        bundle.putString("deptDate", deptDate);
 
         dest.writeBundle(bundle);
     }
@@ -55,6 +70,10 @@ public class SearchItem implements Serializable, Parcelable
         deptMain = bundle.getString("deptMain");
         deptSub = bundle.getString("deptSub");
         departure = bundle.getString("departure");
+        destMain = bundle.getString("destMain");
+        destSub = bundle.getString("destSub");
+        destination = bundle.getString("destination");
+        deptDate = bundle.getString("deptDate");
     }
 
     @SuppressWarnings("rawtypes")

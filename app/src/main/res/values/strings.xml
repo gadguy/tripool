@@ -2,4 +2,9 @@
     <string name="app_name">tripool</string>
     <string name="action_settings">Settings</string>
     <string name="action_logout">Logout</string>
+    <string name="start">시작하기</string>
+    <string name="intro_help1">여행 목적지까지\n이제 힘들게 찾아가지 마세요.</string>
+    <string name="intro_help2">같은 목적지로 가는 사람들과\n함께 차를 예약해서</string>
+    <string name="intro_help3">빠르고 안전하지만 합리적으로\n이동하세요.</string>
+    <string name="intro_help4">몇 번의 클릭으로\n교통에 대한 고민을 덜고,\n멋진 여행에만 집중하세요!</string>
 </resources>

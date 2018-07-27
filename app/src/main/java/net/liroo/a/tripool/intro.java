@@ -8,7 +8,10 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
-public class intro extends Activity {
+// ----------------------------------------------------------------------------------------
+// 수정
+public class intro extends NoTitledBarBaseActivity {
+// ----------------------------------------------------------------------------------------
 
     private Handler handler;
     private Runnable r;

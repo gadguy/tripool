@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="@string/intro_help3"
+        android:text="@string/intro_help4"
         android:textColor="#21a575"
         android:textSize="18sp"
         android:textStyle="bold"/>
