@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ public class SearchResultActivity extends BaseActivity {
 
     private List<String> list = new ArrayList<>();          // 데이터를 넣은 리스트변수
     private ListView listView;          // 검색을 보여줄 리스트변수
+    private Button makeBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +52,20 @@ public class SearchResultActivity extends BaseActivity {
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list) ;
         listView =(ListView)findViewById(R.id.search_list);
         listView.setAdapter(adapter);
+
+
+        makeBtn = findViewById(R.id.btn_make_room);
+
+        makeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+            Toast.makeText(getApplicationContext(), "방 만들고, 결제 페이지로 이동", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
 
