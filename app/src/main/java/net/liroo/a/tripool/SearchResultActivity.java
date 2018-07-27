@@ -53,12 +53,16 @@ public class SearchResultActivity extends BaseActivity {
         listView =(ListView)findViewById(R.id.search_list);
         listView.setAdapter(adapter);
 
-
+        //방만들기 버튼
         makeBtn = findViewById(R.id.btn_make_room);
-
+        //클릭하면 검색된 정보로 DB에 insert하고 해당 정보를 바탕으로 한 결제페이지로 이동
         makeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            //php 통해서 DB에 insert하는 메소드
+
+
+            //intent 통해서 결제페이지로 이동, 검색된 정보도 intent에 추가해줌
 
 
             Toast.makeText(getApplicationContext(), "방 만들고, 결제 페이지로 이동", Toast.LENGTH_SHORT).show();
