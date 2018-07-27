@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         layerForm.setOwnerActivity(MainActivity.this);
 
         //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
-//        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
+        layerForm.setCanceledOnTouchOutside(false); // 다이얼로그 바깥 영역을 클릭시
 
         //다이얼로그에서 입력 버튼
         Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
         layerForm.setOwnerActivity(MainActivity.this);
 
         //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
-//        layerForm.setCanceledOnTouchOutside(true); // 다이얼로그 바깥 영역을 클릭시
+        layerForm.setCanceledOnTouchOutside(false); // 다이얼로그 바깥 영역을 클릭시
 
         //다이얼로그에서 입력 버튼
         Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
