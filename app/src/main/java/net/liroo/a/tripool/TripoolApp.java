@@ -9,8 +9,12 @@ import java.util.ArrayList;
 
 public class TripoolApp extends Application
 {
-    public AppCompatActivity topActivity;	// 현재 최상위 액티비티
-    private ArrayList<AppCompatActivity> activityPool = new ArrayList<>();	// Activity 관리
+    // AppCompatActivity -> IBaseActivity로 변경
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    public IBaseActivity topActivity;	// 현재 최상위 액티비티
+    private ArrayList<IBaseActivity> activityPool = new ArrayList<>();	// Activity 관리
+    // ----------------------------------------------------------------------------------------
 
     @Override
     public void onCreate()
@@ -22,10 +26,12 @@ public class TripoolApp extends Application
      * 새로운 액티버티 추가.
      * 중복검사.
      */
-    private void addActivity(AppCompatActivity activity)
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    private void addActivity(IBaseActivity activity)
     {
         boolean isExist = false;
-        for ( AppCompatActivity old : activityPool ) {
+        for ( IBaseActivity old : activityPool ) {
             if ( old == activity ) {
                 isExist = true;
                 break;
@@ -40,7 +46,7 @@ public class TripoolApp extends Application
     /**
      * 액티버티 종료 및 목록에서 제거.
      */
-    public void removeActivity(AppCompatActivity activity)
+    public void removeActivity(IBaseActivity activity)
     {
         activityPool.remove(activity);
         ((Activity)activity).finish();
@@ -49,7 +55,7 @@ public class TripoolApp extends Application
     @SuppressWarnings("rawtypes")
     public void removeActivity(Class cls)
     {
-        for ( AppCompatActivity activity : activityPool ) {
+        for ( IBaseActivity activity : activityPool ) {
             if ( activity.getClass() == cls ) {
                 ((Activity)activity).finish();
                 activityPool.remove(activity);
@@ -69,9 +75,9 @@ public class TripoolApp extends Application
     }
 
     // activity 관리
-    public AppCompatActivity getTopActivity() { return topActivity; }
+    public IBaseActivity getTopActivity() { return topActivity; }
 
-    public void setTopActivity(AppCompatActivity activity)
+    public void setTopActivity(IBaseActivity activity)
     {
         topActivity = activity;
         addActivity(activity);
@@ -83,12 +89,13 @@ public class TripoolApp extends Application
     public void clearActivityPool()
     {
         if ( activityPool == null ) return;
-        for ( AppCompatActivity activity : activityPool ) {
+        for ( IBaseActivity activity : activityPool ) {
             if ( activity != topActivity )
                 ((Activity)activity).finish();
         }
         activityPool.clear();
     }
+    // ----------------------------------------------------------------------------------------
 
     public void killApplication()
     {

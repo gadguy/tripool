@@ -1,12 +1,9 @@
 package net.liroo.a.tripool;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
-// ----------------------------------------------------------------------------------------
-// 수정
-public class BaseActivity extends AppCompatActivity implements IBaseActivity
-// ----------------------------------------------------------------------------------------
+public class NoTitledBarBaseActivity extends Activity implements IBaseActivity
 {
     protected TripoolApp app;
 
