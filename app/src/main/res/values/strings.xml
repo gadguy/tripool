@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">tripool</string>
     <string name="action_settings">Settings</string>
     <string name="action_logout">Logout</string>
@@ -7,4 +8,18 @@
     <string name="intro_help2">같은 목적지로 가는 사람들과\n함께 차를 예약해서</string>
     <string name="intro_help3">빠르고 안전하지만 합리적으로\n이동하세요.</string>
     <string name="intro_help4">몇 번의 클릭으로\n교통에 대한 고민을 덜고,\n멋진 여행에만 집중하세요!</string>
+    <string name="access_permission">접근 권한 동의</string>
+    <string name="access_permission_help">다음 접근 권한을 허용해주세요.</string>
+    <string name="agree">동의</string>
+    <string name="camera">카메라</string>
+    <string name="camera_permission_help">사진/동영상 촬영을 하려면 카메라 접근 권한이 필요합니다.</string>
+    <string name="storage">저장공간</string>
+    <string name="storage_permission_help">내 기기에서 사진, 동영상 및 파일을 저장하고 업로드를 하기 위해서 저장공간 접근 권한이 필요합니다..</string>
+    <string name="location">위치</string>
+    <string name="location_permission_help">내 위치를 찾기 위해 위치 접근 권한이 필요합니다.</string>
+    <string name="login">로그인</string>
+    <string name="email">이메일 주소</string>
+    <string name="password">비밀번호</string>
+    <string name="join_do">20초 안에 회원가입하기</string>
+
 </resources>

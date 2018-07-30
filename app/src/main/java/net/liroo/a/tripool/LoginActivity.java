@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -27,6 +29,14 @@ public class LoginActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // ----------------------------------------------------------------------------------------
 
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);
@@ -140,7 +150,18 @@ public class LoginActivity extends BaseActivity {
         task.execute(u_id, u_pw);
     }
 
-
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemID = item.getItemId();
+        if ( itemID == android.R.id.home ) {   // 뒤로
+            finish();
+        }
+        return true;
+    }
+    // ----------------------------------------------------------------------------------------
 
 
 }

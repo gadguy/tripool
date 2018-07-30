@@ -7,59 +7,77 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary" />
+        android:layout_height="wrap_content"
+        style="@style/ToolBar" >
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            android:layout_gravity="center"
+            style="@style/ToolBarTitleText"/>
+
+    </android.support.v7.widget.Toolbar>
+
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0.5dp"
+        android:background="#c1c1c1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/tripool_logo"/>
 
         <EditText
             android:id="@+id/emailInput"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="151dp"
-            android:hint="Email" />
+            android:layout_marginTop="20dp"
+            android:drawableLeft="@drawable/phone"
+            android:drawablePadding="15dp"
+            android:inputType="textEmailAddress"
+            android:hint="@string/email" />
 
         <EditText
             android:id="@+id/passwordInput"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/emailInput"
-            android:layout_centerHorizontal="true"
+            android:drawableLeft="@drawable/phone"
+            android:drawablePadding="15dp"
             android:inputType="textPassword"
-            android:hint="Password" />
+            android:hint="@string/password" />
 
         <Button
             android:id="@+id/loginButton"
-            android:layout_width="150dp"
-            android:layout_height="55dp"
-            android:layout_below="@+id/passwordInput"
-            android:layout_marginTop="20dp"
-            android:layout_toStartOf="@+id/signupButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:background="#117869"
             android:onClick="btnLogin"
-            android:text="Log in"
-            android:textAllCaps="false" />
+            android:text="@string/login"
+            android:textColor="#ffffff" />
 
         <Button
             android:id="@+id/signupButton"
-            android:layout_width="150dp"
-            android:layout_height="55dp"
-            android:layout_alignEnd="@+id/passwordInput"
-            android:layout_alignTop="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="3dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@null"
             android:onClick="btnSignin"
-            android:text="Sign up"
-            android:textAllCaps="false" />
+            android:text="@string/join_do"
+            android:textColor="#777"/>
 
-        <!--<CheckBox-->
-            <!--android:id="@+id/autologinChkBox"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@+id/loginButton"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginTop="20dp"-->
-            <!--android:text="Remember login" />-->
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

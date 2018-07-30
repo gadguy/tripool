@@ -12,13 +12,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PreviewActivity extends AppCompatActivity {
+// ----------------------------------------------------------------------------------------
+// 수정
+public class PreviewActivity extends BaseActivity {
+// ----------------------------------------------------------------------------------------
 
     public static String TAG = "PreviewActivity";
 
@@ -44,6 +49,14 @@ public class PreviewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preview);
+
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // ----------------------------------------------------------------------------------------
 
         init();
         expandableList();
@@ -131,27 +144,20 @@ public class PreviewActivity extends AppCompatActivity {
 //        data.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "WRITE_EXTERNAL_STORAGE"));
 //        data.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "To Save Photos and Videos"));
 
-        ExpandableListAdapter.Item camera = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "Camera");
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        ExpandableListAdapter.Item camera = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, getString(R.string.camera));
         camera.invisibleChildren = new ArrayList<>();
-        camera.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "Camera Permission Needs Permission"));
-        camera.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "Camera"));
-        camera.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "To Take Photos and Videos"));
+        camera.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getString(R.string.camera_permission_help)));
 
-
-        ExpandableListAdapter.Item storage = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "Storage");
+        ExpandableListAdapter.Item storage = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, getString(R.string.storage));
         storage.invisibleChildren = new ArrayList<>();
-        storage.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "Storage Permission Needs Permission"));
-        storage.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "READ_EXTERNAL_STORAGE"));
-        storage.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "WRITE_EXTERNAL_STORAGE"));
-        storage.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "To Save Photos and Videos"));
+        storage.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getString(R.string.storage_permission_help)));
 
-
-        ExpandableListAdapter.Item location = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, "Location");
+        ExpandableListAdapter.Item location = new ExpandableListAdapter.Item(ExpandableListAdapter.HEADER, getString(R.string.location));
         location.invisibleChildren = new ArrayList<>();
-        location.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "Location Permission Needs Permission"));
-        location.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "ACCESS_FINE_LOCATION"));
-        location.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, "To Locate Your Location"));
-
+        location.invisibleChildren.add(new ExpandableListAdapter.Item(ExpandableListAdapter.CHILD, getString(R.string.location_permission_help)));
+        // ----------------------------------------------------------------------------------------
 
         data.add(camera);
         data.add(storage);
@@ -231,4 +237,17 @@ public class PreviewActivity extends AppCompatActivity {
 
         }
     }
+
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemID = item.getItemId();
+        if ( itemID == android.R.id.home ) {   // 뒤로
+            finish();
+        }
+        return true;
+    }
+    // ----------------------------------------------------------------------------------------
 }

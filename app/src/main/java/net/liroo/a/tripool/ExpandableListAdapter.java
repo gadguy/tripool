@@ -32,8 +32,10 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         View view = null;
         Context context = parent.getContext();
         float dp = context.getResources().getDisplayMetrics().density;
-        int subItemPaddingLeft = (int) (18 * dp);
-        int subItemPaddingTopAndBottom = (int) (5 * dp);
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        int subItemPaddingLeftToRight = (int) (30 * dp);
+        // ----------------------------------------------------------------------------------------
 
         switch (type) {
             case HEADER:
@@ -43,7 +45,11 @@ public class ExpandableListAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                 return header;
             case CHILD:
                 TextView itemTextView = new TextView(context);
-                itemTextView.setPadding(subItemPaddingLeft, subItemPaddingTopAndBottom, 0, subItemPaddingTopAndBottom);
+                // ----------------------------------------------------------------------------------------
+                // 수정
+                itemTextView.setPadding(subItemPaddingLeftToRight, 0, subItemPaddingLeftToRight, 0);
+                itemTextView.setTextSize(12);
+                // ----------------------------------------------------------------------------------------
                 itemTextView.setTextColor(0x88000000);
                 itemTextView.setLayoutParams(
                         new ViewGroup.LayoutParams(
