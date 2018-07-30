@@ -37,6 +37,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".MapActivity" />
         <activity android:name=".SearchResultActivity" />
+        <activity android:name=".ReadyBoardActivity" />
+        <activity android:name=".PayActivity" />
 
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="3c8e3fff3053a6bb1ae42fc8b5fbd761"/>
 

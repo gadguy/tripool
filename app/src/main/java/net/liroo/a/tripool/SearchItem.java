@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.HashMap;
 
+//검색된 결과 아이템, 오브젝트
 public class SearchItem implements Serializable, Parcelable
 {
     private static final long serialVersionUID = 3467427543832512425L;
