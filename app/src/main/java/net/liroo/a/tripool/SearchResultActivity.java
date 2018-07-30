@@ -60,6 +60,8 @@ public class SearchResultActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
             //php 통해서 DB에 insert하는 메소드
+            //book_id, book_no, dept_main, dept_sub, departure, dest_main, dest_sub, destination, dept_date 보내야함
+            //json_encode(array('result'=>$result)); 로 결과 받음
 
 
             //intent 통해서 결제페이지로 이동, 검색된 정보도 intent에 추가해줌
