@@ -62,6 +62,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
 // ----------------------------------------------------------------------------------------
 
+    private ProgressDialog loading;
     String myJSON;
     private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
     JSONArray json_dept_list = new JSONArray();                             //지역 DB에서 가져온 값
@@ -94,7 +95,12 @@ public class MainActivity extends BaseActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                searchData("http://a.liroo.net/tripool/json_search_result.php");
+                if ( editTextFrom.getText().toString().isEmpty() || editTextTo.getText().toString().isEmpty() ) {
+                    Toast.makeText(getApplicationContext(), "출발지, 도착지를 먼저 선택하세요", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                SearchResultItem item = new SearchResultItem("1", "여수");
+                searchData("http://a.liroo.net/tripool/json_search_result.php", item);
                 Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
             }
         });
@@ -274,10 +280,9 @@ public class MainActivity extends BaseActivity {
     }
 
     //검색결과 DB에서 가져옴
-    public void searchData(String url) {
-        class GetDataJSON extends AsyncTask<String, Void, String>{
+    public void searchData(String url, final SearchResultItem item) {
 
-            ProgressDialog loading;
+        AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -298,9 +303,13 @@ public class MainActivity extends BaseActivity {
                         searchList.add(new SearchItem(obj));
                     }
 
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("search_result_item", item);
+
                     //검색 결과 페이지로 이동
                     Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
                     intent.putParcelableArrayListExtra("search_list", searchList);
+                    intent.putExtra("message", bundle);
 //                    intent.putExtra("search_list", String.valueOf(json_dept_list));
                     startActivity(intent);  //다음 화면으로 넘어가기
 
@@ -311,9 +320,9 @@ public class MainActivity extends BaseActivity {
                 loading.dismiss();
             }
             @Override
-            protected String doInBackground(String... params) {
+            protected String doInBackground(Object... params) {
 
-                String uri = params[0];
+                String uri = (String)params[0];
 //                String main_addr = params[1];
 //                String sub_addr = params[2];
 //                String station = params[3];
@@ -347,9 +356,91 @@ public class MainActivity extends BaseActivity {
                     return null;
                 }
             }
-        }
-        GetDataJSON g = new GetDataJSON();
-        g.execute(url);
+        };
+        task.execute(url);
+
+
+
+
+//        class GetDataJSON extends AsyncTask<Object, Void, String>{
+//
+//            ProgressDialog loading;
+//            SearchResultItem item;
+//            @Override
+//            protected void onPreExecute() {
+//                super.onPreExecute();
+//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+//            }
+//            @Override
+//            protected void onPostExecute(String result){
+//                myJSON=result;
+//                try {
+//                    JSONObject jsonObj = new JSONObject(myJSON);
+//                    json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
+//
+////                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+//
+//                    ArrayList<SearchItem> searchList = new ArrayList<>();
+//                    for ( int i=0; i<json_dept_list.length(); i++ ) {
+//                        JSONObject obj = json_dept_list.getJSONObject(i);
+//                        searchList.add(new SearchItem(obj));
+//                    }
+//
+//                    //검색 결과 페이지로 이동
+//                    Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
+//                    intent.putParcelableArrayListExtra("search_list", searchList);
+//                    intent.putExtra("search_result_item". item);
+//                    intent.putExtra("dept_addr", "경주");
+////                    intent.putExtra("search_list", String.valueOf(json_dept_list));
+//                    startActivity(intent);  //다음 화면으로 넘어가기
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+////                Log.e("json_arrayList", String.valueOf(dept_list));
+//                loading.dismiss();
+//            }
+//            @Override
+//            protected String doInBackground(Object... params) {
+//
+//                String uri = (String)params[0];
+//                item = (SearchResultItem)params[1];
+////                String main_addr = params[1];
+////                String sub_addr = params[2];
+////                String station = params[3];
+//
+//                BufferedReader bufferedReader = null;
+//                try {
+//
+////                    String data = URLEncoder.encode("main_addr", "UTF-8") + "=" + URLEncoder.encode(main_addr, "UTF-8");
+////                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
+////                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
+//
+//                    URL url = new URL(uri);
+//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//
+//                    StringBuilder sb = new StringBuilder();
+//
+////                    conn.setDoOutput(true);
+////                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+////                    wr.write(data);
+////                    wr.flush();
+//
+//                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//
+//
+//                    String json;
+//                    while((json = bufferedReader.readLine())!= null){
+//                        sb.append(json+"\n");
+//                    }
+//                    return sb.toString().trim();
+//                } catch(Exception e) {
+//                    return null;
+//                }
+//            }
+//        }
+//        GetDataJSON g = new GetDataJSON();
+//        g.execute(url, item);
     }
     //지역, 장소를 json타입으로 php DB에서 가져옴
     public void getData(String url, final String type){

@@ -17,6 +17,8 @@ public class SearchItem implements Serializable, Parcelable
     private String no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate;
     private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
 
+    public SearchItem() {  }
+
     @SuppressWarnings("unchecked")
     public SearchItem(JSONObject data)
     {

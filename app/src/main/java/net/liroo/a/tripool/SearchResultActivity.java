@@ -52,21 +52,28 @@ public class SearchResultActivity extends BaseActivity {
 
         final ArrayList<SearchItem> searchList = (ArrayList<SearchItem>)getIntent().getSerializableExtra("search_list");
 
-        //검색 결과로 목록 출력하기
-        Log.e("test", "searchList : "+searchList.size());
+        final Bundle bundle = getIntent().getBundleExtra("message");
+        SearchResultItem item = bundle.getParcelable("search_result_item");
+        if ( item != null ) {
+            Log.e("test", item.getNo());
+        }
+
+        searchList.add(0, new SearchItem());
 
         //MainActivity에서 받은 정보를 가져옴
         //TODO: From, To, 출발시간, 준비완료 카운트도 추가해야 함
         //From, To는 장소만 표시해줌
         //방 만들 때는 From의 지역,장소, To의 지역장소, 출발날짜, 출발시간이 필요 함 -> 2차원 배열? or 오브젝트?
-        for ( int i=0; i<searchList.size(); i++ ) {
-            Log.d("test_search_result", searchList.get(i).getDeptMain());
-            list.add(searchList.get(i).getDeptMain());
-
-        }
+//        for ( int i=0; i<searchList.size(); i++ ) {
+//            Log.d("test_search_result", searchList.get(i).getDeptMain());
+//            list.add(searchList.get(i).getDeptMain());
+//
+//        }
         //리스트뷰 세팅
         //TODO: 상단에 컬럼명 표시해줘야 함
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+//        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchList);
+
+        SearchResultAdapter adapter = new SearchResultAdapter(this, searchList);
         listView =(ListView)findViewById(R.id.search_list);
         listView.setAdapter(adapter);
 
@@ -77,6 +84,7 @@ public class SearchResultActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //클릭한 정보만 탑승준비 페이지로 넘김
 //                clickedList.add(searchList.get(i).getDeptMain());
+
 
 
                 //탑승준비 페이지로 이동
@@ -109,6 +117,7 @@ public class SearchResultActivity extends BaseActivity {
 //                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
                 //탑승준비 페이지로 이동
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
+                intent.putExtra("message", bundle);
 //                intent.putParcelableArrayListExtra("search_result", searchList);
                 startActivity(intent);  //다음 화면으로 넘어가기
 
