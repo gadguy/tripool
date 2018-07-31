@@ -2,10 +2,13 @@ package net.liroo.a.tripool;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,6 +28,14 @@ public class JoinActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
+
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // ----------------------------------------------------------------------------------------
 
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);
@@ -73,29 +84,34 @@ public class JoinActivity extends BaseActivity {
 
     }
 
-    @Override
-    public void onBackPressed()
-    {
-        super.onBackPressed();
-        //TODO
-        //뒤로가기 한번 누르면 토스트로 '뒤로가기를 한 번더 누르면 앱이 종료됩니다' 띄우고
-        //뒤로가기 두번 누르면 앱 종료 시키기
-        //뒤로가기 두번 누르는 것은 핸들러를 통해서 할 수 있다
+    // ----------------------------------------------------------------------------------------
+    // 수정
 
+//    @Override
+//    public void onBackPressed()
+//    {
+//        super.onBackPressed();
+//        //TODO
+//        //뒤로가기 한번 누르면 토스트로 '뒤로가기를 한 번더 누르면 앱이 종료됩니다' 띄우고
+//        //뒤로가기 두번 누르면 앱 종료 시키기
+//        //뒤로가기 두번 누르는 것은 핸들러를 통해서 할 수 있다
+//
+//
+//
+//        //  앱 아예 종료
+//        killAll();
+//    }
+//
+//    private void killAll()
+//    {
+//        app.clearActivityPool();
+//
+//        finish();
+//
+//        app.killApplication();
+//    }
 
-
-        //  앱 아예 종료
-        killAll();
-    }
-
-    private void killAll()
-    {
-        app.clearActivityPool();
-
-        finish();
-
-        app.killApplication();
-    }
+    // ----------------------------------------------------------------------------------------
 
     private void insertToDatabase(String u_id, String u_pw) {
 
@@ -121,7 +137,11 @@ public class JoinActivity extends BaseActivity {
                     userEdit.putString("chk_autologin", "auto_login");
                     userEdit.commit();
                     // 지도 페이지로 이동
-
+                    // ----------------------------------------------------------------------------------------
+                    // 수정
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);  //다음 화면으로 넘어가기
+                    // ----------------------------------------------------------------------------------------
 
                 } else if ( s.equals("no_id") ) {
                     Toast.makeText(getApplicationContext(), "ID 혹은 비밀번호가 공백이면 안됩니다.", Toast.LENGTH_LONG).show();
@@ -176,7 +196,16 @@ public class JoinActivity extends BaseActivity {
         task.execute(u_id, u_pw);
     }
 
-
-
-
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemID = item.getItemId();
+        if ( itemID == android.R.id.home ) {   // 뒤로
+            finish();
+        }
+        return true;
+    }
+    // ----------------------------------------------------------------------------------------
 }

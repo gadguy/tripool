@@ -1,98 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary" />
+        android:layout_height="wrap_content"
+        android:background="#ccffffff"
+        style="@style/ToolBar" >
 
-    <FrameLayout
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RelativeLayout
-            android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#fff"
-            android:orientation="vertical">
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/intro_dot_ov"/>
+
+            <EditText
+                android:id="@+id/editTextFrom"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="@string/setting_departure"
+                android:textColor="#666"
+                android:textSize="14sp"
+                android:focusable="false"
+                android:onClick="btnLayerFrom"/>
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text="From"
-                    android:textSize="18sp" />
+        </LinearLayout>
 
-                <EditText
-                    android:id="@+id/editTextFrom"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="8dp"
-                    android:text="어디로 가시나요?"
-                    android:textSize="14sp"
-                    android:focusable="false"
-                    android:onClick="btnLayerFrom"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_height="1dp"
+            android:background="#eee"/>
 
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/intro_dot"/>
+
+            <EditText
+                android:id="@+id/editTextTo"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:text="To"
-                    android:textSize="18sp" />
-
-                <EditText
-                    android:id="@+id/editTextTo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="8dp"
-                    android:text="어디에서 타시나요?"
-                    android:textSize="14sp"
-                    android:focusable="false"
-                    android:onClick="btnLayerTo"/>
-
-            </LinearLayout>
+                android:layout_weight="1"
+                android:background="@null"
+                android:text="@string/setting_destination"
+                android:textColor="#666"
+                android:textSize="14sp"
+                android:focusable="false"
+                android:onClick="btnLayerTo"/>
 
         </LinearLayout>
 
         <Button
             android:id="@+id/btn_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_gravity="bottom"
-            android:text="검색" />
+            android:layout_height="50dp"
+            android:background="#117869"
+            android:text="@string/search"
+            android:textColor="#fff" />
 
-    </FrameLayout>
+    </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

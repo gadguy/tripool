@@ -24,60 +24,69 @@
         android:layout_height="0.5dp"
         android:background="#c1c1c1" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:fillViewport="true">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/tripool_logo"/>
-
-        <EditText
-            android:id="@+id/emailInput"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="20dp"
-            android:drawableLeft="@drawable/phone"
-            android:drawablePadding="15dp"
-            android:inputType="textEmailAddress"
-            android:hint="@string/email" />
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/passwordInput"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:drawableLeft="@drawable/phone"
-            android:drawablePadding="15dp"
-            android:inputType="textPassword"
-            android:hint="@string/password" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/tripool_logo"/>
 
-        <Button
-            android:id="@+id/loginButton"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="15dp"
-            android:background="#117869"
-            android:onClick="btnLogin"
-            android:text="@string/login"
-            android:textColor="#ffffff" />
+            <EditText
+                android:id="@+id/emailInput"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:drawableLeft="@drawable/phone"
+                android:drawablePadding="15dp"
+                android:inputType="textEmailAddress"
+                android:hint="@string/email"
+                android:textSize="16sp"/>
 
-        <Button
-            android:id="@+id/signupButton"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginTop="3dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:background="@null"
-            android:onClick="btnSignin"
-            android:text="@string/join_do"
-            android:textColor="#777"/>
+            <EditText
+                android:id="@+id/passwordInput"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:drawableLeft="@drawable/phone"
+                android:drawablePadding="15dp"
+                android:inputType="textPassword"
+                android:hint="@string/password"
+                android:textSize="16sp" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:background="#117869"
+                android:onClick="btnLogin"
+                android:text="@string/login"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/signupButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="3dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@null"
+                android:onClick="btnSignin"
+                android:text="@string/join_do"
+                android:textColor="#777"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

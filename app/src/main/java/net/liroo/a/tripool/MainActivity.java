@@ -15,6 +15,8 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -55,8 +57,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
-public class MainActivity extends AppCompatActivity {
+// ----------------------------------------------------------------------------------------
+//  수정
+public class MainActivity extends BaseActivity {
+// ----------------------------------------------------------------------------------------
 
     String myJSON;
     private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
@@ -71,9 +75,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // ----------------------------------------------------------------------------------------
+        //  수정
+        setContentView(R.layout.map_view);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        // ----------------------------------------------------------------------------------------
 
         editTextFrom = findViewById(R.id.editTextFrom);
         editTextTo = findViewById(R.id.editTextTo);
@@ -464,4 +473,42 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    // ----------------------------------------------------------------------------------------
+    //  수정
+
+    // 앱을 완전히 종료 FrontPage에서만 사용
+    private boolean quitFlag;
+    private Handler quitHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            if ( msg.what == 0 )
+                quitFlag = false;
+        }
+    };
+
+    private void killAll()
+    {
+        app.clearActivityPool();
+
+        finish();
+
+        app.killApplication();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if ( !quitFlag ) {
+            Toast.makeText(getApplicationContext(), R.string.exit_confirm, Toast.LENGTH_LONG).show();
+            quitFlag = true;
+            quitHandler.sendEmptyMessageDelayed(0, 2000);
+        }
+        else {
+            killAll();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------
 }

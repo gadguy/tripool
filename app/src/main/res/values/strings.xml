@@ -21,5 +21,12 @@
     <string name="email">이메일 주소</string>
     <string name="password">비밀번호</string>
     <string name="join_do">20초 안에 회원가입하기</string>
+    <string name="join">회원가입</string>
+    <string name="join_check">비밀번호 확인</string>
+    <string name="join_do_now">가입하기</string>
+    <string name="search">검색하기</string>
+    <string name="setting_departure">출발지 설정</string>
+    <string name="setting_destination">도착지 설정</string>
+    <string name="exit_confirm">\'뒤로\'버튼을 한 번 더 누르시면 종료됩니다.</string>
 
 </resources>
