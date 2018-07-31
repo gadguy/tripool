@@ -88,6 +88,9 @@ public class MainActivity extends BaseActivity {
         editTextTo = findViewById(R.id.editTextTo);
         searchBtn = findViewById(R.id.btn_search);
 
+        //TODO:출발지, 도착지 입력확인하고, 입력이 되었으면 인원수, 캐리어 수를 입력하는 다이얼로그가 떠야함
+        //해당 다이얼로그에서 확인을 누르면 아래 함수가 동작해야 함
+        //검색하기 버튼
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -461,6 +464,7 @@ public class MainActivity extends BaseActivity {
             Toast.makeText(getApplicationContext(), u_id, Toast.LENGTH_SHORT).show();
             return true;
         }
+        //로그아웃
         if (id == R.id.action_logout) {
             SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
             SharedPreferences.Editor userEdit = userInfo.edit();

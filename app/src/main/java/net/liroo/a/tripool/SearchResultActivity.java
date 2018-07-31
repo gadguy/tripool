@@ -66,11 +66,12 @@ public class SearchResultActivity extends BaseActivity {
         }
         //리스트뷰 세팅
         //TODO: 상단에 컬럼명 표시해줘야 함
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list) ;
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         listView =(ListView)findViewById(R.id.search_list);
         listView.setAdapter(adapter);
 
         //리스트뷰 클릭할 경우
+        //TODO:클릭한 정보만 탑승준비 페이지로 넘겨야 함
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
