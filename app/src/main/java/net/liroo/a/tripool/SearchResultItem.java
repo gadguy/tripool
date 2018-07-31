@@ -10,29 +10,36 @@ public class SearchResultItem implements Serializable, Parcelable
 {
     private static final long serialVersionUID = 3467427543832512425L;
 
-    private String no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate;
+    private String no, deptMain, deptSub, departure, destMain, destSub, destination;
+    private long deptDate;
     private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
 
     @SuppressWarnings("unchecked")
-    public SearchResultItem(String no, String deptMain)
+    public SearchResultItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate)
     {
         try {
             this.no = no;
             this.deptMain = deptMain;
+            this.deptSub = deptSub;
+            this.departure = departure;
+            this.destMain = destMain;
+            this.destSub = destSub;
+            this.destination = destination;
+            this.deptDate = deptDate;
         } catch ( Exception e ) {
 
         }
     }
 
     public String getNo() { return no; }
+    public String getDeptMain() { return deptMain; }
+    public String getDeptSub() { return deptSub; }
+    public String getDeparture() { return departure; }
+    public String getDestMain() { return destMain; }
+    public String getDestSub() { return destSub; }
+    public String getDestination() { return destination; }
+    public long getDeptDate() { return deptDate; }
 
-//    public String getDeptMain() { return deptMain; }
-//    public String getDeptSub() { return deptSub; }
-//    public String getDeparture() { return departure; }
-//    public String getDestMain() { return deptMain; }
-//    public String getDestSub() { return destSub; }
-//    public String getDestination() { return destination; }
-//    public String getDeptDate() { return deptDate; }
 
     // Parcelable
     @Override
@@ -44,13 +51,13 @@ public class SearchResultItem implements Serializable, Parcelable
         Bundle bundle = new Bundle();
 
         bundle.putString("no", no);
-//        bundle.putString("deptMain", deptMain);
-//        bundle.putString("deptSub", deptSub);
-//        bundle.putString("departure", departure);
-//        bundle.putString("destMain", destMain);
-//        bundle.putString("destSub", destSub);
-//        bundle.putString("destination", destination);
-//        bundle.putString("deptDate", deptDate);
+        bundle.putString("deptMain", deptMain);
+        bundle.putString("deptSub", deptSub);
+        bundle.putString("departure", departure);
+        bundle.putString("destMain", destMain);
+        bundle.putString("destSub", destSub);
+        bundle.putString("destination", destination);
+        bundle.putLong("deptDate", deptDate);
 
         dest.writeBundle(bundle);
     }
@@ -60,13 +67,13 @@ public class SearchResultItem implements Serializable, Parcelable
         Bundle bundle = in.readBundle();
 
         no = bundle.getString("no");
-//        deptMain = bundle.getString("deptMain");
-//        deptSub = bundle.getString("deptSub");
-//        departure = bundle.getString("departure");
-//        destMain = bundle.getString("destMain");
-//        destSub = bundle.getString("destSub");
-//        destination = bundle.getString("destination");
-//        deptDate = bundle.getString("deptDate");
+        deptMain = bundle.getString("deptMain");
+        deptSub = bundle.getString("deptSub");
+        departure = bundle.getString("departure");
+        destMain = bundle.getString("destMain");
+        destSub = bundle.getString("destSub");
+        destination = bundle.getString("destination");
+        deptDate = bundle.getLong("deptDate");
     }
 
     @SuppressWarnings("rawtypes")

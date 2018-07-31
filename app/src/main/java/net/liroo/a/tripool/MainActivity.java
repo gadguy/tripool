@@ -95,13 +95,29 @@ public class MainActivity extends BaseActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ( editTextFrom.getText().toString().isEmpty() || editTextTo.getText().toString().isEmpty() ) {
-                    Toast.makeText(getApplicationContext(), "출발지, 도착지를 먼저 선택하세요", Toast.LENGTH_SHORT).show();
+                if ( editTextFrom.getText().toString().isEmpty() || editTextFrom.getText().toString().equals("출발지 설정") ) {
+                    Toast.makeText(getApplicationContext(), "출발지를 선택해 주세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                SearchResultItem item = new SearchResultItem("1", "여수");
+                if ( editTextTo.getText().toString().isEmpty() || editTextTo.getText().toString().equals("도착지 설정") ) {
+                    Toast.makeText(getApplicationContext(), "도착지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String no = "";
+                String[] dept_info = editTextFrom.getText().toString().split(" ");
+                String[] dest_info = editTextTo.getText().toString().split(" ");
+                String deptMain = dept_info[0];
+                String deptSub = dept_info[1];
+                String departure = dept_info[2];
+                String destMain = dept_info[0];
+                String destSub = dept_info[1];
+                String destination = dept_info[2];
+                //검색한 날짜를 가져와야 함, 일단은 현재시간으로 설정
+                long deptDate = System.currentTimeMillis();
+                SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate);
                 searchData("http://a.liroo.net/tripool/json_search_result.php", item);
-                Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -202,6 +218,14 @@ public class MainActivity extends BaseActivity {
         btnInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if ( dept_spinner.getSelectedItem().toString().isEmpty() || dept_spinner.getSelectedItem().toString().equals("어느 지역 인가요?") ) {
+                    Toast.makeText(getApplicationContext(), "지역명을 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if ( dept_station_spinner.getSelectedItem().toString().isEmpty() || dept_station_spinner.getSelectedItem().toString().equals("어디로 가시나요?") ) {
+                    Toast.makeText(getApplicationContext(), "탑승지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 editTextFrom.setText(dept_spinner.getSelectedItem().toString().trim() + " " + dept_station_spinner.getSelectedItem().toString().trim());
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
@@ -265,6 +289,14 @@ public class MainActivity extends BaseActivity {
         btnInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if ( dest_spinner.getSelectedItem().toString().isEmpty() || dest_spinner.getSelectedItem().toString().equals("어느 지역 인가요?") ) {
+                    Toast.makeText(getApplicationContext(), "지역명을 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if ( dest_station_spinner.getSelectedItem().toString().isEmpty() || dest_station_spinner.getSelectedItem().toString().equals("어디로 가시나요?") ) {
+                    Toast.makeText(getApplicationContext(), "탑승지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 editTextTo.setText(dest_spinner.getSelectedItem().toString().trim() + " " + dest_station_spinner.getSelectedItem().toString().trim());
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
@@ -286,7 +318,7 @@ public class MainActivity extends BaseActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
             }
             @Override
             protected void onPostExecute(String result){
@@ -317,7 +349,7 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 //                Log.e("json_arrayList", String.valueOf(dept_list));
-                loading.dismiss();
+//                loading.dismiss();
             }
             @Override
             protected String doInBackground(Object... params) {
@@ -358,89 +390,6 @@ public class MainActivity extends BaseActivity {
             }
         };
         task.execute(url);
-
-
-
-
-//        class GetDataJSON extends AsyncTask<Object, Void, String>{
-//
-//            ProgressDialog loading;
-//            SearchResultItem item;
-//            @Override
-//            protected void onPreExecute() {
-//                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
-//            }
-//            @Override
-//            protected void onPostExecute(String result){
-//                myJSON=result;
-//                try {
-//                    JSONObject jsonObj = new JSONObject(myJSON);
-//                    json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
-//
-////                    Log.e("test", "json_dept_list : "+json_dept_list.length());
-//
-//                    ArrayList<SearchItem> searchList = new ArrayList<>();
-//                    for ( int i=0; i<json_dept_list.length(); i++ ) {
-//                        JSONObject obj = json_dept_list.getJSONObject(i);
-//                        searchList.add(new SearchItem(obj));
-//                    }
-//
-//                    //검색 결과 페이지로 이동
-//                    Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
-//                    intent.putParcelableArrayListExtra("search_list", searchList);
-//                    intent.putExtra("search_result_item". item);
-//                    intent.putExtra("dept_addr", "경주");
-////                    intent.putExtra("search_list", String.valueOf(json_dept_list));
-//                    startActivity(intent);  //다음 화면으로 넘어가기
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-////                Log.e("json_arrayList", String.valueOf(dept_list));
-//                loading.dismiss();
-//            }
-//            @Override
-//            protected String doInBackground(Object... params) {
-//
-//                String uri = (String)params[0];
-//                item = (SearchResultItem)params[1];
-////                String main_addr = params[1];
-////                String sub_addr = params[2];
-////                String station = params[3];
-//
-//                BufferedReader bufferedReader = null;
-//                try {
-//
-////                    String data = URLEncoder.encode("main_addr", "UTF-8") + "=" + URLEncoder.encode(main_addr, "UTF-8");
-////                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
-////                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
-//
-//                    URL url = new URL(uri);
-//                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//                    StringBuilder sb = new StringBuilder();
-//
-////                    conn.setDoOutput(true);
-////                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-////                    wr.write(data);
-////                    wr.flush();
-//
-//                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//
-//
-//                    String json;
-//                    while((json = bufferedReader.readLine())!= null){
-//                        sb.append(json+"\n");
-//                    }
-//                    return sb.toString().trim();
-//                } catch(Exception e) {
-//                    return null;
-//                }
-//            }
-//        }
-//        GetDataJSON g = new GetDataJSON();
-//        g.execute(url, item);
     }
     //지역, 장소를 json타입으로 php DB에서 가져옴
     public void getData(String url, final String type){
@@ -450,7 +399,7 @@ public class MainActivity extends BaseActivity {
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
             }
             @Override
             protected void onPostExecute(String result){
@@ -467,7 +416,7 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 //                Log.e("json_arrayList", String.valueOf(json_dept_list));
-                loading.dismiss();
+//                loading.dismiss();
             }
             @Override
             protected String doInBackground(String... params) {
