@@ -115,7 +115,13 @@ public class MainActivity extends BaseActivity {
                 String destination = dept_info[2];      //도착 장소에 스페이스가 들어가는 경우 예외처리 해야함
                 //검색한 날짜를 가져와야 함, 일단은 현재시간으로 설정
                 long deptDate = System.currentTimeMillis();
-                SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate);
+
+                //검색할 때, 입력한 인원수 추가해야 함
+
+
+                //검색할 때, 입력한 캐리어 수 추가해야 함
+
+                SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, "", "");
                 searchData("http://a.liroo.net/tripool/json_search_result.php", item);
 //                Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
             }

@@ -15,7 +15,7 @@ public class SearchResultItem implements Serializable, Parcelable
     private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
 
     @SuppressWarnings("unchecked")
-    public SearchResultItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate)
+    public SearchResultItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage)
     {
         try {
             this.no = no;
@@ -26,6 +26,8 @@ public class SearchResultItem implements Serializable, Parcelable
             this.destSub = destSub;
             this.destination = destination;
             this.deptDate = deptDate;
+            this.people = people;
+            this.luggage = luggage;
         } catch ( Exception e ) {
 
         }
@@ -39,6 +41,8 @@ public class SearchResultItem implements Serializable, Parcelable
     public String getDestSub() { return destSub; }
     public String getDestination() { return destination; }
     public long getDeptDate() { return deptDate; }
+    public String people() { return people; }
+    public String luggage() { return luggage; }
 
 
     // Parcelable
@@ -58,6 +62,8 @@ public class SearchResultItem implements Serializable, Parcelable
         bundle.putString("destSub", destSub);
         bundle.putString("destination", destination);
         bundle.putLong("deptDate", deptDate);
+        bundle.putString("people", people);
+        bundle.putString("luggage", luggage);
 
         dest.writeBundle(bundle);
     }
@@ -74,6 +80,8 @@ public class SearchResultItem implements Serializable, Parcelable
         destSub = bundle.getString("destSub");
         destination = bundle.getString("destination");
         deptDate = bundle.getLong("deptDate");
+        people = bundle.getString("people");
+        people = bundle.getString("luggage");
     }
 
     @SuppressWarnings("rawtypes")

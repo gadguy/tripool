@@ -10,7 +10,8 @@ public class PayActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
 
-
+        //현재는 현장결제만 가능하다는 메시지를 띄우고, 확인을 누르면 예약확인 페이지로 이동(TicketActivity)
+        //예약확인 페이지에서 배차 관련 정보를 표시 해줌
 
 
     }
