@@ -61,14 +61,9 @@ public class SearchResultActivity extends BaseActivity {
         searchList.add(0, new SearchItem());
 
         //MainActivity에서 받은 정보를 가져옴
-        //TODO: From, To, 출발시간, 준비완료 카운트도 추가해야 함
-        //From, To는 장소만 표시해줌
-        //방 만들 때는 From의 지역,장소, To의 지역장소, 출발날짜, 출발시간이 필요 함 -> 2차원 배열? or 오브젝트?
-//        for ( int i=0; i<searchList.size(); i++ ) {
-//            Log.d("test_search_result", searchList.get(i).getDeptMain());
-//            list.add(searchList.get(i).getDeptMain());
-//
-//        }
+        //TODO: 번들로 가져온 item을 현재페이지 상단에 표시해 주기
+
+
         //리스트뷰 세팅
         //TODO: 상단에 컬럼명 표시해줘야 함
 //        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchList);
@@ -78,14 +73,12 @@ public class SearchResultActivity extends BaseActivity {
         listView.setAdapter(adapter);
 
         //리스트뷰 클릭할 경우
-        //TODO:클릭한 정보만 탑승준비 페이지로 넘겨야 함
+        //TODO:클릭한 정보만 탑승준비 페이지로 넘겨야 함 -> 승희가 하기로 함?
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //클릭한 정보만 탑승준비 페이지로 넘김
 //                clickedList.add(searchList.get(i).getDeptMain());
-
-
 
                 //탑승준비 페이지로 이동
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
@@ -115,7 +108,7 @@ public class SearchResultActivity extends BaseActivity {
 
 
 //                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
-                //탑승준비 페이지로 이동
+                //탑승준비 페이지로 이동, 번들로 가져온 item을 그대로 넘김
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
                 intent.putExtra("message", bundle);
 //                intent.putParcelableArrayListExtra("search_result", searchList);
