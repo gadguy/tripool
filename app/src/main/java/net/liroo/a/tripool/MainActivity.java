@@ -141,11 +141,24 @@ public class MainActivity extends BaseActivity {
                 String[] dest_info = editTextTo.getText().toString().split(" ");
                 String deptMain = dept_info[0];
                 String deptSub = dept_info[1];
-                String departure = dept_info[2];        //출발 장소에 스페이스가 들어가는 경우 예외처리 해야함3
+                String departure = "";
+                if ( dept_info.length > 4 ) {
+                    departure = dept_info[2]+" "+dept_info[3]+" "+dept_info[4];
+                } else if ( dept_info.length > 3 ) {
+                    departure = dept_info[2]+" "+dept_info[3];
+                } else {
+                    departure = dept_info[2];
+                }
                 String destMain = dest_info[0];
                 String destSub = dest_info[1];
-                String destination = dest_info[2];      //도착 장소에 스페이스가 들어가는 경우 예외처리 해야함
-
+                String destination = "";
+                if ( dest_info.length > 4 ) {
+                    destination = dest_info[2]+" "+dest_info[3]+" "+dest_info[4];
+                } else if ( dest_info.length > 3 ) {
+                    destination = dest_info[2]+" "+dest_info[3];
+                } else {
+                    destination = dest_info[2];
+                }
                 // 검색한 날짜
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, day, hour, minute);
@@ -458,19 +471,23 @@ public class MainActivity extends BaseActivity {
                 BufferedReader bufferedReader = null;
                 try {
 
-//                    String data = URLEncoder.encode("main_addr", "UTF-8") + "=" + URLEncoder.encode(main_addr, "UTF-8");
-//                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
-//                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
+                    String data = "dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
+                    data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
+                    data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+                    data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
+                    data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
+                    data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
+                    data += "&dept_date=" + item.getDeptDate();
 
                     URL url = new URL(uri);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     StringBuilder sb = new StringBuilder();
 
-//                    conn.setDoOutput(true);
-//                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-//                    wr.write(data);
-//                    wr.flush();
+                    conn.setDoOutput(true);
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                    wr.write(data);
+                    wr.flush();
 
                     bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
