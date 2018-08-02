@@ -1,18 +1,31 @@
 package net.liroo.a.tripool;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 //탑승 준비 페이지
 public class ReadyBoardActivity extends BaseActivity {
 
+    String myJSON;
+    private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
+    JSONArray json_list = new JSONArray();                                  //php에서 넘겨받는 값
     private List<String> list = new ArrayList<>();          // 데이터를 넣은 리스트변수
     private String departure;
     private String destination;
@@ -58,7 +71,7 @@ public class ReadyBoardActivity extends BaseActivity {
 
 
 
-        //결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기
+        //리스트뷰를 통해서 들어왔다면, 결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기
 
 
 
@@ -93,4 +106,78 @@ public class ReadyBoardActivity extends BaseActivity {
         }
         return true;
     }
+    //현재 동승자 수를 DB에서 가져옴
+    public void getFellowCount(String url, final SearchResultItem item) {
+
+        AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+            }
+            @Override
+            protected void onPostExecute(String result){
+                myJSON=result;
+                try {
+                    JSONObject jsonObj = new JSONObject(myJSON);
+                    json_list = jsonObj.getJSONArray(TAG_RESULTS);
+
+//                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+
+                    ArrayList<SearchItem> searchList = new ArrayList<>();
+                    for ( int i=0; i<json_list.length(); i++ ) {
+                        JSONObject obj = json_list.getJSONObject(i);
+                        searchList.add(new SearchItem(obj));
+                    }
+
+//                    Bundle bundle = new Bundle();
+//                    bundle.putParcelable("search_result_item", item);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                Log.e("json_arrayList", String.valueOf(dept_list));
+//                loading.dismiss();
+            }
+            @Override
+            protected String doInBackground(Object... params) {
+
+                String uri = (String)params[0];
+//                String main_addr = params[1];
+//                String sub_addr = params[2];
+//                String station = params[3];
+
+                BufferedReader bufferedReader = null;
+                try {
+
+                    String data = URLEncoder.encode("dept_addr", "UTF-8") + "=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+//                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
+//                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
+
+                    URL url = new URL(uri);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    StringBuilder sb = new StringBuilder();
+
+//                    conn.setDoOutput(true);
+//                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+//                    wr.write(data);
+//                    wr.flush();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    return sb.toString().trim();
+                } catch(Exception e) {
+                    return null;
+                }
+            }
+        };
+        task.execute(url);
+    }
+
+
 }
