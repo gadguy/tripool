@@ -2,27 +2,23 @@ package net.liroo.a.tripool;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,17 +26,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
-
-import net.daum.mf.map.api.MapView;
-import net.daum.mf.map.common.MapEvent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,16 +44,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Calendar;
 
-// ----------------------------------------------------------------------------------------
-//  수정
 public class MainActivity extends BaseActivity {
-// ----------------------------------------------------------------------------------------
 
     private ProgressDialog loading;
     String myJSON;
@@ -73,21 +61,31 @@ public class MainActivity extends BaseActivity {
     private Button searchBtn;
     TMapView tMapView;
 
+    private View dateBtn, timeBtn;
+    private TextView dateText, timeText;
+    private int year, month, day, hour, minute;
+
+    private View searchDialog;
+    private EditText peopleInput, carrierInput;
+    private Button dialogOkBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // ----------------------------------------------------------------------------------------
-        //  수정
         setContentView(R.layout.map_view);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-        // ----------------------------------------------------------------------------------------
 
         editTextFrom = findViewById(R.id.editTextFrom);
         editTextTo = findViewById(R.id.editTextTo);
         searchBtn = findViewById(R.id.btn_search);
+
+        searchDialog = findViewById(R.id.searchDialog);
+        dialogOkBtn = findViewById(R.id.dialogOkBtn);
+        peopleInput = findViewById(R.id.peopleInput);
+        carrierInput = findViewById(R.id.carrierInput);
 
         //TODO:출발지, 도착지 입력확인하고, 입력이 되었으면 인원수, 캐리어 수를 입력하는 다이얼로그가 떠야함
         //해당 다이얼로그에서 확인을 누르면 아래 함수가 동작해야 함
@@ -104,26 +102,39 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
+                searchDialog.setVisibility(View.VISIBLE);
+            }
+        });
+
+        dialogOkBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if ( peopleInput.getText().toString().isEmpty() ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_enter_people_number, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if ( carrierInput.getText().toString().isEmpty() ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_enter_carrier_number, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String no = "";
                 String[] dept_info = editTextFrom.getText().toString().split(" ");
                 String[] dest_info = editTextTo.getText().toString().split(" ");
                 String deptMain = dept_info[0];
                 String deptSub = dept_info[1];
-                String departure = dept_info[2];        //출발 장소에 스페이스가 들어가는 경우 예외처리 해야함
+                String departure = dept_info[2];        //출발 장소에 스페이스가 들어가는 경우 예외처리 해야함3
                 String destMain = dept_info[0];
                 String destSub = dept_info[1];
                 String destination = dept_info[2];      //도착 장소에 스페이스가 들어가는 경우 예외처리 해야함
-                //검색한 날짜를 가져와야 함, 일단은 현재시간으로 설정
-                long deptDate = System.currentTimeMillis();
 
-                //검색할 때, 입력한 인원수 추가해야 함
+                // 검색한 날짜
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, month, day, hour, minute);
+                long deptDate = calendar.getTimeInMillis();
 
-
-                //검색할 때, 입력한 캐리어 수 추가해야 함
-
-                SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, "", "");
+                SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());
                 searchData("http://a.liroo.net/tripool/json_search_result.php", item);
-//                Toast.makeText(getApplicationContext(), "검색 기능, 페이지 이동", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -143,7 +154,66 @@ public class MainActivity extends BaseActivity {
         setGps();
         //장소 목록을 php에서 가져옴
         getData("http://a.liroo.net/tripool/json_region_list.php", "region_list");
+
+        // 검색시 필요한 날짜 및 시간
+        dateBtn = findViewById(R.id.dateBtn);
+        dateText = (TextView)findViewById(R.id.dateText);
+        dateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int y, int m, int d)
+                    {
+                        year = y;
+                        month = m;
+                        day = d;
+
+                        dateText.setText(String.valueOf(year) + "." + String.valueOf(month+1) + "." + String.valueOf(day));
+                    }
+                };
+                new DatePickerDialog(MainActivity.this, dateSetListener, year, month, day).show();
+            }
+        });
+
+        timeBtn = findViewById(R.id.timeBtn);
+        timeText = (TextView)findViewById(R.id.timeText);
+        timeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int m)
+                    {
+                        hour = hourOfDay;
+                        minute = m;
+
+                        if ( minute >= 0 && minute < 10 )
+                            timeText.setText(String.valueOf(hour) + " : 0" + String.valueOf(minute));
+                        else
+                            timeText.setText(String.valueOf(hour) + " : " + String.valueOf(minute));
+                    }
+                };
+                new TimePickerDialog(MainActivity.this, timeSetListener, hour, minute, false).show();
+            }
+        });
+
+        // 현재 시간
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+
+        dateText.setText(String.valueOf(year) + "." + String.valueOf(month+1) + "." + String.valueOf(day));
+        if ( minute >= 0 && minute < 10 )
+            timeText.setText(String.valueOf(hour) + " : 0" + String.valueOf(minute));
+        else
+            timeText.setText(String.valueOf(hour) + " : " + String.valueOf(minute));
     }
+
     //Tmap 현재위치로 이동
     private final LocationListener mLocationListener = new LocationListener() {
         public void onLocationChanged(Location location) {
@@ -341,6 +411,8 @@ public class MainActivity extends BaseActivity {
                         searchList.add(new SearchItem(obj));
                     }
 
+                    searchDialog.setVisibility(View.GONE);
+
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("search_result_item", item);
 
@@ -524,9 +596,6 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // ----------------------------------------------------------------------------------------
-    //  수정
-
     // 앱을 완전히 종료 FrontPage에서만 사용
     private boolean quitFlag;
     private Handler quitHandler = new Handler() {
@@ -559,6 +628,4 @@ public class MainActivity extends BaseActivity {
             killAll();
         }
     }
-
-    // ----------------------------------------------------------------------------------------
 }

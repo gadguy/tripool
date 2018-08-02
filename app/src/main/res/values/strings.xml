@@ -28,5 +28,10 @@
     <string name="setting_departure">출발지 설정</string>
     <string name="setting_destination">도착지 설정</string>
     <string name="exit_confirm">\'뒤로\'버튼을 한 번 더 누르시면 종료됩니다.</string>
+    <string name="number_people_setting">인원수 설정</string>
+    <string name="number_carrier_setting">캐리어수 설정</string>
+    <string name="ok">확인</string>
+    <string name="plz_enter_people_number">인원수를 입력해주세요.</string>
+    <string name="plz_enter_carrier_number">캐리어수를 입력해주세요.</string>
 
 </resources>

@@ -6,12 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
 
-// ----------------------------------------------------------------------------------------
-// 수정
 public class intro extends NoTitledBarBaseActivity {
-// ----------------------------------------------------------------------------------------
 
     private Handler handler;
     private Runnable r;
@@ -34,13 +30,13 @@ public class intro extends NoTitledBarBaseActivity {
                     //로그아웃 상태면 소개페이지
                     Intent intent = new Intent(getApplicationContext(), IntroFlipperActivity.class);
                     startActivity(intent);  //다음 화면으로 넘어가기
-                } else {
+                }
+                else {
                     //로그인 되어 있으면 바로 지도 페이지
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);  //다음 화면으로 넘어가기
                 }
                 finish();
-
             }
         };
     }

@@ -39,14 +39,14 @@
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/tripool_logo"/>
+                android:layout_height="100dp"
+                android:src="@drawable/login_logo"/>
 
             <EditText
                 android:id="@+id/emailInput"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="40dp"
                 android:drawableLeft="@drawable/phone"
                 android:drawablePadding="15dp"
                 android:inputType="textEmailAddress"

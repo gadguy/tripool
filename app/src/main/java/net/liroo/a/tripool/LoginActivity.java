@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,22 +24,19 @@ public class LoginActivity extends BaseActivity {
 
     EditText et_id, et_pw;
     String sId, sPw;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // ----------------------------------------------------------------------------------------
-        // 수정
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // ----------------------------------------------------------------------------------------
 
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);
-
     }
 
     public void btnLogin(View view) {
@@ -66,6 +62,7 @@ public class LoginActivity extends BaseActivity {
         Intent intent = new Intent(getApplicationContext(), JoinActivity.class);
         startActivity(intent);  //다음 화면으로 넘어가기
     }
+
     private void loginToDB(String u_id, String u_pw) {
         class loginData extends AsyncTask<String, Void, String> {
             ProgressDialog loading;
@@ -150,8 +147,6 @@ public class LoginActivity extends BaseActivity {
         task.execute(u_id, u_pw);
     }
 
-    // ----------------------------------------------------------------------------------------
-    // 수정
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -161,7 +156,4 @@ public class LoginActivity extends BaseActivity {
         }
         return true;
     }
-    // ----------------------------------------------------------------------------------------
-
-
 }
