@@ -41,9 +41,8 @@ public class SearchResultItem implements Serializable, Parcelable
     public String getDestSub() { return destSub; }
     public String getDestination() { return destination; }
     public long getDeptDate() { return deptDate; }
-    public String people() { return people; }
-    public String luggage() { return luggage; }
-
+    public String getPeople() { return people; }
+    public String getLuggage() { return luggage; }
 
     // Parcelable
     @Override
@@ -81,7 +80,7 @@ public class SearchResultItem implements Serializable, Parcelable
         destination = bundle.getString("destination");
         deptDate = bundle.getLong("deptDate");
         people = bundle.getString("people");
-        people = bundle.getString("luggage");
+        luggage = bundle.getString("luggage");
     }
 
     @SuppressWarnings("rawtypes")

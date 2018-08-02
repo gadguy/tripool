@@ -2,23 +2,16 @@ package net.liroo.a.tripool;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,8 +23,11 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 //검색 결과 페이지
 public class SearchResultActivity extends BaseActivity {
@@ -40,8 +36,6 @@ public class SearchResultActivity extends BaseActivity {
     private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
     JSONArray json_result_array = new JSONArray();                             //php에 insert하고 DB에서 가져온 값
 
-    private List<String> list = new ArrayList<>();          // 데이터를 넣은 리스트변수
-    private List<String> clickedList = new ArrayList<>();          // 리스트뷰에서 클릭한 아이템의 데이터
     private ListView listView;          // 검색을 보여줄 리스트변수
     private Button makeBtn;
 
@@ -53,44 +47,51 @@ public class SearchResultActivity extends BaseActivity {
         final ArrayList<SearchItem> searchList = (ArrayList<SearchItem>)getIntent().getSerializableExtra("search_list");
 
         final Bundle bundle = getIntent().getBundleExtra("message");
-        SearchResultItem item = bundle.getParcelable("search_result_item");
-        if ( item != null ) {
-            Log.e("test", item.getNo());
+        SearchResultItem searchResultItem = bundle.getParcelable("search_result_item");
+        if ( searchResultItem == null ) {
+            finish();
+            return;
         }
 
-        searchList.add(0, new SearchItem());
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //MainActivity에서 받은 정보를 가져옴
-        //TODO: 번들로 가져온 item을 현재페이지 상단에 표시해 주기
+        TextView departureText = findViewById(R.id.departureText);
+        TextView destinationText = findViewById(R.id.destinationText);
+        TextView deptDateText = findViewById(R.id.deptDateText);
+        TextView peopleText = findViewById(R.id.peopleText);
+        TextView luggageText = findViewById(R.id.luggageText);
 
+        departureText.setText(searchResultItem.getDeparture());
+        destinationText.setText(searchResultItem.getDestination());
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 (E)", Locale.getDefault());
+        deptDateText.setText(df.format(new Date(searchResultItem.getDeptDate())));
+
+        peopleText.setText(searchResultItem.getPeople()+"명");
+        luggageText.setText(searchResultItem.getLuggage()+"개");
 
         //리스트뷰 세팅
-        //TODO: 상단에 컬럼명 표시해줘야 함
-//        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, searchList);
-
         SearchResultAdapter adapter = new SearchResultAdapter(this, searchList);
-        listView =(ListView)findViewById(R.id.search_list);
+        listView = (ListView)findViewById(R.id.search_list);
         listView.setAdapter(adapter);
 
         //리스트뷰 클릭할 경우
-        //TODO:클릭한 정보만 탑승준비 페이지로 넘겨야 함 -> 승희가 하기로 함?
+        //TODO:클릭한 정보만 탑승준비 페이지로 넘겨야 함
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //클릭한 정보만 탑승준비 페이지로 넘김
-//                clickedList.add(searchList.get(i).getDeptMain());
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("search_item", searchList.get(i));
 
                 //탑승준비 페이지로 이동
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
-////                intent.putParcelableArrayListExtra("search_result", clickedList);
-//                intent.putStringArrayListExtra("search_result", (ArrayList<String>) clickedList);
+                intent.putExtra("message", bundle);
                 startActivity(intent);  //다음 화면으로 넘어가기
-
-//                Toast.makeText(SearchResultActivity.this ,searchList.get(i).getDeptMain(),Toast.LENGTH_LONG).show();
             }
         });
-
-
 
         //방만들기 버튼
         makeBtn = findViewById(R.id.btn_make_room);
@@ -196,8 +197,13 @@ public class SearchResultActivity extends BaseActivity {
         g.execute(url, type);
     }
 
-
-
-
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemID = item.getItemId();
+        if ( itemID == android.R.id.home ) {   // 뒤로
+            finish();
+        }
+        return true;
+    }
 }

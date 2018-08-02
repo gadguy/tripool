@@ -38,7 +38,7 @@ public class SearchResultAdapter extends BaseAdapter
 
     private class ViewHolder
     {
-        TextView fromText, toText;
+        TextView departureText, destinationText, deptDateText, readyText;
     }
 
     @Override
@@ -48,8 +48,10 @@ public class SearchResultAdapter extends BaseAdapter
             view = layoutInflater.inflate(R.layout.search_result_cell, parent, false);
 
             holder = new ViewHolder();
-            holder.fromText = (TextView)view.findViewById(R.id.fromText);
-            holder.toText = (TextView)view.findViewById(R.id.toText);
+            holder.departureText = view.findViewById(R.id.departureText);
+            holder.destinationText = view.findViewById(R.id.destinationText);
+            holder.deptDateText = view.findViewById(R.id.deptDateText);
+            holder.readyText = view.findViewById(R.id.readyText);
 
             view.setTag(holder);
         }
@@ -58,10 +60,12 @@ public class SearchResultAdapter extends BaseAdapter
         }
 
         SearchItem item = data.get(index);
-        holder.fromText.setText(item.getDeptMain());
-        holder.toText.setText(item.getDeptSub());
+        holder.departureText.setText(item.getDeparture());
+        holder.destinationText.setText(item.getDestination());
 
-
+        // TODO: 수정 필요 (데이터가 어떤 형태로 오는지 확인 불가)
+        holder.deptDateText.setText(item.getDeptMain());
+        holder.readyText.setText(item.getDeptSub());
 
         return view;
     }

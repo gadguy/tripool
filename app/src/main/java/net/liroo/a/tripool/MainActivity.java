@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -118,15 +119,32 @@ public class MainActivity extends BaseActivity {
                     return;
                 }
 
+                // 키보드 숨기기
+                peopleInput.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager imm = (InputMethodManager)peopleInput.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(peopleInput.getWindowToken(), 0);
+                    }
+                });
+
+                carrierInput.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        InputMethodManager imm = (InputMethodManager)carrierInput.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(carrierInput.getWindowToken(), 0);
+                    }
+                });
+
                 String no = "";
                 String[] dept_info = editTextFrom.getText().toString().split(" ");
                 String[] dest_info = editTextTo.getText().toString().split(" ");
                 String deptMain = dept_info[0];
                 String deptSub = dept_info[1];
                 String departure = dept_info[2];        //출발 장소에 스페이스가 들어가는 경우 예외처리 해야함3
-                String destMain = dept_info[0];
-                String destSub = dept_info[1];
-                String destination = dept_info[2];      //도착 장소에 스페이스가 들어가는 경우 예외처리 해야함
+                String destMain = dest_info[0];
+                String destSub = dest_info[1];
+                String destination = dest_info[2];      //도착 장소에 스페이스가 들어가는 경우 예외처리 해야함
 
                 // 검색한 날짜
                 Calendar calendar = Calendar.getInstance();

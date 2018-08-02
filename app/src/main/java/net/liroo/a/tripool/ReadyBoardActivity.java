@@ -2,10 +2,10 @@ package net.liroo.a.tripool;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +25,25 @@ public class ReadyBoardActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readyboard);
 
-        final Bundle bundle = getIntent().getBundleExtra("message");
-        SearchResultItem item = bundle.getParcelable("search_result_item");
-        if ( item != null ) {
-            Log.e("ReadyBoardActivity test", item.getNo());
+        Bundle bundle = getIntent().getBundleExtra("message");
+        SearchItem searchItem = bundle.getParcelable("search_item");
+        if ( searchItem == null ) {
+            return;
         }
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
 
         //검색한 결과값 중, 출발지, 도착지, 출발 시간을 가져옴
-        departure = item.getDeparture();                    //출발지
-        destination= item.getDestination();                 //도착지
-        deptDate = item.getDeptDate();                      //출발시간 -> 리눅스타임 형태라 yyyy-mm-dd h:i:s 형태로 변경해야 함
-        people = item.people();                             //인원수
-        luggage = item.luggage();                           //캐리어 수
+//        departure = searchItem.getDeparture();                    //출발지
+//        destination= searchItem.getDestination();                 //도착지
+//        deptDate = searchItem.getDeptDate();                      //출발시간 -> 리눅스타임 형태라 yyyy-mm-dd h:i:s 형태로 변경해야 함
+//        people = searchItem.getPeople();                             //인원수
+//        luggage = searchItem.getLuggage();                           //캐리어 수
 
 
         //검색결과 가져온 값을 xml에 표시해 줘야 함
@@ -77,5 +82,15 @@ public class ReadyBoardActivity extends BaseActivity {
 
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemID = item.getItemId();
+        if ( itemID == android.R.id.home ) {   // 뒤로
+            finish();
+        }
+        return true;
     }
 }
