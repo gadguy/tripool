@@ -116,6 +116,7 @@ public class SearchResultActivity extends BaseActivity {
                 //탑승준비 페이지로 이동, 번들로 가져온 item을 그대로 넘김
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
                 intent.putExtra("message", bundle);
+                intent.putExtra("is_make_room", "make_room");
 //                intent.putParcelableArrayListExtra("search_result", searchList);
                 startActivity(intent);  //다음 화면으로 넘어가기
 
@@ -167,7 +168,7 @@ public class SearchResultActivity extends BaseActivity {
                     data += "&dept_date=" + item.getDeptDate() / 1000;              //DB입력할때 만 변경함
                     data += "&people=" + item.getPeople();
                     data += "&luggage=" + item.getLuggage();
-                    Log.e("DB RESULT", String.valueOf(data));
+//                    Log.e("DB RESULT", String.valueOf(data));
 
                     //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
                     SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);

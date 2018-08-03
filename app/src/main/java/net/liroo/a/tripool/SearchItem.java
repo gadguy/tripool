@@ -14,7 +14,8 @@ public class SearchItem implements Serializable, Parcelable
 {
     private static final long serialVersionUID = 3467427543832512425L;
 
-    private String no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate;
+    private String no, deptMain, deptSub, departure, destMain, destSub, destination;
+    private Long deptDate;
     private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
 
     public SearchItem() {  }
@@ -30,7 +31,9 @@ public class SearchItem implements Serializable, Parcelable
             destMain = data.getString("dest_main");
             destSub = data.getString("dest_sub");
             destination = data.getString("destination");
-            deptDate = data.getString("dept_date");
+            deptDate = data.getLong("dept_date");
+            people = data.getString("people");
+            luggage = data.getString("luggage");
         } catch ( Exception e ) {
 
         }
@@ -42,7 +45,9 @@ public class SearchItem implements Serializable, Parcelable
     public String getDestMain() { return deptMain; }
     public String getDestSub() { return destSub; }
     public String getDestination() { return destination; }
-    public String getDeptDate() { return deptDate; }
+    public long getDeptDate() { return deptDate; }
+    public String getPeople() { return people; }
+    public String getLuggage() { return luggage; }
 
     // Parcelable
     @Override
@@ -60,7 +65,9 @@ public class SearchItem implements Serializable, Parcelable
         bundle.putString("destMain", destMain);
         bundle.putString("destSub", destSub);
         bundle.putString("destination", destination);
-        bundle.putString("deptDate", deptDate);
+        bundle.putLong("deptDate", deptDate);
+        bundle.putString("people", people);
+        bundle.putString("luggage", luggage);
 
         dest.writeBundle(bundle);
     }
@@ -76,7 +83,9 @@ public class SearchItem implements Serializable, Parcelable
         destMain = bundle.getString("destMain");
         destSub = bundle.getString("destSub");
         destination = bundle.getString("destination");
-        deptDate = bundle.getString("deptDate");
+        deptDate = bundle.getLong("deptDate");
+        people = bundle.getString("people");
+        luggage = bundle.getString("luggage");
     }
 
     @SuppressWarnings("rawtypes")

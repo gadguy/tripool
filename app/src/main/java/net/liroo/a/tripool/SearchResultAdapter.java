@@ -70,9 +70,9 @@ public class SearchResultAdapter extends BaseAdapter
 
         //시,분만 표시
         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-        Log.e("search_result_date", item.getDeptDate());
+//        Log.e("search_result_date", item.getDeptDate());
 
-        Long searchTime = Long.parseLong(item.getDeptDate()) * 1000;        //초->밀리초로 변환
+        Long searchTime = item.getDeptDate() * 1000;        //초->밀리초로 변환
         holder.deptDateText.setText(df.format(searchTime));
 
         return view;

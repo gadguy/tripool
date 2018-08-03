@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,8 +18,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 //탑승 준비 페이지
 public class ReadyBoardActivity extends BaseActivity {
@@ -43,36 +47,47 @@ public class ReadyBoardActivity extends BaseActivity {
         if ( searchItem == null ) {
             return;
         }
+        final String is_make_room = getIntent().getStringExtra("is_make_room");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        TextView departureText = findViewById(R.id.departureText);
+        TextView destinationText = findViewById(R.id.destinationText);
+        TextView deptDateText = findViewById(R.id.deptDateText);
+        TextView peopleText = findViewById(R.id.peopleText);
+        TextView luggageText = findViewById(R.id.luggageText);
+        TextView departurePointText = findViewById(R.id.departurePointText);
 
 
-        //검색한 결과값 중, 출발지, 도착지, 출발 시간을 가져옴
-//        departure = searchItem.getDeparture();                    //출발지
-//        destination= searchItem.getDestination();                 //도착지
-//        deptDate = searchItem.getDeptDate();                      //출발시간 -> 리눅스타임 형태라 yyyy-mm-dd h:i:s 형태로 변경해야 함
-//        people = searchItem.getPeople();                             //인원수
-//        luggage = searchItem.getLuggage();                           //캐리어 수
+        departurePointText.setText(searchItem.getDeptMain()+" "+ searchItem.getDeptSub());      //출발 도 + 시
+        departureText.setText(searchItem.getDeparture());       //출발 장소
+        destinationText.setText(searchItem.getDestination());   //도착 장소
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 (E)", Locale.getDefault());
+        deptDateText.setText(df.format(new Date(searchItem.getDeptDate() * 1000)));        //출발 일시
 
-        //검색결과 가져온 값을 xml에 표시해 줘야 함
-
-
+        peopleText.setText(searchItem.getPeople()+"명");             //인원수
+//        luggageText.setText(searchItem.getLuggage()+"개");           //짐 개수
 
         //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
 
 
 
-        //방 만들기로 들어온 상태라면 검색한 결과값을 tripool_info에 insert 해야 함
 
 
+        //방 만들기를 통해서 들어왔다면, 뒤로 가기 누를 때 메인 페이지로 넘어감
+        if ( is_make_room.equals("make_room")) {
 
-        //리스트뷰를 통해서 들어왔다면, 결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기
 
+        }
+        //리스트뷰를 통해서 들어왔다면, 결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기 -> 검색 결과 페이지로 넘어감
+        else {
+
+
+        }
 
 
         //결제하기 버튼 클릭 -> 결제화면으로 이동
@@ -80,12 +95,17 @@ public class ReadyBoardActivity extends BaseActivity {
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
-
-
 
                 //방만들기로 들어온 상태면 tripool_info의 결제 상태값을 변경해야 함
+                if ( is_make_room.equals("make_room")) {
 
+
+                }
+                //리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
+                else {
+
+
+                }
 
                 //결제화면으로 이동
                 Intent intent = new Intent(getApplicationContext(), PayActivity.class);
@@ -178,6 +198,12 @@ public class ReadyBoardActivity extends BaseActivity {
         };
         task.execute(url);
     }
+
+    //리스트뷰에서 온 경우, list view에서 받아온 정보를 토대로 결제할때 DB에 insert 함
+
+
+    //방 만들기에서 온 경우, 검색 결과 값을 토대로 해당 DB를 update 함
+
 
 
 }
