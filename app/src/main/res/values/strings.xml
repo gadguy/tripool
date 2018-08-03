@@ -50,5 +50,14 @@
     <string name="discount_amount">할인금액 :</string>
     <string name="total_pay_amount">총 결제 금액 :</string>
     <string name="pay_do">결제하기</string>
+    <string name="alert">알림</string>
+    <string name="cannot_pay_help">죄송합니다 :(\n테스트 기간에는 현장결제만 가능합니다.</string>
+    <string name="test_period">테스트 기간</string>
+    <string name="pay_cancel">결제 취소</string>
+    <string name="next">다음</string>
+    <string name="car_schedule_ing">배차 중입니다 :)\n잠시만 기다려주세요!</string>
+    <string name="car_schedule_finish">배차가 완료되었습니다.</string>
+    <string name="check_reservation_detail">예약 내역 확인하기</string>
+    <string name="check_reservation">예약 확인</string>
 
 </resources>

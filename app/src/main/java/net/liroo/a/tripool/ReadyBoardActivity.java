@@ -1,8 +1,11 @@
 package net.liroo.a.tripool;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +18,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -37,22 +41,44 @@ public class ReadyBoardActivity extends BaseActivity {
     private String people;
     private String luggage;
 
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    private View payDialog, cannotPayAlert, scheduleIngAlert, scheduleFinishAlert;
+    private Button cancelBtn, nextBtn, checkReservationBtn;
+    // ----------------------------------------------------------------------------------------
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readyboard);
 
         Bundle bundle = getIntent().getBundleExtra("message");
-        SearchItem searchItem = bundle.getParcelable("search_item");
-        if ( searchItem == null ) {
+        final SearchItem searchItem = bundle.getParcelable("search_item");
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        SearchResultItem searchResultItem = bundle.getParcelable("search_result_item");
+        if ( searchItem == null && searchResultItem == null ) {
+            finish();
             return;
         }
+        // ----------------------------------------------------------------------------------------
         final String is_make_room = getIntent().getStringExtra("is_make_room");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        payDialog = findViewById(R.id.payDialog);
+        cannotPayAlert = findViewById(R.id.cannotPayAlert);
+        cancelBtn = findViewById(R.id.cancelBtn);
+        nextBtn = findViewById(R.id.nextBtn);
+        scheduleIngAlert = findViewById(R.id.scheduleIngAlert);
+        scheduleFinishAlert = findViewById(R.id.scheduleFinishAlert);
+        checkReservationBtn = findViewById(R.id.checkReservationBtn);
+        // ----------------------------------------------------------------------------------------
 
         TextView departureText = findViewById(R.id.departureText);
         TextView destinationText = findViewById(R.id.destinationText);
@@ -61,29 +87,31 @@ public class ReadyBoardActivity extends BaseActivity {
         TextView luggageText = findViewById(R.id.luggageText);
         TextView departurePointText = findViewById(R.id.departurePointText);
 
+        //방 만들기 하면 정보를 가져오지 못함...
+        if ( searchItem != null ) {
+            departurePointText.setText(searchItem.getDeptMain() + " " + searchItem.getDeptSub());      //출발 도 + 시
+            departureText.setText(searchItem.getDeparture());       //출발 장소
+            destinationText.setText(searchItem.getDestination());   //도착 장소
 
-        departurePointText.setText(searchItem.getDeptMain()+" "+ searchItem.getDeptSub());      //출발 도 + 시
-        departureText.setText(searchItem.getDeparture());       //출발 장소
-        destinationText.setText(searchItem.getDestination());   //도착 장소
+            SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 (E)", Locale.getDefault());
+            deptDateText.setText(df.format(new Date(searchItem.getDeptDate() * 1000)));        //출발 일시
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 (E)", Locale.getDefault());
-        deptDateText.setText(df.format(new Date(searchItem.getDeptDate() * 1000)));        //출발 일시
-
-        peopleText.setText(searchItem.getPeople()+"명");             //인원수
+            peopleText.setText(searchItem.getPeople() + "명");             //인원수
 //        luggageText.setText(searchItem.getLuggage()+"개");           //짐 개수
+        }
 
         //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
+//        getFellowCount("json_fellow_count.php", searchItem);
 
 
 
 
-
-        //방 만들기를 통해서 들어왔다면, 뒤로 가기 누를 때 메인 페이지로 넘어감
+        //TODO: 방 만들기를 통해서 들어왔다면, 뒤로 가기 누를 때 메인 페이지로 넘어감
         if ( is_make_room.equals("make_room")) {
 
 
         }
-        //리스트뷰를 통해서 들어왔다면, 결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기 -> 검색 결과 페이지로 넘어감
+        //TODO: 리스트뷰를 통해서 들어왔다면, 결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기 -> 검색 결과 페이지로 넘어감
         else {
 
 
@@ -110,12 +138,69 @@ public class ReadyBoardActivity extends BaseActivity {
                 //결제화면으로 이동
                 Intent intent = new Intent(getApplicationContext(), PayActivity.class);
                 startActivity(intent);  //다음 화면으로 넘어가기
+
+                payDialog.setVisibility(View.VISIBLE);
+                cannotPayAlert.setVisibility(View.VISIBLE);
             }
         });
 
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        // 결제하기 팝업창
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                payDialog.setVisibility(View.GONE);
+                cannotPayAlert.setVisibility(View.VISIBLE);
+            }
+        });
 
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cannotPayAlert.setVisibility(View.GONE);
+                scheduleIngAlert.setVisibility(View.VISIBLE);
+
+                // TODO : 배차 완료되면 화면 바뀌도록 변경 필요 (현재는 화면 전환 확인하기 위해 자동으로 변경)
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        scheduleIngAlert.setVisibility(View.GONE);
+                        scheduleFinishAlert.setVisibility(View.VISIBLE);
+                    }
+                }, 3000);
+            }
+        });
+
+        checkReservationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 예약 확인 페이지로 이동
+                Intent intent = new Intent(getApplicationContext(), CheckReservationActivity.class);
+                startActivity(intent);
+
+                finish();
+            }
+        });
+
+        // ----------------------------------------------------------------------------------------
 
     }
+
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    @Override
+    public void onBackPressed()
+    {
+        if ( payDialog.getVisibility() == View.VISIBLE && cannotPayAlert.getVisibility() == View.VISIBLE ) {
+            payDialog.setVisibility(View.GONE);
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+    // ----------------------------------------------------------------------------------------
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -127,7 +212,7 @@ public class ReadyBoardActivity extends BaseActivity {
         return true;
     }
     //현재 동승자 수를 DB에서 가져옴
-    public void getFellowCount(String url, final SearchResultItem item) {
+    public void getFellowCount(String url, final SearchItem item) {
 
         AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
             @Override
@@ -144,11 +229,14 @@ public class ReadyBoardActivity extends BaseActivity {
 
 //                    Log.e("test", "json_dept_list : "+json_dept_list.length());
 
-                    ArrayList<SearchItem> searchList = new ArrayList<>();
-                    for ( int i=0; i<json_list.length(); i++ ) {
-                        JSONObject obj = json_list.getJSONObject(i);
-                        searchList.add(new SearchItem(obj));
-                    }
+//                    ArrayList<SearchItem> searchList = new ArrayList<>();
+//                    for ( int i=0; i<json_list.length(); i++ ) {
+                        JSONObject obj = json_list.getJSONObject(0);
+                        String together_people =  obj.getString("together_people");
+//                        searchList.add(new SearchItem(obj));
+//                    }
+                    TextView togetherPeopleText = findViewById(R.id.togetherPeopleText);
+                    togetherPeopleText.setText(together_people+"명");             //인원수
 
 //                    Bundle bundle = new Bundle();
 //                    bundle.putParcelable("search_result_item", item);
@@ -169,19 +257,31 @@ public class ReadyBoardActivity extends BaseActivity {
                 BufferedReader bufferedReader = null;
                 try {
 
-                    String data = URLEncoder.encode("dept_addr", "UTF-8") + "=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
-//                    data += "&" + URLEncoder.encode("sub_addr", "UTF-8") + "=" + URLEncoder.encode(sub_addr, "UTF-8");
-//                    data += "&" + URLEncoder.encode("station", "UTF-8") + "=" + URLEncoder.encode(station, "UTF-8");
+                    String data = "mode=" + URLEncoder.encode("people_cnt", "UTF-8");
+                    data += "&dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
+                    data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
+                    data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+                    data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
+                    data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
+                    data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
+                    data += "&dept_date=" + item.getDeptDate() / 1000;              //DB입력할때 만 변경함
+//                    data += "&people=" + item.getPeople();
+//                    data += "&luggage=" + item.getLuggage();
+                    //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
+//                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+//                    String u_id = userInfo.getString("u_id", "");
+//                    data += "&book_id=" + u_id;
+
 
                     URL url = new URL(uri);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     StringBuilder sb = new StringBuilder();
 
-//                    conn.setDoOutput(true);
-//                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-//                    wr.write(data);
-//                    wr.flush();
+                    conn.setDoOutput(true);
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                    wr.write(data);
+                    wr.flush();
 
                     bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 

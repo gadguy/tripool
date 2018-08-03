@@ -92,6 +92,7 @@ public class SearchResultActivity extends BaseActivity {
                 //탑승준비 페이지로 이동
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
                 intent.putExtra("message", bundle);
+                intent.putExtra("is_make_room", "click_room");
                 startActivity(intent);  //다음 화면으로 넘어가기
             }
         });

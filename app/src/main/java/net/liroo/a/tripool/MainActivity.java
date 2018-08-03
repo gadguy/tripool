@@ -89,7 +89,6 @@ public class MainActivity extends BaseActivity {
         peopleInput = findViewById(R.id.peopleInput);
         carrierInput = findViewById(R.id.carrierInput);
 
-
         //검색하기 버튼
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +141,7 @@ public class MainActivity extends BaseActivity {
                 String[] dest_info = editTextTo.getText().toString().split(" ");
                 String deptMain = dept_info[0];
                 String deptSub = dept_info[1];
+
                 String departure = "";
                 if ( dept_info.length > 4 ) {
                     departure = dept_info[2]+" "+dept_info[3]+" "+dept_info[4];
@@ -160,6 +160,7 @@ public class MainActivity extends BaseActivity {
                 } else {
                     destination = dest_info[2];
                 }
+
                 // 검색한 날짜
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, day, hour, minute);
@@ -655,7 +656,10 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onBackPressed()
     {
-        if ( !quitFlag ) {
+        if ( searchDialog.getVisibility() == View.VISIBLE ) {
+            searchDialog.setVisibility(View.GONE);
+        }
+        else if ( !quitFlag ) {
             Toast.makeText(getApplicationContext(), R.string.exit_confirm, Toast.LENGTH_LONG).show();
             quitFlag = true;
             quitHandler.sendEmptyMessageDelayed(0, 2000);
