@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,8 +89,7 @@ public class MainActivity extends BaseActivity {
         peopleInput = findViewById(R.id.peopleInput);
         carrierInput = findViewById(R.id.carrierInput);
 
-        //TODO:출발지, 도착지 입력확인하고, 입력이 되었으면 인원수, 캐리어 수를 입력하는 다이얼로그가 떠야함
-        //해당 다이얼로그에서 확인을 누르면 아래 함수가 동작해야 함
+
         //검색하기 버튼
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +106,8 @@ public class MainActivity extends BaseActivity {
                 searchDialog.setVisibility(View.VISIBLE);
             }
         });
-
+        //인원수, 캐리어 입력 버튼
+        //php DB에서 검색 후, 검색결과 화면으로 이동
         dialogOkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -434,7 +435,7 @@ public class MainActivity extends BaseActivity {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
 
-//                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+                    Log.e("search_result", "json_dept_list : "+json_dept_list.length());
 
                     ArrayList<SearchItem> searchList = new ArrayList<>();
                     for ( int i=0; i<json_dept_list.length(); i++ ) {
@@ -477,7 +478,7 @@ public class MainActivity extends BaseActivity {
                     data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
                     data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
-                    data += "&dept_date=" + item.getDeptDate();
+                    data += "&dept_date=" + item.getDeptDate()/1000;        //DB에서 찾을 때는 초단위로 변경
 
                     URL url = new URL(uri);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();

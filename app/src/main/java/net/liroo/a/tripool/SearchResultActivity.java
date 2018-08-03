@@ -1,11 +1,14 @@
 package net.liroo.a.tripool;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -47,7 +50,7 @@ public class SearchResultActivity extends BaseActivity {
         final ArrayList<SearchItem> searchList = (ArrayList<SearchItem>)getIntent().getSerializableExtra("search_list");
 
         final Bundle bundle = getIntent().getBundleExtra("message");
-        SearchResultItem searchResultItem = bundle.getParcelable("search_result_item");
+        final SearchResultItem searchResultItem = bundle.getParcelable("search_result_item");
         if ( searchResultItem == null ) {
             finish();
             return;
@@ -104,8 +107,9 @@ public class SearchResultActivity extends BaseActivity {
                 //json_encode(array('result'=>$result)); 로 결과 받음
 
 
-                //클릭할 때, 위의 정보를 받아서 아래 함수로 넘겨야 함 -> 결제하기를 하면 방이 만들어져야 함
-                insertSearchInfo("http://a.liroo.net/tripool/trip_control.php", "add");
+                //클릭할 때, 위의 정보를 받아
+//             SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());아래 함수로 넘겨야 함 -> 결제하기를 하면 방이 만들어져야 함
+                insertSearchInfo("http://a.liroo.net/tripool/trip_control.php", "add", searchResultItem);
 
 
 //                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
@@ -123,7 +127,7 @@ public class SearchResultActivity extends BaseActivity {
     }
 
     //지역, 장소를 json타입으로 php DB에서 가져옴
-    public void insertSearchInfo(String url, final String type){
+    public void insertSearchInfo(String url, final String type, final SearchResultItem item){
         class GetDataJSON extends AsyncTask<String, Void, String> {
             ProgressDialog loading;
             @Override
@@ -137,19 +141,10 @@ public class SearchResultActivity extends BaseActivity {
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_result_array = jsonObj.getJSONArray(TAG_RESULTS);
-//                    if ( type.equals("add") ) {
-//                        setData(json_dept_list);
-//                        Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
-//                        intent.putParcelableArrayListExtra("search_result", searchList);
-//                        startActivity(intent);  //다음 화면으로 넘어가기
-//                    } else {
-//                        setPlaceData(json_dept_list);
-
-//                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-//                Log.e("json_result_array", String.valueOf(json_result_array));
+                Log.e("json_result_add", String.valueOf(json_result_array));
                 loading.dismiss();
             }
             @Override
@@ -161,13 +156,23 @@ public class SearchResultActivity extends BaseActivity {
                 try {
                     //php로 보낼 데이터 세팅
                     //book_id, book_no, dept_main, dept_sub, departure, dest_main, dest_sub, destination, dept_date 보내야함
-                    String data = URLEncoder.encode("mode", "UTF-8") + "=" + URLEncoder.encode(type, "UTF-8");
-                    data += "&" + URLEncoder.encode("dept_main", "UTF-8") + "=" + URLEncoder.encode("전북", "UTF-8");
-                    data += "&" + URLEncoder.encode("dept_sub", "UTF-8") + "=" + URLEncoder.encode("전주", "UTF-8");
-                    data += "&" + URLEncoder.encode("departure", "UTF-8") + "=" + URLEncoder.encode("전주한옥마을", "UTF-8");
-//                    data += "&" + URLEncoder.encode("dept_main", "UTF-8") + "=" + URLEncoder.encode(searchList.get(0).getDeptMain(), "UTF-8");
-//                    data += "&" + URLEncoder.encode("dept_sub", "UTF-8") + "=" + URLEncoder.encode(searchList.get(0).getDeptSub(), "UTF-8");
-//                    data += "&" + URLEncoder.encode("departure", "UTF-8") + "=" + URLEncoder.encode(searchList.get(0).getDeparture(), "UTF-8");
+//                    String data = URLEncoder.encode("mode", "UTF-8") + "=" + URLEncoder.encode(type, "UTF-8");
+                    String data = "mode=" + URLEncoder.encode(type, "UTF-8");
+                    data += "&dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
+                    data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
+                    data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+                    data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
+                    data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
+                    data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
+                    data += "&dept_date=" + item.getDeptDate() / 1000;              //DB입력할때 만 변경함
+                    data += "&people=" + item.getPeople();
+                    data += "&luggage=" + item.getLuggage();
+                    Log.e("DB RESULT", String.valueOf(data));
+
+                    //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
+                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+                    String u_id = userInfo.getString("u_id", "");
+                    data += "&book_id=" + u_id;
 
 
                     URL url = new URL(uri);
