@@ -41,6 +41,7 @@ public class SearchResultActivity extends BaseActivity {
 
     private ListView listView;          // 검색을 보여줄 리스트변수
     private Button makeBtn;
+    private final static int RESERVATION_FINISH = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,7 +94,8 @@ public class SearchResultActivity extends BaseActivity {
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
                 intent.putExtra("message", bundle);
                 intent.putExtra("is_make_room", "click_room");
-                startActivity(intent);  //다음 화면으로 넘어가기
+//                startActivity(intent);  //다음 화면으로 넘어가기
+                startActivityForResult(intent, RESERVATION_FINISH);
             }
         });
 
@@ -118,7 +120,8 @@ public class SearchResultActivity extends BaseActivity {
                 intent.putExtra("message", bundle);
                 intent.putExtra("is_make_room", "make_room");
 //                intent.putParcelableArrayListExtra("search_result", searchList);
-                startActivity(intent);  //다음 화면으로 넘어가기
+//                startActivity(intent);  //다음 화면으로 넘어가기
+                startActivityForResult(intent, RESERVATION_FINISH);
 
 
             }
@@ -202,6 +205,18 @@ public class SearchResultActivity extends BaseActivity {
         }
         GetDataJSON g = new GetDataJSON();
         g.execute(url, type);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+    {
+        Log.e("SearchResultActivity", "REQ:"+requestCode+",RET:"+resultCode+",DATA:"+intent);
+
+        if ( resultCode != RESULT_OK ) return;
+
+        if ( requestCode == RESERVATION_FINISH ) {
+            finish();
+        }
     }
 
     @Override

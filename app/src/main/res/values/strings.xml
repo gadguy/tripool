@@ -14,9 +14,11 @@
     <string name="camera">카메라</string>
     <string name="camera_permission_help">사진/동영상 촬영을 하려면 카메라 접근 권한이 필요합니다.</string>
     <string name="storage">저장공간</string>
-    <string name="storage_permission_help">내 기기에서 사진, 동영상 및 파일을 저장하고 업로드를 하기 위해서 저장공간 접근 권한이 필요합니다..</string>
+    <string name="storage_permission_help">내 기기에서 사진, 동영상 및 파일을 저장하고 업로드를 하기 위해서 저장공간 접근 권한이 필요합니다.</string>
     <string name="location">위치</string>
     <string name="location_permission_help">내 위치를 찾기 위해 위치 접근 권한이 필요합니다.</string>
+    <string name="call">전화</string>
+    <string name="call_permission_help">예약된 기사님에게 전화하기 위해 위치 접근 권한이 필요합니다.</string>
     <string name="login">로그인</string>
     <string name="email">이메일 주소</string>
     <string name="password">비밀번호</string>
@@ -69,5 +71,9 @@
     <string name="together_ride_people2">동승인원 :</string>
     <string name="contact_driver">기사님 연락하기</string>
     <string name="ask">문의하기</string>
+    <string name="not_pay_reservation_confirm">결제를 하지 않으면 예약이 되지 않습니다. 예약을 종료하시겠습니까?</string>
+    <string name="yes">예</string>
+    <string name="no">아니오</string>
+    <string name="plz_accept_permission">권한사용을 동의해주셔야 이용이 가능합니다.</string>
 
 </resources>

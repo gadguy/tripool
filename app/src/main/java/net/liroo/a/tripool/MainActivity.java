@@ -63,6 +63,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     ArrayList<String> dept_list = new ArrayList<>();                        //지역 spinner에서 쓰임
     ArrayList<String> dept_station_list = new ArrayList<>();                //장소 spinner에서 쓰임
 
+    private ArrayAdapter adapter, after_adapter;
     private EditText editTextFrom, editTextTo;
     private Button searchBtn;
     TMapView tMapView;
@@ -315,7 +316,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //출발 지역 스피너
         //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
-        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
+        adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
         dept_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
         dept_spinner.setAdapter(adapter);
 
@@ -325,7 +326,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //출발 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
                 getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dept_spinner.getItemAtPosition(position)));
-                ArrayAdapter after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
+                after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
                 Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
                 after_spinner.setAdapter(after_adapter);
 //                Toast.makeText(MainActivity.this,"선택된 아이템 : "+dept_spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
@@ -386,7 +387,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         //출발 지역 스피너
         //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
-        ArrayAdapter adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
+        adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
         dest_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
         dest_spinner.setAdapter(adapter);
 
@@ -396,7 +397,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //출발 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
                 getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dest_spinner.getItemAtPosition(position)));
-                ArrayAdapter after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
+                after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
                 Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
                 after_spinner.setAdapter(after_adapter);
 //                Toast.makeText(MainActivity.this,"선택된 아이템 : "+dept_spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
@@ -603,13 +604,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         dept_station_list.add("어디로 가시나요?");
         for(int i=0;i<list.length();i++){
             JSONObject item = list.getJSONObject(i);
-
             String main_addr = item.getString("main_addr");
             String sub_addr = item.getString("sub_addr");
-//            String station = item.getString("station");
-
             dept_list.add(main_addr+ " " + sub_addr);
-//            dept_station_list.add(station);
+            if ( adapter != null ) {
+                adapter.notifyDataSetChanged();
+            }
+            if ( after_adapter != null ) {
+                after_adapter.notifyDataSetChanged();
+            }
         }
     }
     //출발 장소 세팅
@@ -620,6 +623,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             JSONObject item = list.getJSONObject(i);
             String station = item.getString("place");
             dept_station_list.add(station);
+        }
+        if ( after_adapter != null ) {
+            after_adapter.notifyDataSetChanged();
         }
     }
 

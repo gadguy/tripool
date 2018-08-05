@@ -1,6 +1,8 @@
 package net.liroo.a.tripool;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -42,12 +44,10 @@ public class ReadyBoardActivity extends BaseActivity {
     private String people;
     private String luggage;
     private String owner_id;
-
-    // ----------------------------------------------------------------------------------------
-    // 수정
+    private String is_make_room;
+    private boolean isPyaDo;
     private View payDialog, cannotPayAlert, scheduleIngAlert, scheduleFinishAlert;
     private Button cancelBtn, nextBtn, checkReservationBtn;
-    // ----------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,22 +56,17 @@ public class ReadyBoardActivity extends BaseActivity {
 
         Bundle bundle = getIntent().getBundleExtra("message");
         final SearchItem searchItem = bundle.getParcelable("search_item");
-        // ----------------------------------------------------------------------------------------
-        // 수정
         if ( searchItem == null ) {
             finish();
             return;
         }
-        // ----------------------------------------------------------------------------------------
-        final String is_make_room = getIntent().getStringExtra("is_make_room");
+        is_make_room = getIntent().getStringExtra("is_make_room");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // ----------------------------------------------------------------------------------------
-        // 수정
         payDialog = findViewById(R.id.payDialog);
         cannotPayAlert = findViewById(R.id.cannotPayAlert);
         cancelBtn = findViewById(R.id.cancelBtn);
@@ -79,7 +74,6 @@ public class ReadyBoardActivity extends BaseActivity {
         scheduleIngAlert = findViewById(R.id.scheduleIngAlert);
         scheduleFinishAlert = findViewById(R.id.scheduleFinishAlert);
         checkReservationBtn = findViewById(R.id.checkReservationBtn);
-        // ----------------------------------------------------------------------------------------
 
         TextView departureText = findViewById(R.id.departureText);
         TextView destinationText = findViewById(R.id.destinationText);
@@ -110,8 +104,6 @@ public class ReadyBoardActivity extends BaseActivity {
         //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
 //        getFellowCount("json_fellow_count.php", searchItem);
         }
-
-
 
 
 
@@ -157,8 +149,6 @@ public class ReadyBoardActivity extends BaseActivity {
             }
         });
 
-        // ----------------------------------------------------------------------------------------
-        // 수정
         // 결제하기 팝업창
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,6 +161,7 @@ public class ReadyBoardActivity extends BaseActivity {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isPyaDo = true;
                 cannotPayAlert.setVisibility(View.GONE);
                 scheduleIngAlert.setVisibility(View.VISIBLE);
 
@@ -196,13 +187,8 @@ public class ReadyBoardActivity extends BaseActivity {
                 finish();
             }
         });
-
-        // ----------------------------------------------------------------------------------------
-
     }
 
-    // ----------------------------------------------------------------------------------------
-    // 수정
     @Override
     public void onBackPressed()
     {
@@ -210,17 +196,38 @@ public class ReadyBoardActivity extends BaseActivity {
             payDialog.setVisibility(View.GONE);
         }
         else {
-            super.onBackPressed();
+            if ( is_make_room.equals("make_room") || isPyaDo ) {
+                setResult(RESULT_OK);
+                super.onBackPressed();
+            }
+            else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReadyBoardActivity.this);
+                alertDialogBuilder.setTitle(getString(R.string.alert));
+                alertDialogBuilder
+                        .setMessage(getString(R.string.not_pay_reservation_confirm))
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // 다이얼로그를 취소한다
+                                dialog.cancel();
+                            }
+                        });
+                alertDialogBuilder.show();
+            }
         }
     }
-    // ----------------------------------------------------------------------------------------
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemID = item.getItemId();
         if ( itemID == android.R.id.home ) {   // 뒤로
-            finish();
+            onBackPressed();
         }
         return true;
     }
@@ -306,7 +313,7 @@ public class ReadyBoardActivity extends BaseActivity {
         };
         task.execute(url);
     }
-
+    //8월 6일에 php쪽 수정해야함 -> 현재 버그
     //리스트뷰에서 온 경우, list view에서 받아온 정보를 토대로 결제할때 DB에 insert 함
     public void setPayJoin(String url, final SearchItem item) {
 
