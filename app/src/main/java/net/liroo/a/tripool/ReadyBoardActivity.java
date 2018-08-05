@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +41,7 @@ public class ReadyBoardActivity extends BaseActivity {
     private long deptDate;
     private String people;
     private String luggage;
+    private String owner_id;
 
     // ----------------------------------------------------------------------------------------
     // 수정
@@ -56,8 +58,7 @@ public class ReadyBoardActivity extends BaseActivity {
         final SearchItem searchItem = bundle.getParcelable("search_item");
         // ----------------------------------------------------------------------------------------
         // 수정
-        SearchResultItem searchResultItem = bundle.getParcelable("search_result_item");
-        if ( searchItem == null && searchResultItem == null ) {
+        if ( searchItem == null ) {
             finish();
             return;
         }
@@ -89,19 +90,27 @@ public class ReadyBoardActivity extends BaseActivity {
 
         //방 만들기 하면 정보를 가져오지 못함...
         if ( searchItem != null ) {
-            departurePointText.setText(searchItem.getDeptMain() + " " + searchItem.getDeptSub());      //출발 도 + 시
+            departurePointText.setText(searchItem.getDeptMain() + " " + searchItem.getDeptSub() + " " +  searchItem.getDeparture());      //출발 도 + 시
             departureText.setText(searchItem.getDeparture());       //출발 장소
             destinationText.setText(searchItem.getDestination());   //도착 장소
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 (E)", Locale.getDefault());
-            deptDateText.setText(df.format(new Date(searchItem.getDeptDate() * 1000)));        //출발 일시
+            //방 만들기에서 넘어온 경우
+            if ( is_make_room.equals("make_room")) {
+                deptDateText.setText(df.format(new Date(searchItem.getDeptDate())));        //출발 일시
+            }
+            //리스트 뷰에서 넘어온 경우
+            else {
+                owner_id = searchItem.getOwnerId();
+                deptDateText.setText(df.format(new Date(searchItem.getDeptDate()*1000)));        //출발 일시
+            }
 
             peopleText.setText(searchItem.getPeople() + "명");             //인원수
 //        luggageText.setText(searchItem.getLuggage()+"개");           //짐 개수
-        }
-
         //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
 //        getFellowCount("json_fellow_count.php", searchItem);
+        }
+
 
 
 
@@ -128,16 +137,20 @@ public class ReadyBoardActivity extends BaseActivity {
                 if ( is_make_room.equals("make_room")) {
 
 
+
+
                 }
                 //리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
                 else {
+                    //owner_id 저장하기
+                    setPayJoin("http://a.liroo.net/tripool/trip_control.php", searchItem);
 
 
                 }
 
                 //결제화면으로 이동
-                Intent intent = new Intent(getApplicationContext(), PayActivity.class);
-                startActivity(intent);  //다음 화면으로 넘어가기
+//                Intent intent = new Intent(getApplicationContext(), PayActivity.class);
+//                startActivity(intent);  //다음 화면으로 넘어가기
 
                 payDialog.setVisibility(View.VISIBLE);
                 cannotPayAlert.setVisibility(View.VISIBLE);
@@ -264,14 +277,9 @@ public class ReadyBoardActivity extends BaseActivity {
                     data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
                     data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
-                    data += "&dept_date=" + item.getDeptDate() / 1000;              //DB입력할때 만 변경함
+                    data += "&dept_date=" + item.getDeptDate() / 100000;              //DB입력할때 만 변경함
 //                    data += "&people=" + item.getPeople();
 //                    data += "&luggage=" + item.getLuggage();
-                    //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
-//                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-//                    String u_id = userInfo.getString("u_id", "");
-//                    data += "&book_id=" + u_id;
-
 
                     URL url = new URL(uri);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -300,9 +308,94 @@ public class ReadyBoardActivity extends BaseActivity {
     }
 
     //리스트뷰에서 온 경우, list view에서 받아온 정보를 토대로 결제할때 DB에 insert 함
+    public void setPayJoin(String url, final SearchItem item) {
+
+        AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+            }
+            @Override
+            protected void onPostExecute(String result){
+                myJSON=result;
+                Log.e("Pay_Join", result);
+                try {
+                    JSONObject jsonObj = new JSONObject(myJSON);
+                    json_list = jsonObj.getJSONArray(TAG_RESULTS);
+
+//                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+
+//                    ArrayList<SearchItem> searchList = new ArrayList<>();
+//                    for ( int i=0; i<json_list.length(); i++ ) {
+//                        JSONObject obj = json_list.getJSONObject(i);
+//                        searchList.add(new SearchItem(obj));
+//                    }
+//                    Bundle bundle = new Bundle();
+//                    bundle.putParcelable("search_result_item", item);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                Log.e("json_arrayList", String.valueOf(dept_list));
+//                loading.dismiss();
+            }
+            @Override
+            protected String doInBackground(Object... params) {
+
+                String uri = (String)params[0];
+//                String main_addr = params[1];
+//                String sub_addr = params[2];
+//                String station = params[3];
+
+                BufferedReader bufferedReader = null;
+                try {
+
+                    String data = "mode=" + URLEncoder.encode("pay_add", "UTF-8");
+                    data += "&dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
+                    data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
+                    data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+                    data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
+                    data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
+                    data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
+                    data += "&dept_date=" + item.getDeptDate();              //DB입력할때 만 변경함
+                    //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
+                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+                    String u_id = userInfo.getString("u_id", "");
+                    data += "&book_id=" + u_id;
+                    data += "&owner_id=" + owner_id;
+
+
+                    URL url = new URL(uri);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    StringBuilder sb = new StringBuilder();
+
+                    conn.setDoOutput(true);
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                    wr.write(data);
+                    wr.flush();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    return sb.toString().trim();
+                } catch(Exception e) {
+                    return null;
+                }
+            }
+        };
+        task.execute(url);
+    }
+
 
 
     //방 만들기에서 온 경우, 검색 결과 값을 토대로 해당 DB를 update 함
+
+
 
 
 

@@ -192,7 +192,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 calendar.set(year, month, day, hour, minute);
                 long deptDate = calendar.getTimeInMillis();
 
-                SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());
+                SearchItem item = new SearchItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());
                 searchData("http://a.liroo.net/tripool/json_search_result.php", item);
             }
         });
@@ -447,7 +447,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     //검색결과 DB에서 가져옴
-    public void searchData(String url, final SearchResultItem item) {
+    public void searchData(String url, final SearchItem item) {
 
         AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
             @Override
@@ -473,7 +473,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     searchDialog.setVisibility(View.GONE);
 
                     Bundle bundle = new Bundle();
-                    bundle.putParcelable("search_result_item", item);
+                    bundle.putParcelable("search_item", item);
 
                     //검색 결과 페이지로 이동
                     Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
@@ -505,7 +505,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
                     data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
-                    data += "&dept_date=" + item.getDeptDate()/1000;        //DB에서 찾을 때는 초단위로 변경
+                    data += "&dept_date=" + item.getDeptDate()/100000;        //DB에서 찾을 때는 초단위로 변경
 
                     URL url = new URL(uri);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();

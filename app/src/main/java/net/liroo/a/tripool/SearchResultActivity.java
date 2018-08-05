@@ -50,8 +50,8 @@ public class SearchResultActivity extends BaseActivity {
         final ArrayList<SearchItem> searchList = (ArrayList<SearchItem>)getIntent().getSerializableExtra("search_list");
 
         final Bundle bundle = getIntent().getBundleExtra("message");
-        final SearchResultItem searchResultItem = bundle.getParcelable("search_result_item");
-        if ( searchResultItem == null ) {
+        final SearchItem searchItem = bundle.getParcelable("search_item");
+        if ( searchItem == null ) {
             finish();
             return;
         }
@@ -67,14 +67,14 @@ public class SearchResultActivity extends BaseActivity {
         TextView peopleText = findViewById(R.id.peopleText);
         TextView luggageText = findViewById(R.id.luggageText);
 
-        departureText.setText(searchResultItem.getDeparture());
-        destinationText.setText(searchResultItem.getDestination());
+        departureText.setText(searchItem.getDeparture());
+        destinationText.setText(searchItem.getDestination());
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 (E)", Locale.getDefault());
-        deptDateText.setText(df.format(new Date(searchResultItem.getDeptDate())));
+        deptDateText.setText(df.format(new Date(searchItem.getDeptDate())));
 
-        peopleText.setText(searchResultItem.getPeople()+"명");
-        luggageText.setText(searchResultItem.getLuggage()+"개");
+        peopleText.setText(searchItem.getPeople()+"명");
+        luggageText.setText(searchItem.getLuggage()+"개");
 
         //리스트뷰 세팅
         SearchResultAdapter adapter = new SearchResultAdapter(this, searchList);
@@ -109,8 +109,7 @@ public class SearchResultActivity extends BaseActivity {
 
 
                 //클릭할 때, 위의 정보를 받아
-//             SearchResultItem item = new SearchResultItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());아래 함수로 넘겨야 함 -> 결제하기를 하면 방이 만들어져야 함
-                insertSearchInfo("http://a.liroo.net/tripool/trip_control.php", "add", searchResultItem);
+                insertSearchInfo("http://a.liroo.net/tripool/trip_control.php", "add", searchItem);
 
 
 //                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
@@ -129,7 +128,7 @@ public class SearchResultActivity extends BaseActivity {
     }
 
     //지역, 장소를 json타입으로 php DB에서 가져옴
-    public void insertSearchInfo(String url, final String type, final SearchResultItem item){
+    public void insertSearchInfo(String url, final String type, final SearchItem item){
         class GetDataJSON extends AsyncTask<String, Void, String> {
             ProgressDialog loading;
             @Override
@@ -166,7 +165,7 @@ public class SearchResultActivity extends BaseActivity {
                     data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
                     data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
-                    data += "&dept_date=" + item.getDeptDate() / 1000;              //DB입력할때 만 변경함
+                    data += "&dept_date=" + item.getDeptDate() / 100000;              //DB입력할때 만 변경함
                     data += "&people=" + item.getPeople();
                     data += "&luggage=" + item.getLuggage();
 //                    Log.e("DB RESULT", String.valueOf(data));
@@ -175,6 +174,7 @@ public class SearchResultActivity extends BaseActivity {
                     SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
                     String u_id = userInfo.getString("u_id", "");
                     data += "&book_id=" + u_id;
+                    data += "&owner_id=" + u_id;
 
 
                     URL url = new URL(uri);

@@ -17,6 +17,7 @@ public class SearchItem implements Serializable, Parcelable
     private String no, deptMain, deptSub, departure, destMain, destSub, destination;
     private Long deptDate;
     private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
+    private String book_id, owner_id;
 
     public SearchItem() {  }
 
@@ -34,6 +35,26 @@ public class SearchItem implements Serializable, Parcelable
             deptDate = data.getLong("dept_date");
             people = data.getString("people");
             luggage = data.getString("luggage");
+            book_id = data.getString("book_id");
+            owner_id = data.getString("owner_id");
+        } catch ( Exception e ) {
+
+        }
+    }
+
+    public SearchItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage)
+    {
+        try {
+            this.no = no;
+            this.deptMain = deptMain;
+            this.deptSub = deptSub;
+            this.departure = departure;
+            this.destMain = destMain;
+            this.destSub = destSub;
+            this.destination = destination;
+            this.deptDate = deptDate;
+            this.people = people;
+            this.luggage = luggage;
         } catch ( Exception e ) {
 
         }
@@ -48,6 +69,8 @@ public class SearchItem implements Serializable, Parcelable
     public long getDeptDate() { return deptDate; }
     public String getPeople() { return people; }
     public String getLuggage() { return luggage; }
+    public String getBookId() { return book_id; }
+    public String getOwnerId() { return owner_id; }
 
     // Parcelable
     @Override
@@ -68,6 +91,8 @@ public class SearchItem implements Serializable, Parcelable
         bundle.putLong("deptDate", deptDate);
         bundle.putString("people", people);
         bundle.putString("luggage", luggage);
+        bundle.putString("book_id", book_id);
+        bundle.putString("owner_id", owner_id);
 
         dest.writeBundle(bundle);
     }
@@ -86,6 +111,8 @@ public class SearchItem implements Serializable, Parcelable
         deptDate = bundle.getLong("deptDate");
         people = bundle.getString("people");
         luggage = bundle.getString("luggage");
+        book_id = bundle.getString("book_id");
+        owner_id = bundle.getString("owner_id");
     }
 
     @SuppressWarnings("rawtypes")
