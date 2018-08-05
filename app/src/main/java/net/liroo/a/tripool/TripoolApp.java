@@ -3,18 +3,13 @@ package net.liroo.a.tripool;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
-import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
 public class TripoolApp extends Application
 {
-    // AppCompatActivity -> IBaseActivity로 변경
-    // ----------------------------------------------------------------------------------------
-    // 수정
     public IBaseActivity topActivity;	// 현재 최상위 액티비티
     private ArrayList<IBaseActivity> activityPool = new ArrayList<>();	// Activity 관리
-    // ----------------------------------------------------------------------------------------
 
     @Override
     public void onCreate()
@@ -26,8 +21,6 @@ public class TripoolApp extends Application
      * 새로운 액티버티 추가.
      * 중복검사.
      */
-    // ----------------------------------------------------------------------------------------
-    // 수정
     private void addActivity(IBaseActivity activity)
     {
         boolean isExist = false;
@@ -83,6 +76,13 @@ public class TripoolApp extends Application
         addActivity(activity);
     }
 
+    public ArrayList<IBaseActivity> getActivityPool() {
+        if ( activityPool == null ) {
+            return new ArrayList<>();
+        }
+        return activityPool;
+    }
+
     /**
      * 탑을 제외한 모든 액티버티를 종료하고 목록을 1개로 초기화.
      */
@@ -95,7 +95,6 @@ public class TripoolApp extends Application
         }
         activityPool.clear();
     }
-    // ----------------------------------------------------------------------------------------
 
     public void killApplication()
     {

@@ -33,7 +33,10 @@ public class LoginActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // 로그아웃 후에는 back 버튼 없도록 설정
+        if ( app.getActivityPool().size() != 0 ) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);

@@ -1,178 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
 
-    <RelativeLayout
-        android:id="@+id/map_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ccffffff"
-        style="@style/ToolBar" >
+        <RelativeLayout
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="33dp"
-            android:layout_gravity="center"
-            android:src="@drawable/app_bar"/>
-
-    </android.support.v7.widget.Toolbar>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#fff"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
-
-        <LinearLayout
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:background="#ccffffff"
+            style="@style/ToolBar" >
 
             <ImageView
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/intro_dot_ov"/>
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:layout_gravity="center"
+                android:src="@drawable/app_bar"/>
 
-            <EditText
-                android:id="@+id/editTextFrom"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@null"
-                android:text="@string/setting_departure"
-                android:textColor="#666"
-                android:textSize="14sp"
-                android:focusable="false"
-                android:onClick="btnLayerFrom"/>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_marginLeft="30dp"
-            android:layout_height="1dp"
-            android:background="#eee"/>
+        </android.support.v7.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="10dp"
-                android:layout_height="10dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/intro_dot"/>
-
-            <EditText
-                android:id="@+id/editTextTo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@null"
-                android:text="@string/setting_destination"
-                android:textColor="#666"
-                android:textSize="14sp"
-                android:focusable="false"
-                android:onClick="btnLayerTo"/>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#eee"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="13dp"
-            android:orientation="horizontal">
+            android:background="#fff"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/dateBtn"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="5dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/calendar"/>
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/intro_dot_ov"/>
 
-                <TextView
-                    android:id="@+id/dateText"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/editTextFrom"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="13dp"
-                    android:text="2018.08.01"
-                    android:textSize="14sp"/>
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:text="@string/setting_departure"
+                    android:textColor="#666"
+                    android:textSize="14sp"
+                    android:focusable="false"
+                    android:onClick="btnLayerFrom"/>
 
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginLeft="30dp"
+                android:layout_height="1dp"
+                android:background="#eee"/>
+
             <LinearLayout
-                android:id="@+id/timeBtn"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginRight="5dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:src="@drawable/clock"/>
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/intro_dot"/>
 
-                <TextView
-                    android:id="@+id/timeText"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/editTextTo"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="13dp"
-                    android:text="03:00"/>
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:text="@string/setting_destination"
+                    android:textColor="#666"
+                    android:textSize="14sp"
+                    android:focusable="false"
+                    android:onClick="btnLayerTo"/>
 
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#eee"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="13dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/dateBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/calendar"/>
+
+                    <TextView
+                        android:id="@+id/dateText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="13dp"
+                        android:text="2018.08.01"
+                        android:textSize="14sp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/timeBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginRight="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:src="@drawable/clock"/>
+
+                    <TextView
+                        android:id="@+id/timeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="13dp"
+                        android:text="03:00"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_search"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#117869"
+                android:text="@string/search"
+                android:textColor="#fff" />
+
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_search"
+        <include
+            android:id="@+id/searchDialog"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="#117869"
-            android:text="@string/search"
-            android:textColor="#fff" />
+            android:layout_height="match_parent"
+            layout="@layout/search_dialog"
+            android:visibility="gone" />
 
-    </LinearLayout>
+    </FrameLayout>
 
-    <include
-        android:id="@+id/searchDialog"
-        android:layout_width="match_parent"
+    <android.support.design.widget.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        layout="@layout/search_dialog"
-        android:visibility="gone" />
+        android:layout_gravity="start"
+        android:fitsSystemWindows="false"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/menu_main" />
 
-</FrameLayout>
+</android.support.v4.widget.DrawerLayout>

@@ -59,5 +59,15 @@
     <string name="car_schedule_finish">배차가 완료되었습니다.</string>
     <string name="check_reservation_detail">예약 내역 확인하기</string>
     <string name="check_reservation">예약 확인</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="my_info">내 정보</string>
+    <string name="logout">로그아웃</string>
+    <string name="boarding_location">탑승위치 :</string>
+    <string name="reservation_no">예약번호 :</string>
+    <string name="car_no">차량번호 :</string>
+    <string name="together_ride_people2">동승인원 :</string>
+    <string name="contact_driver">기사님 연락하기</string>
+    <string name="ask">문의하기</string>
 
 </resources>

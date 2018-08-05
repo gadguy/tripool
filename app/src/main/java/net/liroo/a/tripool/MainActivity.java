@@ -17,10 +17,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +54,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private ProgressDialog loading;
     String myJSON;
@@ -71,6 +75,11 @@ public class MainActivity extends BaseActivity {
     private EditText peopleInput, carrierInput;
     private Button dialogOkBtn;
 
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private NavigationView navView;
+    private TextView myEmailText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +89,23 @@ public class MainActivity extends BaseActivity {
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
+        // Side Menu Setting
+        drawerLayout = findViewById(R.id.drawerLayout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+
+        navView = findViewById(R.id.navView);
+        navView.setNavigationItemSelectedListener(this);
+
+        SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+        String u_id = userInfo.getString("u_id", "");
+
+        View headerView = navView.getHeaderView(0);
+        myEmailText = headerView.findViewById(R.id.myEmailText);
+        myEmailText.setText(u_id);
+
+        // 검색 정보
         editTextFrom = findViewById(R.id.editTextFrom);
         editTextTo = findViewById(R.id.editTextTo);
         searchBtn = findViewById(R.id.btn_search);
@@ -597,42 +623,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-//            Toast.makeText(getApplicationContext(), "세팅버튼 입니다. 추후 개발 예정", Toast.LENGTH_LONG).show();
-            SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-            String u_id = userInfo.getString("u_id", "");
-            Toast.makeText(getApplicationContext(), u_id, Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        //로그아웃
-        if (id == R.id.action_logout) {
-            SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-            SharedPreferences.Editor userEdit = userInfo.edit();
-            userEdit.clear();
-            userEdit.commit();
-
-            Toast.makeText(getApplicationContext(), "로그아웃 됩니다.", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);  //다음 화면으로 넘어가기
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     // 앱을 완전히 종료 FrontPage에서만 사용
     private boolean quitFlag;
     private Handler quitHandler = new Handler() {
@@ -656,7 +646,10 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onBackPressed()
     {
-        if ( searchDialog.getVisibility() == View.VISIBLE ) {
+        if ( drawerLayout.isDrawerOpen(GravityCompat.START) ) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        else if ( searchDialog.getVisibility() == View.VISIBLE ) {
             searchDialog.setVisibility(View.GONE);
         }
         else if ( !quitFlag ) {
@@ -667,5 +660,33 @@ public class MainActivity extends BaseActivity {
         else {
             killAll();
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+        int id = menuItem.getItemId();
+
+        if (id == R.id.nav_check_reservation) {
+            Intent intent = new Intent(getApplicationContext(), CheckReservationActivity.class);
+            startActivity(intent);
+        }
+        else if (id == R.id.nav_logout) {
+            app.clearActivityPool();
+
+            SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+            SharedPreferences.Editor userEdit = userInfo.edit();
+            userEdit.clear();
+            userEdit.commit();
+
+            Toast.makeText(getApplicationContext(), "로그아웃 됩니다.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);  //다음 화면으로 넘어가기
+
+            finish();
+        }
+
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
