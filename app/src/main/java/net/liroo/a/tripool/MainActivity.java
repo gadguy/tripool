@@ -463,8 +463,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
 
-                    Log.e("search_result", "json_dept_list : "+json_dept_list.length());
-
                     ArrayList<SearchItem> searchList = new ArrayList<>();
                     for ( int i=0; i<json_dept_list.length(); i++ ) {
                         JSONObject obj = json_dept_list.getJSONObject(i);

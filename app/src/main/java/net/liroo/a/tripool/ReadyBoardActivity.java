@@ -48,11 +48,17 @@ public class ReadyBoardActivity extends BaseActivity {
     private boolean isPyaDo;
     private View payDialog, cannotPayAlert, scheduleIngAlert, scheduleFinishAlert;
     private Button cancelBtn, nextBtn, checkReservationBtn;
+    private String u_id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_readyboard);
+
+        //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
+        SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+        u_id = userInfo.getString("u_id", "");
 
         Bundle bundle = getIntent().getBundleExtra("message");
         final SearchItem searchItem = bundle.getParcelable("search_item");
@@ -61,6 +67,8 @@ public class ReadyBoardActivity extends BaseActivity {
             return;
         }
         is_make_room = getIntent().getStringExtra("is_make_room");
+        people = getIntent().getStringExtra("search_people");
+        luggage = getIntent().getStringExtra("search_luggage");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -82,7 +90,7 @@ public class ReadyBoardActivity extends BaseActivity {
         TextView luggageText = findViewById(R.id.luggageText);
         TextView departurePointText = findViewById(R.id.departurePointText);
 
-        //방 만들기 하면 정보를 가져오지 못함...
+        //검색된 결과값을 화면에 세팅
         if ( searchItem != null ) {
             departurePointText.setText(searchItem.getDeptMain() + " " + searchItem.getDeptSub() + " " +  searchItem.getDeparture());      //출발 도 + 시
             departureText.setText(searchItem.getDeparture());       //출발 장소
@@ -101,44 +109,16 @@ public class ReadyBoardActivity extends BaseActivity {
 
             peopleText.setText(searchItem.getPeople() + "명");             //인원수
 //        luggageText.setText(searchItem.getLuggage()+"개");           //짐 개수
-        //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
-//        getFellowCount("json_fellow_count.php", searchItem);
+            //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
+            getFellowCount("http://a.liroo.net/tripool/json_fellow_count.php", searchItem);
         }
 
-
-
-        //TODO: 방 만들기를 통해서 들어왔다면, 뒤로 가기 누를 때 메인 페이지로 넘어감
-        if ( is_make_room.equals("make_room")) {
-
-
-        }
-        //TODO: 리스트뷰를 통해서 들어왔다면, 결제를 하지 않고 뒤로가기를 누르면 예약이 안된다는 메시지 띄우기 -> 검색 결과 페이지로 넘어감
-        else {
-
-
-        }
-
-
-        //결제하기 버튼 클릭 -> 결제화면으로 이동
+        //결제하기 버튼 클릭 -> 결제화면으로 이동 (2차 개발)
+        //지금은 결제하기 팝업창이 뜸
         Button btnClose = (Button) findViewById(R.id.btn_pay);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //방만들기로 들어온 상태면 tripool_info의 결제 상태값을 변경해야 함
-                if ( is_make_room.equals("make_room")) {
-
-
-
-
-                }
-                //리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
-                else {
-                    //owner_id 저장하기
-                    setPayJoin("http://a.liroo.net/tripool/trip_control.php", searchItem);
-
-
-                }
 
                 //결제화면으로 이동
 //                Intent intent = new Intent(getApplicationContext(), PayActivity.class);
@@ -157,13 +137,23 @@ public class ReadyBoardActivity extends BaseActivity {
                 cannotPayAlert.setVisibility(View.VISIBLE);
             }
         });
-
+        //결제 팝업에서 다음 버튼
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isPyaDo = true;
                 cannotPayAlert.setVisibility(View.GONE);
                 scheduleIngAlert.setVisibility(View.VISIBLE);
+                //방만들기로 들어온 상태면 tripool_info의 결제 상태값을 변경해야 함
+                //혹은 자신이 만든 방이면 결제의 상태값만 update 해야 함
+                if ( is_make_room.equals("make_room") || owner_id.equals(u_id) ) {
+                    setPayUpdate("http://a.liroo.net/tripool/trip_control.php", searchItem);
+                }
+                //리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
+                else {
+                    //owner_id 저장하기
+                    setPayJoin("http://a.liroo.net/tripool/trip_control.php", searchItem);
+                }
 
                 // TODO : 배차 완료되면 화면 바뀌도록 변경 필요 (현재는 화면 전환 확인하기 위해 자동으로 변경)
                 Handler handler = new Handler();
@@ -176,14 +166,13 @@ public class ReadyBoardActivity extends BaseActivity {
                 }, 3000);
             }
         });
-
+        //예약 확인 페이지
         checkReservationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 예약 확인 페이지로 이동
                 Intent intent = new Intent(getApplicationContext(), CheckReservationActivity.class);
                 startActivity(intent);
-
                 finish();
             }
         });
@@ -257,6 +246,7 @@ public class ReadyBoardActivity extends BaseActivity {
 //                    }
                     TextView togetherPeopleText = findViewById(R.id.togetherPeopleText);
                     togetherPeopleText.setText(together_people+"명");             //인원수
+                        Log.e("together_people", together_people);
 
 //                    Bundle bundle = new Bundle();
 //                    bundle.putParcelable("search_result_item", item);
@@ -326,7 +316,7 @@ public class ReadyBoardActivity extends BaseActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
-                Log.e("Pay_Join", result);
+//                Log.e("Pay_Join", result);
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_list = jsonObj.getJSONArray(TAG_RESULTS);
@@ -348,15 +338,9 @@ public class ReadyBoardActivity extends BaseActivity {
             }
             @Override
             protected String doInBackground(Object... params) {
-
                 String uri = (String)params[0];
-//                String main_addr = params[1];
-//                String sub_addr = params[2];
-//                String station = params[3];
-
                 BufferedReader bufferedReader = null;
                 try {
-
                     String data = "mode=" + URLEncoder.encode("pay_add", "UTF-8");
                     data += "&dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
                     data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
@@ -365,9 +349,82 @@ public class ReadyBoardActivity extends BaseActivity {
                     data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
                     data += "&dept_date=" + item.getDeptDate();              //DB입력할때 만 변경함
-                    //자동로그인 되어있으면 로그인 정보 가져와서 같이 insert하기
-                    SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-                    String u_id = userInfo.getString("u_id", "");
+                    data += "&people=" + people;
+                    data += "&luggage=" + luggage;
+                    data += "&book_id=" + URLEncoder.encode(u_id, "UTF-8");
+                    data += "&owner_id=" + URLEncoder.encode(owner_id, "UTF-8");
+
+                    URL url = new URL(uri);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+                    StringBuilder sb = new StringBuilder();
+
+                    conn.setDoOutput(true);
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                    wr.write(data);
+                    wr.flush();
+
+                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                    String json;
+                    while((json = bufferedReader.readLine())!= null){
+                        sb.append(json+"\n");
+                    }
+                    return sb.toString().trim();
+                } catch(Exception e) {
+                    return null;
+                }
+            }
+        };
+        task.execute(url);
+    }
+
+    //방 만들기에서 온 경우, 검색 결과 값을 토대로 해당 DB를 update 함
+    public void setPayUpdate(String url, final SearchItem item) {
+
+        AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
+            }
+            @Override
+            protected void onPostExecute(String result){
+                myJSON=result;
+                Log.e("Pay_Update", result);
+                try {
+                    JSONObject jsonObj = new JSONObject(myJSON);
+                    json_list = jsonObj.getJSONArray(TAG_RESULTS);
+
+//                    Log.e("test", "json_dept_list : "+json_dept_list.length());
+
+//                    ArrayList<SearchItem> searchList = new ArrayList<>();
+//                    for ( int i=0; i<json_list.length(); i++ ) {
+//                        JSONObject obj = json_list.getJSONObject(i);
+//                        searchList.add(new SearchItem(obj));
+//                    }
+//                    Bundle bundle = new Bundle();
+//                    bundle.putParcelable("search_result_item", item);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//                Log.e("json_arrayList", String.valueOf(dept_list));
+//                loading.dismiss();
+            }
+            @Override
+            protected String doInBackground(Object... params) {
+                String uri = (String)params[0];
+                BufferedReader bufferedReader = null;
+                try {
+                    String data = "mode=" + URLEncoder.encode("pay_update", "UTF-8");
+                    data += "&dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
+                    data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
+                    data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+                    data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
+                    data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
+                    data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
+                    data += "&dept_date=" + item.getDeptDate();              //DB입력할 때만 변경함
+                    Log.e("Pay_Update_dept_date", String.valueOf(item.getDeptDate()));
                     data += "&book_id=" + u_id;
                     data += "&owner_id=" + owner_id;
 
@@ -397,11 +454,6 @@ public class ReadyBoardActivity extends BaseActivity {
         };
         task.execute(url);
     }
-
-
-
-    //방 만들기에서 온 경우, 검색 결과 값을 토대로 해당 DB를 update 함
-
 
 
 

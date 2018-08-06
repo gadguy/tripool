@@ -72,6 +72,9 @@ public class SearchItem implements Serializable, Parcelable
     public String getBookId() { return book_id; }
     public String getOwnerId() { return owner_id; }
 
+    public void setLuggage(String luggage) { this.luggage = luggage;}
+    public void setPeople(String people) { this.people = people;}
+
     // Parcelable
     @Override
     public int describeContents() { return 0; }

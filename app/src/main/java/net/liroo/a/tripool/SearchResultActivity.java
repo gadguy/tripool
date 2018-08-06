@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,6 +43,7 @@ public class SearchResultActivity extends BaseActivity {
     private ListView listView;          // 검색을 보여줄 리스트변수
     private Button makeBtn;
     private final static int RESERVATION_FINISH = 1;
+    private String chkSameRoom = "none";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,11 +91,16 @@ public class SearchResultActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("search_item", searchList.get(i));
+//               searchItem.setLuggage(searchItem.getLuggage());
+//               searchItem.setPeople(searchItem.getPeople());
 
                 //탑승준비 페이지로 이동
                 Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
                 intent.putExtra("message", bundle);
                 intent.putExtra("is_make_room", "click_room");
+                intent.putExtra("search_luggage", searchItem.getLuggage());
+                intent.putExtra("search_people", searchItem.getPeople());
+
 //                startActivity(intent);  //다음 화면으로 넘어가기
                 startActivityForResult(intent, RESERVATION_FINISH);
             }
@@ -101,7 +108,7 @@ public class SearchResultActivity extends BaseActivity {
 
         //방만들기 버튼
         makeBtn = findViewById(R.id.btn_make_room);
-        //클릭하면 검색된 정보로 DB에 insert하고 해당 정보를 바탕으로 한 결제페이지로 이동
+        //클릭하면 검색된 정보로 DB에 insert하고 해당 정보를 바탕으로 한 탑승준비 페이지로 이동
         makeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -109,28 +116,28 @@ public class SearchResultActivity extends BaseActivity {
                 //book_id, book_no, dept_main, dept_sub, departure, dest_main, dest_sub, destination, dept_date 보내야함
                 //json_encode(array('result'=>$result)); 로 결과 받음
 
-
-                //클릭할 때, 위의 정보를 받아
+                //클릭할 때, 검색된 정보를 이용하여 방을 만듬
                 insertSearchInfo("http://a.liroo.net/tripool/trip_control.php", "add", searchItem);
-
-
-//                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
-                //탑승준비 페이지로 이동, 번들로 가져온 item을 그대로 넘김
-                Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
-                intent.putExtra("message", bundle);
-                intent.putExtra("is_make_room", "make_room");
-//                intent.putParcelableArrayListExtra("search_result", searchList);
-//                startActivity(intent);  //다음 화면으로 넘어가기
-                startActivityForResult(intent, RESERVATION_FINISH);
-
-
+                //TODO: 승승 여기좀 봐줘 ㅠㅠ 이게 잘 안되네 ㅠㅠ
+                if ( chkSameRoom.equals("same_room") ) {
+                    Log.e("json_chk_same_room", "BBBBBBBBBBBBB");
+                    Toast.makeText(getApplicationContext(), "같은 시간대에 만드신 방이 있습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+    //                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
+                    //탑승준비 페이지로 이동, 번들로 가져온 item을 그대로 넘김
+                    Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
+                    intent.putExtra("message", bundle);
+                    intent.putExtra("is_make_room", "make_room");
+    //                intent.putParcelableArrayListExtra("search_result", searchList);
+    //                startActivity(intent);  //다음 화면으로 넘어가기
+                    startActivityForResult(intent, RESERVATION_FINISH);
+                }
             }
         });
-
-
     }
 
-    //지역, 장소를 json타입으로 php DB에서 가져옴
+    //방 만들기
     public void insertSearchInfo(String url, final String type, final SearchItem item){
         class GetDataJSON extends AsyncTask<String, Void, String> {
             ProgressDialog loading;
@@ -142,13 +149,26 @@ public class SearchResultActivity extends BaseActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
-                try {
-                    JSONObject jsonObj = new JSONObject(myJSON);
-                    json_result_array = jsonObj.getJSONArray(TAG_RESULTS);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                //TODO: 승승 여기좀 봐줘2 플리즈~
+                if ( result.indexOf("same_room_error") != -1 ) {
+                    chkSameRoom = "same_room";
+                    Log.e("json_chk_same_room", "AAAAAAAAA");
+
+                } else {
+                    try {
+                        JSONObject jsonObj = new JSONObject(myJSON);
+                        json_result_array = jsonObj.getJSONArray(TAG_RESULTS);
+//                        if ( json_result_array.length() < 1 && json_result_array.("same_room_error") == -1 ) {
+//                            chkSameRoom = "same_room";
+//                            Log.e("json_chk_same_room", "AAAAAAAAA");
+//                        }
+                        Log.e("json_result_add", String.valueOf(json_result_array));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 }
-                Log.e("json_result_add", String.valueOf(json_result_array));
+
                 loading.dismiss();
             }
             @Override
