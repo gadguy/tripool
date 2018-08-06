@@ -75,5 +75,13 @@
     <string name="yes">예</string>
     <string name="no">아니오</string>
     <string name="plz_accept_permission">권한사용을 동의해주셔야 이용이 가능합니다.</string>
+    <string name="cellphone">핸드폰</string>
+    <string name="sex">성별</string>
+    <string name="men">남</string>
+    <string name="woman">여</string>
+    <string name="privacy">개인정보 수집</string>
+    <string name="privacy_help">개인정보는 \'차랑 배차를 위한 본인 확인\', \'더 나은 서비스를 위한 이용자의 서비스 이용에 대한 통계\' 외에 다른곳에는 사용하지 않습니다.</string>
+    <string name="privacy_agree">개인정보 수집 동의</string>
+    <string name="password_help">* 영문, 숫자, 특수문자 포함 8~11자리</string>
 
 </resources>

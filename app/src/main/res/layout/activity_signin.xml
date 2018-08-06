@@ -68,7 +68,6 @@
                 android:id="@+id/passwordInput"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_marginBottom="5dp"
                 android:hint="@string/password"
                 android:textColorHint="#99ffffff"
                 android:textColor="#fff"
@@ -76,16 +75,111 @@
                 android:inputType="textPassword"
                 android:backgroundTint="#fff" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:text="@string/password_help"
+                android:textColor="#ffeaf8"
+                android:textSize="12sp"/>
+
             <EditText
                 android:id="@+id/passwordchkInput"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginBottom="5dp"
                 android:hint="@string/join_check"
                 android:textColorHint="#99ffffff"
                 android:textColor="#fff"
                 android:textSize="16sp"
                 android:inputType="textPassword"
                 android:backgroundTint="#fff" />
+
+            <EditText
+                android:id="@+id/phoneInput"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="@string/cellphone"
+                android:textColorHint="#99ffffff"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:inputType="phone"
+                android:backgroundTint="#fff" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sex"
+                    android:textColor="#99ffffff"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/menRadio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#fff"
+                        android:checked="true"
+                        android:text="@string/men"
+                        android:textColor="#fff"/>
+
+                    <RadioButton
+                        android:id="@+id/womanRadio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:buttonTint="#fff"
+                        android:text="@string/woman"
+                        android:textColor="#fff"/>
+
+                </RadioGroup>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="#fff" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:textSize="15sp"
+                android:text="@string/privacy"
+                android:textColor="#fff"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="13sp"
+                android:text="@string/privacy_help"
+                android:textColor="#fff"/>
+
+            <CheckBox
+                android:id="@+id/privacyAgreeCheck"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:buttonTint="#fff"
+                android:text="@string/privacy_agree"
+                android:textSize="13sp"
+                android:textColor="#fff"/>
 
             <Button
                 android:id="@+id/btnJoin"

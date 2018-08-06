@@ -30,7 +30,6 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 //검색 결과 페이지
@@ -43,7 +42,10 @@ public class SearchResultActivity extends BaseActivity {
     private ListView listView;          // 검색을 보여줄 리스트변수
     private Button makeBtn;
     private final static int RESERVATION_FINISH = 1;
-    private String chkSameRoom = "none";
+    // ----------------------------------------------------------------------------------------
+    // 수정
+    private SearchItem searchItem;
+    // ----------------------------------------------------------------------------------------
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +55,10 @@ public class SearchResultActivity extends BaseActivity {
         final ArrayList<SearchItem> searchList = (ArrayList<SearchItem>)getIntent().getSerializableExtra("search_list");
 
         final Bundle bundle = getIntent().getBundleExtra("message");
-        final SearchItem searchItem = bundle.getParcelable("search_item");
+        // ----------------------------------------------------------------------------------------
+        // 수정
+        searchItem = bundle.getParcelable("search_item");
+        // ----------------------------------------------------------------------------------------
         if ( searchItem == null ) {
             finish();
             return;
@@ -116,23 +121,11 @@ public class SearchResultActivity extends BaseActivity {
                 //book_id, book_no, dept_main, dept_sub, departure, dest_main, dest_sub, destination, dept_date 보내야함
                 //json_encode(array('result'=>$result)); 로 결과 받음
 
+                // ----------------------------------------------------------------------------------------
+                // 수정
                 //클릭할 때, 검색된 정보를 이용하여 방을 만듬
                 insertSearchInfo("http://a.liroo.net/tripool/trip_control.php", "add", searchItem);
-                //TODO: 승승 여기좀 봐줘 ㅠㅠ 이게 잘 안되네 ㅠㅠ
-                if ( chkSameRoom.equals("same_room") ) {
-                    Log.e("json_chk_same_room", "BBBBBBBBBBBBB");
-                    Toast.makeText(getApplicationContext(), "같은 시간대에 만드신 방이 있습니다.", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-    //                Toast.makeText(getApplicationContext(), "방 만들고, 탑승준비 페이지로 이동", Toast.LENGTH_SHORT).show();
-                    //탑승준비 페이지로 이동, 번들로 가져온 item을 그대로 넘김
-                    Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
-                    intent.putExtra("message", bundle);
-                    intent.putExtra("is_make_room", "make_room");
-    //                intent.putParcelableArrayListExtra("search_result", searchList);
-    //                startActivity(intent);  //다음 화면으로 넘어가기
-                    startActivityForResult(intent, RESERVATION_FINISH);
-                }
+                // ----------------------------------------------------------------------------------------
             }
         });
     }
@@ -149,25 +142,31 @@ public class SearchResultActivity extends BaseActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
-                //TODO: 승승 여기좀 봐줘2 플리즈~
-                if ( result.indexOf("same_room_error") != -1 ) {
-                    chkSameRoom = "same_room";
-                    Log.e("json_chk_same_room", "AAAAAAAAA");
-
-                } else {
+                // ----------------------------------------------------------------------------------------
+                // 수정
+                if ( result.contains("same_room_error") ) {
+                    Toast.makeText(getApplicationContext(), "같은 시간대에 만드신 방이 있습니다.", Toast.LENGTH_SHORT).show();
+                }
+                else {
                     try {
                         JSONObject jsonObj = new JSONObject(myJSON);
                         json_result_array = jsonObj.getJSONArray(TAG_RESULTS);
-//                        if ( json_result_array.length() < 1 && json_result_array.("same_room_error") == -1 ) {
-//                            chkSameRoom = "same_room";
-//                            Log.e("json_chk_same_room", "AAAAAAAAA");
-//                        }
                         Log.e("json_result_add", String.valueOf(json_result_array));
+
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("search_item", searchItem);
+
+                        Intent intent = new Intent(getApplicationContext(), ReadyBoardActivity.class);
+                        intent.putExtra("message", bundle);
+                        intent.putExtra("is_make_room", "make_room");
+                        //                intent.putParcelableArrayListExtra("search_result", searchList);
+                        //                startActivity(intent);  //다음 화면으로 넘어가기
+                        startActivityForResult(intent, RESERVATION_FINISH);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
+                // ----------------------------------------------------------------------------------------
 
                 loading.dismiss();
             }
