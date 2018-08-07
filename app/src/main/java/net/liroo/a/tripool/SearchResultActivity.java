@@ -142,6 +142,7 @@ public class SearchResultActivity extends BaseActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
+//                Log.e("json_result", result);
                 // ----------------------------------------------------------------------------------------
                 // 수정
                 if ( result.contains("same_room_error") ) {
@@ -151,7 +152,7 @@ public class SearchResultActivity extends BaseActivity {
                     try {
                         JSONObject jsonObj = new JSONObject(myJSON);
                         json_result_array = jsonObj.getJSONArray(TAG_RESULTS);
-                        Log.e("json_result_add", String.valueOf(json_result_array));
+//                        Log.e("json_result_add", String.valueOf(json_result_array));
 
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("search_item", searchItem);

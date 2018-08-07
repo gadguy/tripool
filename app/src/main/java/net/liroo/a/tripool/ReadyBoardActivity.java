@@ -110,6 +110,7 @@ public class ReadyBoardActivity extends BaseActivity {
             peopleText.setText(searchItem.getPeople() + "명");             //인원수
 //        luggageText.setText(searchItem.getLuggage()+"개");           //짐 개수
             //tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
+            //동승인원을 가져옴
             getFellowCount("http://a.liroo.net/tripool/json_fellow_count.php", searchItem);
         }
 
@@ -235,19 +236,20 @@ public class ReadyBoardActivity extends BaseActivity {
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_list = jsonObj.getJSONArray(TAG_RESULTS);
-
 //                    Log.e("test", "json_dept_list : "+json_dept_list.length());
 
 //                    ArrayList<SearchItem> searchList = new ArrayList<>();
 //                    for ( int i=0; i<json_list.length(); i++ ) {
                         JSONObject obj = json_list.getJSONObject(0);
                         String together_people =  obj.getString("together_people");
+                        if ( together_people.equals("null")) {
+                            together_people = "0";
+                        }
 //                        searchList.add(new SearchItem(obj));
 //                    }
                     TextView togetherPeopleText = findViewById(R.id.togetherPeopleText);
                     togetherPeopleText.setText(together_people+"명");             //인원수
-                        Log.e("together_people", together_people);
-
+//                        Log.e("together_people", together_people);
 //                    Bundle bundle = new Bundle();
 //                    bundle.putParcelable("search_result_item", item);
                 } catch (JSONException e) {
@@ -423,10 +425,15 @@ public class ReadyBoardActivity extends BaseActivity {
                     data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
                     data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
-                    data += "&dept_date=" + item.getDeptDate();              //DB입력할 때만 변경함
+                    if ( is_make_room.equals("make_room") ) {
+                        data += "&dept_date=" + item.getDeptDate() / 100000;              //DB입력할 때만 변경함
+                    } else {
+                        data += "&dept_date=" + item.getDeptDate();              //DB입력할 때만 변경함
+                    }
                     Log.e("Pay_Update_dept_date", String.valueOf(item.getDeptDate()));
                     data += "&book_id=" + u_id;
                     data += "&owner_id=" + owner_id;
+                    data += "&is_make_room=" + is_make_room;
 
 
                     URL url = new URL(uri);
