@@ -2,12 +2,15 @@ package net.liroo.a.tripool;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class CheckReservationAdapter extends BaseAdapter
@@ -41,6 +44,8 @@ public class CheckReservationAdapter extends BaseAdapter
 
     private class ViewHolder
     {
+        TextView reservationDeptText, reservationDestText, reservationDateText, readyText;
+        TextView reservationDeptTimeText, reservationDestTimeText;
         Button contactBtn, askBtn;
     }
 
@@ -51,6 +56,12 @@ public class CheckReservationAdapter extends BaseAdapter
             view = layoutInflater.inflate(R.layout.check_reservation_cell, parent, false);
 
             holder = new ViewHolder();
+            holder.reservationDeptText = view.findViewById(R.id.reservationDeptText);
+            holder.reservationDestText = view.findViewById(R.id.reservationDestText);
+            holder.reservationDateText = view.findViewById(R.id.reservationDateText);
+            holder.reservationDeptTimeText = view.findViewById(R.id.reservationDeptTimeText);
+            holder.reservationDestTimeText = view.findViewById(R.id.reservationDestTimeText);
+
             holder.contactBtn = view.findViewById(R.id.contactBtn);
             holder.askBtn = view.findViewById(R.id.askBtn);
 
@@ -61,15 +72,19 @@ public class CheckReservationAdapter extends BaseAdapter
         }
 
         SearchItem item = data.get(index);
-//        holder.departureText.setText(item.getDeparture());
-//        holder.destinationText.setText(item.getDestination());
-//
-//        //시,분만 표시
-//        SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-////        Log.e("search_result_date", item.getDeptDate());
-//
-//        Long searchTime = item.getDeptDate() * 1000;        //초->밀리초로 변환
-//        holder.deptDateText.setText(df.format(searchTime));
+        holder.reservationDeptText.setText(item.getDeparture());
+        holder.reservationDestText.setText(item.getDestination());
+
+        //년, 월, 일, 시,분 표시
+        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH:mm");
+        Long searchTime = item.getDeptDate() * 1000;        //초->밀리초로 변환
+        holder.reservationDateText.setText(df.format(searchTime));
+        //시, 분만 표시
+        SimpleDateFormat df_dept = new SimpleDateFormat("HH:mm");
+        holder.reservationDeptTimeText.setText(df_dept.format(searchTime));
+        holder.reservationDestTimeText.setText(df_dept.format(searchTime+3600));
+        //동승인원
+
 
         holder.contactBtn.setOnClickListener(new View.OnClickListener() {
             @Override

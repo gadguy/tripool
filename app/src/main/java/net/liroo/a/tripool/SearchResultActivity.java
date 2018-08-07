@@ -54,6 +54,8 @@ public class SearchResultActivity extends BaseActivity {
 
         final ArrayList<SearchItem> searchList = (ArrayList<SearchItem>)getIntent().getSerializableExtra("search_list");
 
+//        Log.e("searchList", String.valueOf(searchList));
+
         final Bundle bundle = getIntent().getBundleExtra("message");
         // ----------------------------------------------------------------------------------------
         // 수정

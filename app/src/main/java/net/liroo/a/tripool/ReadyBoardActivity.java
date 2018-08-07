@@ -393,7 +393,7 @@ public class ReadyBoardActivity extends BaseActivity {
             @Override
             protected void onPostExecute(String result){
                 myJSON=result;
-                Log.e("Pay_Update", result);
+//                Log.e("Pay_Update", result);
                 try {
                     JSONObject jsonObj = new JSONObject(myJSON);
                     json_list = jsonObj.getJSONArray(TAG_RESULTS);
@@ -427,12 +427,14 @@ public class ReadyBoardActivity extends BaseActivity {
                     data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
                     if ( is_make_room.equals("make_room") ) {
                         data += "&dept_date=" + item.getDeptDate() / 100000;              //DB입력할 때만 변경함
+                        data += "&owner_id=" + u_id;
                     } else {
                         data += "&dept_date=" + item.getDeptDate();              //DB입력할 때만 변경함
+                        data += "&owner_id=" + owner_id;
                     }
-                    Log.e("Pay_Update_dept_date", String.valueOf(item.getDeptDate()));
+//                    Log.e("Pay_Update_dept_date", String.valueOf(item.getDeptDate()));
                     data += "&book_id=" + u_id;
-                    data += "&owner_id=" + owner_id;
+
                     data += "&is_make_room=" + is_make_room;
 
 
