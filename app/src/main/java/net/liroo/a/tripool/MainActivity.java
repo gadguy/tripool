@@ -384,6 +384,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
         layerForm.setTitle("목적지 검색");
         layerForm.setContentView(R.layout.map_find); // 다이얼로그 화면 등록
+        TextView placeText = layerForm.findViewById(R.id.placeText);
+        placeText.setText("하차지");
 
         //출발 지역 스피너
         //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
@@ -395,7 +397,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         dest_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //출발 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
+                //도착 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
                 getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dest_spinner.getItemAtPosition(position)));
                 after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
                 Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
