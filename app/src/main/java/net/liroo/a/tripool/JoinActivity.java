@@ -27,11 +27,13 @@ import java.util.regex.Pattern;
 
 public class JoinActivity extends BaseActivity {
 
-    EditText et_id, et_pw, et_pw_chk;
-    String sId, sPw, sPw_chk;
+    private EditText et_id, et_pw, et_pw_chk, et_mobile;
+    private String sId, sPw, sPw_chk, mb_hp, mb_agree;
 
     private RadioButton menRadio, womanRadio;
+    private String chk_gender;
     private CheckBox privacyAgreeCheck;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,13 +48,14 @@ public class JoinActivity extends BaseActivity {
         et_id = (EditText)findViewById(R.id.emailInput);
         et_pw = (EditText)findViewById(R.id.passwordInput);
         et_pw_chk = (EditText)findViewById(R.id.passwordchkInput);
+        et_mobile = (EditText)findViewById(R.id.phoneInput);
 
         menRadio = findViewById(R.id.menRadio);
         womanRadio = findViewById(R.id.womanRadio);
         privacyAgreeCheck = findViewById(R.id.privacyAgreeCheck);
 
-        // TODO: 성별 남녀에 대한 값 확인
-//        menRadio.isChecked() -> menRadio 버튼 클릭됨
+        mb_hp = et_mobile.getText().toString();
+
     }
 
     public void btnJoin(View view) {
@@ -100,6 +103,16 @@ public class JoinActivity extends BaseActivity {
         //pw와 pw_chk이 같으면
         if ( sPw.equals(sPw_chk)) {
 
+            // TODO: 성별 남녀에 대한 값 확인
+            if ( menRadio.isChecked() ) {
+                chk_gender = "m";
+            } else {
+                chk_gender = "f";
+            }
+            //개인 정보 동의
+            if ( privacyAgreeCheck.isChecked() ) {
+                mb_agree = "개인정보수집동의";
+            }
 
             insertToDatabase(sId, sPw);
 
@@ -168,8 +181,12 @@ public class JoinActivity extends BaseActivity {
                     }
 
                     String link = "http://a.liroo.net/tripool/member_join.php";
-                    String data = URLEncoder.encode("u_id", "UTF-8") + "=" + URLEncoder.encode(u_id, "UTF-8");
-                    data += "&" + URLEncoder.encode("u_pw", "UTF-8") + "=" + URLEncoder.encode(u_pw, "UTF-8");
+                    String data = "u_id=" + URLEncoder.encode(u_id, "UTF-8");
+                    data += "&mb_hp=" + URLEncoder.encode(u_pw, "UTF-8");
+                    data += "&mb_hp=" + URLEncoder.encode(mb_hp, "UTF-8");
+                    data += "&mb_sex=" + URLEncoder.encode(chk_gender, "UTF-8");
+                    //개인정보 동의
+                    data += "&mb_1=" + URLEncoder.encode(mb_agree, "UTF-8");
 
                     URL url = new URL(link);
                     URLConnection conn = url.openConnection();
