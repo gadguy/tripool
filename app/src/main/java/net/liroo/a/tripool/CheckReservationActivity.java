@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -74,11 +75,11 @@ public class CheckReservationActivity extends BaseActivity {
         }
         else {
             // TODO: 전화번호 설정
-//                    // 사용 권한이 있을 경우
-//                    String tel = "tel:" + phone;
-//                    Intent intent = new Intent(Intent.ACTION_CALL);
-//                    intent.setData(Uri.parse(tel));
-//                    context.startActivity(intent);
+            // 사용 권한이 있을 경우
+//            String tel = "tel:" + phone;
+//            Intent intent = new Intent(Intent.ACTION_CALL);
+//            intent.setData(Uri.parse(tel));
+//            context.startActivity(intent);
         }
     }
 
@@ -88,7 +89,7 @@ public class CheckReservationActivity extends BaseActivity {
             switch ( requestCode ) {
                 case PERMISSIONS_REQUEST_CALL_PHONE:
                     // TODO: 전화번호 설정
-//                    // 사용 권한이 있을 경우
+                    // 사용 권한이 있을 경우
 //                    String tel = "tel:" + phone;
 //                    Intent intent = new Intent(Intent.ACTION_CALL);
 //                    intent.setData(Uri.parse(tel));

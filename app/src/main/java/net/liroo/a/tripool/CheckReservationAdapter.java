@@ -82,7 +82,7 @@ public class CheckReservationAdapter extends BaseAdapter
         //시, 분만 표시
         SimpleDateFormat df_dept = new SimpleDateFormat("HH:mm");
         holder.reservationDeptTimeText.setText(df_dept.format(searchTime));
-        holder.reservationDestTimeText.setText(df_dept.format(searchTime+3600));
+        holder.reservationDestTimeText.setText(df_dept.format(searchTime+3600000));
         //동승인원
 
 

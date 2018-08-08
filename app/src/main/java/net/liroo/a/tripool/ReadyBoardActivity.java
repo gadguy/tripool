@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -156,13 +157,19 @@ public class ReadyBoardActivity extends BaseActivity {
                     setPayJoin("http://a.liroo.net/tripool/trip_control.php", searchItem);
                 }
 
+                Toast.makeText(ReadyBoardActivity.this,"메인 페이지로 이동됩니다.",Toast.LENGTH_SHORT).show();
+
                 // TODO : 배차 완료되면 화면 바뀌도록 변경 필요 (현재는 화면 전환 확인하기 위해 자동으로 변경)
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        scheduleIngAlert.setVisibility(View.GONE);
-                        scheduleFinishAlert.setVisibility(View.VISIBLE);
+
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+//                        scheduleIngAlert.setVisibility(View.GONE);
+//                        scheduleFinishAlert.setVisibility(View.VISIBLE);
                     }
                 }, 3000);
             }

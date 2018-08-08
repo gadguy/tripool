@@ -182,9 +182,9 @@ public class JoinActivity extends BaseActivity {
 
                     String link = "http://a.liroo.net/tripool/member_join.php";
                     String data = "u_id=" + URLEncoder.encode(u_id, "UTF-8");
-                    data += "&mb_hp=" + URLEncoder.encode(u_pw, "UTF-8");
+                    data += "&u_pw=" + URLEncoder.encode(u_pw, "UTF-8");
                     data += "&mb_hp=" + URLEncoder.encode(mb_hp, "UTF-8");
-                    data += "&mb_sex=" + URLEncoder.encode(chk_gender, "UTF-8");
+                    data += "&mb_sex=" + chk_gender;
                     //개인정보 동의
                     data += "&mb_1=" + URLEncoder.encode(mb_agree, "UTF-8");
 

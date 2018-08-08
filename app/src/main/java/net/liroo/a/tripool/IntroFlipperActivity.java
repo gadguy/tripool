@@ -37,7 +37,7 @@ public class IntroFlipperActivity extends NoTitledBarBaseActivity implements Vie
         ImageView index2 = (ImageView)findViewById(R.id.imgIndex2);
         // ----------------------------------------------------------------------------------------
         // 수정
-        ImageView index3 = (ImageView)findViewById(R.id.imgIndex3);
+//        ImageView index3 = (ImageView)findViewById(R.id.imgIndex3);
         // ----------------------------------------------------------------------------------------
 
         //인덱스 리스트
@@ -47,7 +47,7 @@ public class IntroFlipperActivity extends NoTitledBarBaseActivity implements Vie
         indexes.add(index2);
         // ----------------------------------------------------------------------------------------
         // 수정
-        indexes.add(index3);
+//        indexes.add(index3);
         // ----------------------------------------------------------------------------------------
 
         //xml을 inflate 하여 flipper view에 추가하기
@@ -58,7 +58,7 @@ public class IntroFlipperActivity extends NoTitledBarBaseActivity implements Vie
         View view3 = inflater.inflate(R.layout.viewflipper3, flipper, false);
         // ----------------------------------------------------------------------------------------
         // 수정
-        View view4 = inflater.inflate(R.layout.viewflipper4, flipper, false);
+//        View view4 = inflater.inflate(R.layout.viewflipper4, flipper, false);
         // ----------------------------------------------------------------------------------------
 
         if ( view1 == null ) {
@@ -73,7 +73,7 @@ public class IntroFlipperActivity extends NoTitledBarBaseActivity implements Vie
         flipper.addView(view3);
         // ----------------------------------------------------------------------------------------
         // 수정
-        flipper.addView(view4);
+//        flipper.addView(view4);
         // ----------------------------------------------------------------------------------------
 
         //리스너 설정 - 좌우 터치시 화면 넘어가기
