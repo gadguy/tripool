@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -39,6 +40,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
 import org.json.JSONArray;
@@ -209,9 +213,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
         ViewGroup linearLayoutTmap = (ViewGroup)findViewById(R.id.map_view);
         tMapView.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
-        linearLayoutTmap.addView(tMapView);
         //지도에서 현재위치를 표시
-        setGps();
+//        setGps();
+
+
+        linearLayoutTmap.addView(tMapView);
+
+
+
+
+
+
         //장소 목록을 php에서 가져옴
         getData("http://a.liroo.net/tripool/json_region_list.php", "region_list");
 
@@ -273,6 +285,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         else
             timeText.setText(String.valueOf(hour) + " : " + String.valueOf(minute));
     }
+    //Tmap 경로 찍기, 스레드 사용
+//    new Thread() {
+//        public void run () {
+//    TMapPoint tMapPointStart = new TMapPoint(37.570841, 126.985302); // SKT타워(출발지)
+//    TMapPoint tMapPointEnd = new TMapPoint(37.551135, 126.988205); // N서울타워(목적지)
+//
+//        try {
+////            TMapPolyLine tMapPolyLine = new TMapData().findPathData(tMapPointStart, tMapPointEnd);
+//        TMapPolyLine tMapPolyLine = new TMapPolyLine();
+//        TMapData tMapData = new TMapData();
+//        tMapPolyLine = tMapData.findPathData(tMapPointStart, tMapPointEnd);
+////            tMapPolyLine.addLinePoint(tMapPointStart);
+////            tMapPolyLine.addLinePoint(tMapPointEnd);
+//        tMapPolyLine.setLineColor(Color.BLUE);
+//        tMapPolyLine.setLineWidth(2);
+//        tMapView.addTMapPolyLine("Line1", tMapPolyLine);
+//        Log.e("Tmap_line_test", String.valueOf(tMapPointStart));
+//
+//    }catch(Exception e) {
+//        e.printStackTrace();
+//        Log.e("Tmap_line_error", String.valueOf(tMapPointStart));
+//    }
+//
+//
+//        }
+//    }
 
     //Tmap 현재위치로 이동
     private final LocationListener mLocationListener = new LocationListener() {
