@@ -218,7 +218,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         linearLayoutTmap.addView(tMapView);
-
+        drawline();
+//        Thread.interrupted();
 
 
 
@@ -286,31 +287,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             timeText.setText(String.valueOf(hour) + " : " + String.valueOf(minute));
     }
     //Tmap 경로 찍기, 스레드 사용
-//    new Thread() {
-//        public void run () {
-//    TMapPoint tMapPointStart = new TMapPoint(37.570841, 126.985302); // SKT타워(출발지)
-//    TMapPoint tMapPointEnd = new TMapPoint(37.551135, 126.988205); // N서울타워(목적지)
-//
-//        try {
-////            TMapPolyLine tMapPolyLine = new TMapData().findPathData(tMapPointStart, tMapPointEnd);
-//        TMapPolyLine tMapPolyLine = new TMapPolyLine();
-//        TMapData tMapData = new TMapData();
-//        tMapPolyLine = tMapData.findPathData(tMapPointStart, tMapPointEnd);
-////            tMapPolyLine.addLinePoint(tMapPointStart);
-////            tMapPolyLine.addLinePoint(tMapPointEnd);
-//        tMapPolyLine.setLineColor(Color.BLUE);
-//        tMapPolyLine.setLineWidth(2);
-//        tMapView.addTMapPolyLine("Line1", tMapPolyLine);
-//        Log.e("Tmap_line_test", String.valueOf(tMapPointStart));
-//
-//    }catch(Exception e) {
-//        e.printStackTrace();
-//        Log.e("Tmap_line_error", String.valueOf(tMapPointStart));
-//    }
-//
-//
-//        }
-//    }
+    //TODO: 생성된 스레드는 경로 다 그리고 죽어야하는데 어떻게 죽임?
+    private void drawline() {
+        new Thread() {
+            public void run() {
+                TMapPoint tMapPointStart = new TMapPoint(37.570841, 126.985302); // SKT타워(출발지)
+                TMapPoint tMapPointEnd = new TMapPoint(37.551135, 126.988205); // N서울타워(목적지)
+
+                try {
+                    //            TMapPolyLine tMapPolyLine = new TMapData().findPathData(tMapPointStart, tMapPointEnd);
+                    TMapPolyLine tMapPolyLine = new TMapPolyLine();
+                    TMapData tMapData = new TMapData();
+                    tMapPolyLine = tMapData.findPathData(tMapPointStart, tMapPointEnd);
+                    //            tMapPolyLine.addLinePoint(tMapPointStart);
+                    //            tMapPolyLine.addLinePoint(tMapPointEnd);
+                    tMapPolyLine.setLineColor(Color.BLUE);
+                    tMapPolyLine.setLineWidth(2);
+                    tMapView.addTMapPolyLine("Line1", tMapPolyLine);
+                    Log.e("Tmap_line_test", String.valueOf(tMapPointStart));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("Tmap_line_error", String.valueOf(tMapPointStart));
+                }
+            }
+        }.start();
+    }
 
     //Tmap 현재위치로 이동
     private final LocationListener mLocationListener = new LocationListener() {
