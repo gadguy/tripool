@@ -85,6 +85,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private NavigationView navView;
     private TextView myEmailText;
 
+//    private String chkSpinner;
+    private double deptLat;
+    private double deptLon;
+    private double destLat;
+    private double destLon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -218,7 +224,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         linearLayoutTmap.addView(tMapView);
-        drawline();
+        //길찾기 정보 그리기
+        drawline(deptLat, deptLon, destLat, destLon);
 //        Thread.interrupted();
 
 
@@ -288,11 +295,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
     //Tmap 경로 찍기, 스레드 사용
     //TODO: 생성된 스레드는 경로 다 그리고 죽어야하는데 어떻게 죽임?
-    private void drawline() {
+    private void drawline(final double deptLat, final double deptLon, final double destLat, final double destLon) {
         new Thread() {
             public void run() {
-                TMapPoint tMapPointStart = new TMapPoint(37.570841, 126.985302); // SKT타워(출발지)
-                TMapPoint tMapPointEnd = new TMapPoint(37.551135, 126.988205); // N서울타워(목적지)
+//                TMapPoint tMapPointStart = new TMapPoint(37.570841, 126.985302); // SKT타워(출발지)
+//                TMapPoint tMapPointEnd = new TMapPoint(37.551135, 126.988205); // N서울타워(목적지)
+
+                TMapPoint tMapPointStart = new TMapPoint(deptLat, deptLon);
+                TMapPoint tMapPointEnd = new TMapPoint(destLat, destLon);
 
                 try {
                     //            TMapPolyLine tMapPolyLine = new TMapData().findPathData(tMapPointStart, tMapPointEnd);
@@ -345,9 +355,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     //출발지 입력하는 다이얼로그 띄움
     public void btnLayerFrom(View view) {
-
         final Spinner dept_spinner;
         final Spinner dept_station_spinner;
+//        chkSpinner = "어디서 탑승하시나요?";
 
         // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
         final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
@@ -398,11 +408,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Toast.makeText(getApplicationContext(), "지역명을 선택해 주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if ( dept_station_spinner.getSelectedItem().toString().isEmpty() || dept_station_spinner.getSelectedItem().toString().equals("어디로 가시나요?") ) {
+                if ( dept_station_spinner.getSelectedItem().toString().isEmpty() || dept_station_spinner.getSelectedItem().toString().equals("장소가 어디인가요?") ) {
                     Toast.makeText(getApplicationContext(), "탑승지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 editTextFrom.setText(dept_spinner.getSelectedItem().toString().trim() + " " + dept_station_spinner.getSelectedItem().toString().trim());
+                //TODO: 이 부분에서 Tmap에 출발지 좌표를 찍어줘야 함
+                //해당 지역 + 탑승지로 php에 요청해서 좌표를 받아서 출발지 좌표를 세팅해야 함(destLat, destLon)
+
+                //만약, 출발지, 도착지가 다 찍혀 있으면 경로를 찍어주는 스레드를 실행함
+
+
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
         });
@@ -419,6 +435,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void btnLayerTo(View view) {
         final Spinner dest_spinner;
         final Spinner dest_station_spinner;
+//        chkSpinner = "어디로 가시나요?";
 
         // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
         final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
@@ -471,11 +488,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     Toast.makeText(getApplicationContext(), "지역명을 선택해 주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if ( dest_station_spinner.getSelectedItem().toString().isEmpty() || dest_station_spinner.getSelectedItem().toString().equals("어디로 가시나요?") ) {
-                    Toast.makeText(getApplicationContext(), "탑승지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                if ( dest_station_spinner.getSelectedItem().toString().isEmpty() || dest_station_spinner.getSelectedItem().toString().equals("장소가 어디인가요?") ) {
+                    Toast.makeText(getApplicationContext(), "하차지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 editTextTo.setText(dest_spinner.getSelectedItem().toString().trim() + " " + dest_station_spinner.getSelectedItem().toString().trim());
+                //TODO: 이 부분에서 Tmap에 도착지 좌표를 찍어줘야 함
+                //해당 지역 + 하차지로 php에 요청해서 좌표를 받아서 도착지 좌표를 세팅해야 함(destLat, destLon)
+
+
+                //만약, 출발지, 도착지가 다 찍혀 있으면 경로를 찍어주는 스레드를 실행함
+
+
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
         });
@@ -641,7 +665,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         dept_list.clear();
         dept_list.add("어느 지역 인가요?");
         dept_station_list.clear();
-        dept_station_list.add("어디로 가시나요?");
+        dept_station_list.add("장소가 어디인가요?");
+//        dept_station_list.add(chkSpinner);
+
+
         for(int i=0;i<list.length();i++){
             JSONObject item = list.getJSONObject(i);
             String main_addr = item.getString("main_addr");
@@ -658,7 +685,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     //출발 장소 세팅
     public void setPlaceData(JSONArray list) throws JSONException {
         dept_station_list.clear();
-        dept_station_list.add("어디로 가시나요?");
+        dept_station_list.add("장소가 어디인가요?");
         for(int i=0;i<list.length();i++){
             JSONObject item = list.getJSONObject(i);
             String station = item.getString("place");
