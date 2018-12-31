@@ -1,4 +1,4 @@
-package net.liroo.a.tripool;
+package net.liroo.a.tripool.obj;
 
 import android.os.Bundle;
 import android.os.Parcel;
@@ -7,22 +7,18 @@ import android.os.Parcelable;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
-//검색된 결과 아이템, 오브젝트
-public class SearchItem implements Serializable, Parcelable
+public class HistoryItem implements Serializable, Parcelable
 {
     private static final long serialVersionUID = 3467427543832512425L;
 
     private String no, deptMain, deptSub, departure, destMain, destSub, destination;
     private Long deptDate;
-    private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
-    private String book_id, owner_id;
-
-    public SearchItem() {  }
+    private String luggage, people;
+    private boolean isDoEvaluation;
 
     @SuppressWarnings("unchecked")
-    public SearchItem(JSONObject data)
+    public HistoryItem(JSONObject data)
     {
         try {
             no = data.getString("no");
@@ -35,14 +31,17 @@ public class SearchItem implements Serializable, Parcelable
             deptDate = data.getLong("dept_date");
             people = data.getString("people");
             luggage = data.getString("luggage");
-            book_id = data.getString("book_id");
-            owner_id = data.getString("owner_id");
+            // TODO: 서버에서 가져온 키로 변경 (평가 여부)
+            String evaluation = data.getString("evaluation");
+            if ( evaluation != null && evaluation.equals("") ) {
+                isDoEvaluation = true;
+            }
         } catch ( Exception e ) {
 
         }
     }
 
-    public SearchItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage)
+    public HistoryItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage, boolean isDoEvaluation)
     {
         try {
             this.no = no;
@@ -55,6 +54,7 @@ public class SearchItem implements Serializable, Parcelable
             this.deptDate = deptDate;
             this.people = people;
             this.luggage = luggage;
+            this.isDoEvaluation = isDoEvaluation;
         } catch ( Exception e ) {
 
         }
@@ -69,11 +69,11 @@ public class SearchItem implements Serializable, Parcelable
     public long getDeptDate() { return deptDate; }
     public String getPeople() { return people; }
     public String getLuggage() { return luggage; }
-    public String getBookId() { return book_id; }
-    public String getOwnerId() { return owner_id; }
+    public boolean isDoEvaluation() { return isDoEvaluation; }
 
-    public void setLuggage(String luggage) { this.luggage = luggage;}
-    public void setPeople(String people) { this.people = people;}
+    public void setLuggage(String luggage) { this.luggage = luggage; }
+    public void setPeople(String people) { this.people = people; }
+    public void setDoEvaluation(boolean value) { this.isDoEvaluation = value; }
 
     // Parcelable
     @Override
@@ -94,13 +94,12 @@ public class SearchItem implements Serializable, Parcelable
         bundle.putLong("deptDate", deptDate);
         bundle.putString("people", people);
         bundle.putString("luggage", luggage);
-        bundle.putString("book_id", book_id);
-        bundle.putString("owner_id", owner_id);
+        bundle.putBoolean("isDoEvaluation", isDoEvaluation);
 
         dest.writeBundle(bundle);
     }
 
-    public SearchItem(Parcel in)
+    public HistoryItem(Parcel in)
     {
         Bundle bundle = in.readBundle();
 
@@ -114,19 +113,18 @@ public class SearchItem implements Serializable, Parcelable
         deptDate = bundle.getLong("deptDate");
         people = bundle.getString("people");
         luggage = bundle.getString("luggage");
-        book_id = bundle.getString("book_id");
-        owner_id = bundle.getString("owner_id");
+        isDoEvaluation = bundle.getBoolean("isDoEvaluation");
     }
 
     @SuppressWarnings("rawtypes")
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator()
     {
-        public SearchItem createFromParcel(Parcel in) {
-            return new SearchItem(in);
+        public HistoryItem createFromParcel(Parcel in) {
+            return new HistoryItem(in);
         }
 
-        public SearchItem[] newArray(int size) {
-            return new SearchItem[size];
+        public HistoryItem[] newArray(int size) {
+            return new HistoryItem[size];
         }
     };
 }

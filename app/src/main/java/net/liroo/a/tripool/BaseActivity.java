@@ -3,10 +3,7 @@ package net.liroo.a.tripool;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-// ----------------------------------------------------------------------------------------
-// 수정
 public class BaseActivity extends AppCompatActivity implements IBaseActivity
-// ----------------------------------------------------------------------------------------
 {
     protected TripoolApp app;
 

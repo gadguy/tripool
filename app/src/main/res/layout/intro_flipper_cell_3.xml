@@ -10,15 +10,9 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:fontFamily="@font/eastseadokdo"
-        android:text="@string/intro_help1"
+        android:text="@string/intro_help3"
         android:textColor="#71c4b4"
         android:textSize="28sp"
         android:textStyle="normal"/>
-
-    <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="30dp"-->
-        <!--android:src="@drawable/tripool_logo"/>-->
 
 </LinearLayout>

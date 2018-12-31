@@ -7,7 +7,6 @@
     <string name="intro_help1">여행 목적지까지\n이제 힘들게 찾아가지 마세요.</string>
     <string name="intro_help2">목적지가 같은 사람들과\n빠르고 합리적인 가격으로</string>
     <string name="intro_help3">편하게 이동하세요.\ntripool은 여행의 시작입니다.</string>
-    <string name="intro_help4">몇 번의 클릭으로\n교통에 대한 고민을 덜고,\n멋진 여행에만 집중하세요!</string>
     <string name="access_permission">접근 권한 동의</string>
     <string name="access_permission_help">다음 접근 권한을 허용해주세요.</string>
     <string name="agree">동의</string>
@@ -22,13 +21,38 @@
     <string name="login">로그인</string>
     <string name="email">이메일 주소</string>
     <string name="password">비밀번호</string>
+    <string name="plz_enter_id">ID를 입력하여 주십시오.</string>
+    <string name="plz_enter_pw">비밀번호를 입력하여 주십시오.</string>
+    <string name="login_failed">로그인 실패, 다시 시도해 주십시오.</string>
+    <string name="id_pw_no_space">ID 혹은 비밀번호가 공백이면 안됩니다.</string>
+    <string name="id_pw_wrong">ID 혹은 비밀번호가 틀립니다. 비밀번호는 대소문자를 구분합니다.</string>
     <string name="join_do">20초 안에 회원가입하기</string>
     <string name="join">회원가입</string>
     <string name="join_check">비밀번호 확인</string>
     <string name="join_do_now">가입하기</string>
+    <string name="id_not_match_regex">ID가 email 형식이 아닙니다. 다시 입력해주십시오.</string>
+    <string name="pw_not_match_regex">비밀번호에 영문, 숫자, 특수문자가 포함되는지 또는 8~11자가 맞는지 확인해주십시오.</string>
+    <string name="pw_not_match">비밀번호가 일치하지 않습니다.</string>
+    <string name="plz_check_privacy">개인정보 수집에 동의하여 주십시오.</string>
+    <string name="join_success">회원가입이 완료되었습니다.</string>
+    <string name="join_failed">회원 가입 오류, 다시 시도해 주십시오.</string>
+    <string name="exist_id">같은 ID가 존재합니다.</string>
     <string name="search">검색하기</string>
     <string name="setting_departure">출발지 설정</string>
     <string name="setting_destination">도착지 설정</string>
+    <string name="plz_select_departure">출발지를 선택해주세요.</string>
+    <string name="plz_select_destination">도착지를 선택해주세요.</string>
+    <string name="region">지역명</string>
+    <string name="boarding_place">탑승지</string>
+    <string name="alight_place">하차지</string>
+    <string name="enter">입력</string>
+    <string name="cancel">취소</string>
+    <string name="which_region">어느 지역인가요?</string>
+    <string name="which_place">장소가 어디인가요?</string>
+    <string name="plz_select_region">지역명을 선택해주세요.</string>
+    <string name="plz_select_boarding_place">탑승지를 선택해주세요.</string>
+    <string name="plz_select_alight_place">하차지를 선택해주세요.</string>
+    <string name="do_logout">로그아웃 됩니다.</string>
     <string name="exit_confirm">\'뒤로\'버튼을 한 번 더 누르시면 종료됩니다.</string>
     <string name="number_people_setting">인원수 설정</string>
     <string name="number_carrier_setting">캐리어수 설정</string>
@@ -38,7 +62,6 @@
     <string name="departure">출발</string>
     <string name="destination">도착</string>
     <string name="departure_time">출발시간</string>
-    <string name="ready">준비</string>
     <string name="make_room">방만들기</string>
     <string name="reservation_do">예약하기</string>
     <string name="departure_date">출발일시</string>
@@ -83,5 +106,11 @@
     <string name="privacy_help">개인정보는 \'차랑 배차를 위한 본인 확인\', \'더 나은 서비스를 위한 이용자의 서비스 이용에 대한 통계\' 외에 다른곳에는 사용하지 않습니다.</string>
     <string name="privacy_agree">개인정보 수집 동의</string>
     <string name="password_help">* 영문, 숫자, 특수문자 포함 8~11자리</string>
+    <string name="exist_room">같은 시간대에 만드신 방이 있습니다.</string>
+    <string name="make_room_failed">방 만들기 실패. 다시 시도해주세요.</string>
+    <string name="history">이용 내역</string>
+    <string name="evaluation">평가하기</string>
+    <string name="driver_evaluation">기사님 평가하기</string>
+    <string name="driver_evaluation_complete">기사님 평가 완료</string>
 
 </resources>

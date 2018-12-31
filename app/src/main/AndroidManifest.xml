@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".intro"
+            android:name=".IntroActivity"
             android:noHistory="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
@@ -54,10 +54,6 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".MapActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"/>
-        <activity
             android:name=".SearchResultActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
@@ -75,6 +71,10 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".AskActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".HistoryActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
 

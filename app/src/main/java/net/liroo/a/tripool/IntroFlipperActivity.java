@@ -1,112 +1,74 @@
 package net.liroo.a.tripool;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 import java.util.ArrayList;
-import java.util.List;
 
-// ----------------------------------------------------------------------------------------
-// 수정
-public class IntroFlipperActivity extends NoTitledBarBaseActivity implements ViewFlipperAction.ViewFlipperCallback {
-    // ----------------------------------------------------------------------------------------
-//public class IntroFlipperActivity extends AppCompatActivity {
-    //UI
-    //뷰 플리퍼
-    ViewFlipper flipper;
-    //인덱스
-    List<ImageView> indexes;
-    //
+public class IntroFlipperActivity extends NoTitledBarBaseActivity implements FlipperTouchAction.ViewFlipperCallback
+{
+    private ArrayList<ImageView> indexes;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_introflipper);
+        setContentView(R.layout.intro_flipper);
 
-        //UI
-        flipper = findViewById(R.id.flipper);
-        ImageView index0 = (ImageView)findViewById(R.id.imgIndex0);
-        ImageView index1 = (ImageView)findViewById(R.id.imgIndex1);
-        ImageView index2 = (ImageView)findViewById(R.id.imgIndex2);
-        // ----------------------------------------------------------------------------------------
-        // 수정
-//        ImageView index3 = (ImageView)findViewById(R.id.imgIndex3);
-        // ----------------------------------------------------------------------------------------
+        ViewFlipper flipper = findViewById(R.id.flipper);
+        ImageView index0 = findViewById(R.id.imgIndex0);
+        ImageView index1 = findViewById(R.id.imgIndex1);
+        ImageView index2 = findViewById(R.id.imgIndex2);
 
-        //인덱스 리스트
+        // 인덱스 리스트
         indexes = new ArrayList<>();
         indexes.add(index0);
         indexes.add(index1);
         indexes.add(index2);
-        // ----------------------------------------------------------------------------------------
-        // 수정
-//        indexes.add(index3);
-        // ----------------------------------------------------------------------------------------
 
-        //xml을 inflate 하여 flipper view에 추가하기
-        //inflate
+        // xml을 inflate 하여 flipper view에 추가하기
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-        View view1 = inflater.inflate(R.layout.viewflipper1, flipper, false);
-        View view2 = inflater.inflate(R.layout.viewflipper2, flipper, false);
-        View view3 = inflater.inflate(R.layout.viewflipper3, flipper, false);
-        // ----------------------------------------------------------------------------------------
-        // 수정
-//        View view4 = inflater.inflate(R.layout.viewflipper4, flipper, false);
-        // ----------------------------------------------------------------------------------------
+        View view1 = inflater.inflate(R.layout.intro_flipper_cell_1, flipper, false);
+        View view2 = inflater.inflate(R.layout.intro_flipper_cell_2, flipper, false);
+        View view3 = inflater.inflate(R.layout.intro_flipper_cell_3, flipper, false);
 
-        if ( view1 == null ) {
-            Log.e("tri", "view1 null");
-        }
-        else {
-            Log.e("tri", "view1 not null");
-        }
-        //inflate한 view 추가
+        // inflate한 view 추가
         flipper.addView(view1);
         flipper.addView(view2);
         flipper.addView(view3);
-        // ----------------------------------------------------------------------------------------
-        // 수정
-//        flipper.addView(view4);
-        // ----------------------------------------------------------------------------------------
 
-        //리스너 설정 - 좌우 터치시 화면 넘어가기
-        flipper.setOnTouchListener(new ViewFlipperAction(this, flipper));
+        // 리스너 설정 - 좌우 터치시 화면 넘어가기
+        flipper.setOnTouchListener(new FlipperTouchAction(this, flipper));
+
+        Button startBtn = findViewById(R.id.btn_start);
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), PreviewActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
-    // ----------------------------------------------------------------------------------------
-    // 수정
-
-    //인덱스 업데이트
-    public void onFlipperActionCallback(int position) {
-        for( int i=0; i<indexes.size(); i++ ) {
+    // 인덱스 업데이트
+    public void onFlipperActionCallback(int position)
+    {
+        for ( int i=0; i<indexes.size(); i++ ) {
             ImageView index = indexes.get(i);
-            //현재화면의 인덱스 위치면 녹색
+            // 현재화면의 인덱스 위치면 녹색
             if ( i == position ) {
                 index.setImageResource(R.drawable.intro_dot_ov);
             }
-            //그외
+            // 그외
             else {
                 index.setImageResource(R.drawable.intro_dot);
             }
         }
     }
-
-    // ----------------------------------------------------------------------------------------
-
-    public void btnToMain(View v) {
-        //여기에다 할 일을 적어주세요.
-        Intent intent = new Intent(getApplicationContext(), PreviewActivity.class);
-        startActivity(intent);
-
-    }
-
-
-
 }

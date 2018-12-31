@@ -15,10 +15,4 @@
         android:textSize="28sp"
         android:textStyle="normal"/>
 
-    <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="30dp"-->
-        <!--android:src="@drawable/tripool_logo"/>-->
-
 </LinearLayout>

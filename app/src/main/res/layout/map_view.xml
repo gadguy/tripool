@@ -67,7 +67,7 @@
                     android:textColor="#666"
                     android:textSize="14sp"
                     android:focusable="false"
-                    android:onClick="btnLayerFrom"/>
+                    android:onClick="layerFromClick"/>
 
             </LinearLayout>
 
@@ -104,7 +104,7 @@
                     android:textColor="#666"
                     android:textSize="14sp"
                     android:focusable="false"
-                    android:onClick="btnLayerTo"/>
+                    android:onClick="layerToClick"/>
 
             </LinearLayout>
 

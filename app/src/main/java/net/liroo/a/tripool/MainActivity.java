@@ -45,6 +45,8 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
+import net.liroo.a.tripool.obj.SearchItem;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,25 +54,28 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener
+{
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private NavigationView navView;
+    private TextView myEmailText;
 
-    private ProgressDialog loading;
-    String myJSON;
-    private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
-    JSONArray json_dept_list = new JSONArray();                             //지역 DB에서 가져온 값
-    ArrayList<String> dept_list = new ArrayList<>();                        //지역 spinner에서 쓰임
-    ArrayList<String> dept_station_list = new ArrayList<>();                //장소 spinner에서 쓰임
-
-    private ArrayAdapter adapter, after_adapter;
+    private TMapView tMapView;
     private EditText editTextFrom, editTextTo;
     private Button searchBtn;
-    TMapView tMapView;
+
+    private ArrayList<String> deptList = new ArrayList<>();     // 지역 spinner에서 쓰임
+    private ArrayList<String> deptStationList = new ArrayList<>();    // 장소 spinner에서 쓰임
+    private ArrayAdapter regionAdapter, placeAdapter;
+    private static final String TAG_RESULTS = "result";   // json으로 가져오는 값의 파라메터
 
     private View dateBtn, timeBtn;
     private TextView dateText, timeText;
@@ -80,19 +85,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private EditText peopleInput, carrierInput;
     private Button dialogOkBtn;
 
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    private NavigationView navView;
-    private TextView myEmailText;
-
-//    private String chkSpinner;
-    private double deptLat;
-    private double deptLon;
-    private double destLat;
-    private double destLon;
+    private double deptLat, deptLon, destLat, destLon;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_view);
 
@@ -110,11 +107,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         navView.setNavigationItemSelectedListener(this);
 
         SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-        String u_id = userInfo.getString("u_id", "");
+        String id = userInfo.getString("u_id", "");
 
         View headerView = navView.getHeaderView(0);
         myEmailText = headerView.findViewById(R.id.myEmailText);
-        myEmailText.setText(u_id);
+        myEmailText.setText(id);
 
         // 검색 정보
         editTextFrom = findViewById(R.id.editTextFrom);
@@ -126,24 +123,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         peopleInput = findViewById(R.id.peopleInput);
         carrierInput = findViewById(R.id.carrierInput);
 
-        //검색하기 버튼
+        // 검색하기 버튼
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ( editTextFrom.getText().toString().isEmpty() || editTextFrom.getText().toString().equals("출발지 설정") ) {
-                    Toast.makeText(getApplicationContext(), "출발지를 선택해 주세요", Toast.LENGTH_SHORT).show();
+                if ( editTextFrom.getText().toString().isEmpty() || editTextFrom.getText().toString().equals(getString(R.string.setting_departure)) ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_select_departure, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if ( editTextTo.getText().toString().isEmpty() || editTextTo.getText().toString().equals("도착지 설정") ) {
-                    Toast.makeText(getApplicationContext(), "도착지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                if ( editTextTo.getText().toString().isEmpty() || editTextTo.getText().toString().equals(getString(R.string.setting_destination)) ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_select_destination, Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 searchDialog.setVisibility(View.VISIBLE);
             }
         });
-        //인원수, 캐리어 입력 버튼
-        //php DB에서 검색 후, 검색결과 화면으로 이동
+        // 인원수, 캐리어 입력 버튼
+        // php DB에서 검색 후, 검색결과 화면으로 이동
         dialogOkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,28 +170,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
 
                 String no = "";
-                String[] dept_info = editTextFrom.getText().toString().split(" ");
-                String[] dest_info = editTextTo.getText().toString().split(" ");
-                String deptMain = dept_info[0];
-                String deptSub = dept_info[1];
+                String[] deptInfo = editTextFrom.getText().toString().split(" ");
+                String deptMain = deptInfo[0];
+                String deptSub = deptInfo[1];
 
-                String departure = "";
-                if ( dept_info.length > 4 ) {
-                    departure = dept_info[2]+" "+dept_info[3]+" "+dept_info[4];
-                } else if ( dept_info.length > 3 ) {
-                    departure = dept_info[2]+" "+dept_info[3];
-                } else {
-                    departure = dept_info[2];
+                String departure;
+                if ( deptInfo.length > 4 ) {
+                    departure = deptInfo[2] + " " + deptInfo[3] + " " + deptInfo[4];
                 }
-                String destMain = dest_info[0];
-                String destSub = dest_info[1];
-                String destination = "";
-                if ( dest_info.length > 4 ) {
-                    destination = dest_info[2]+" "+dest_info[3]+" "+dest_info[4];
-                } else if ( dest_info.length > 3 ) {
-                    destination = dest_info[2]+" "+dest_info[3];
-                } else {
-                    destination = dest_info[2];
+                else if ( deptInfo.length > 3 ) {
+                    departure = deptInfo[2] + " " + deptInfo[3];
+                }
+                else {
+                    departure = deptInfo[2];
+                }
+
+                String[] destInfo = editTextTo.getText().toString().split(" ");
+                String destMain = destInfo[0];
+                String destSub = destInfo[1];
+                String destination;
+                if ( destInfo.length > 4 ) {
+                    destination = destInfo[2] + " " + destInfo[3] + " " + destInfo[4];
+                }
+                else if ( destInfo.length > 3 ) {
+                    destination = destInfo[2] + " " + destInfo[3];
+                }
+                else {
+                    destination = destInfo[2];
                 }
 
                 // 검색한 날짜
@@ -204,40 +205,30 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 long deptDate = calendar.getTimeInMillis();
 
                 SearchItem item = new SearchItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());
-                searchData("http://a.liroo.net/tripool/json_search_result.php", item);
+                SearchTask task = new SearchTask(MainActivity.this);
+                task.execute("http://a.liroo.net/tripool/json_search_result.php", item);
             }
         });
 
-        //다음 지도 api
+        // 다음 지도 api
 //        MapView mapView = new MapView(this);
 //        mapView.setDaumMapApiKey("3c8e3fff3053a6bb1ae42fc8b5fbd761");
 //        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
 //        mapViewContainer.addView(mapView);
 
-        //Tmap 지도 api
+        // Tmap 지도 api
         tMapView = new TMapView(this);
         tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
-        ViewGroup linearLayoutTmap = (ViewGroup)findViewById(R.id.map_view);
-        tMapView.setIconVisibility(true);//현재위치로 표시될 아이콘을 표시할지 여부를 설정합니다.
-        //지도에서 현재위치를 표시
-//        setGps();
-
-
+        ViewGroup linearLayoutTmap = findViewById(R.id.map_view);
+        tMapView.setIconVisibility(true);   //현재위치로 표시될 아이콘을 표시할지 여부를 설정
         linearLayoutTmap.addView(tMapView);
-        //길찾기 정보 그리기
-        drawline(deptLat, deptLon, destLat, destLon);
-//        Thread.interrupted();
 
-
-
-
-
-        //장소 목록을 php에서 가져옴
-        getData("http://a.liroo.net/tripool/json_region_list.php", "region_list");
+//        setGps(); // 지도에서 현재위치를 표시
+//        drawLine(deptLat, deptLon, destLat, destLon);   // 길찾기 정보 그리기
 
         // 검색시 필요한 날짜 및 시간
         dateBtn = findViewById(R.id.dateBtn);
-        dateText = (TextView)findViewById(R.id.dateText);
+        dateText = findViewById(R.id.dateText);
         dateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -257,7 +248,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
 
         timeBtn = findViewById(R.id.timeBtn);
-        timeText = (TextView)findViewById(R.id.timeText);
+        timeText = findViewById(R.id.timeText);
         timeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -292,10 +283,47 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             timeText.setText(String.valueOf(hour) + " : 0" + String.valueOf(minute));
         else
             timeText.setText(String.valueOf(hour) + " : " + String.valueOf(minute));
+
+        // 장소 목록을 php에서 가져옴
+        GetDataTask task = new GetDataTask(this);
+        task.execute("http://a.liroo.net/tripool/json_region_list.php", "region_list");
     }
-    //Tmap 경로 찍기, 스레드 사용
-    //TODO: 생성된 스레드는 경로 다 그리고 죽어야하는데 어떻게 죽임?
-    private void drawline(final double deptLat, final double deptLon, final double destLat, final double destLon) {
+
+    // Tmap 현재 위치 잡음
+    public void setGps()
+    {
+        final LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if ( ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자(실내에선 NETWORK_PROVIDER 권장)
+                1000, // 통지사이의 최소 시간간격 (miliSecond)
+                1, // 통지사이의 최소 변경거리 (m)
+                locationListener);
+    }
+
+    // Tmap 현재위치로 이동
+    private final LocationListener locationListener = new LocationListener() {
+        public void onLocationChanged(Location location) {
+            if ( location != null ) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                tMapView.setLocationPoint(longitude, latitude);
+                tMapView.setCenterPoint(longitude, latitude);
+            }
+        }
+        public void onProviderDisabled(String provider) {
+        }
+        public void onProviderEnabled(String provider) {
+        }
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+    };
+
+    // Tmap 경로 찍기, 스레드 사용
+    // TODO: 생성된 스레드는 경로 다 그리고 죽어야하는데 어떻게 죽임?
+    private void drawLine(final double deptLat, final double deptLon, final double destLat, final double destLon)
+    {
         new Thread() {
             public void run() {
 //                TMapPoint tMapPointStart = new TMapPoint(37.570841, 126.985302); // SKT타워(출발지)
@@ -316,7 +344,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     tMapView.addTMapPolyLine("Line1", tMapPolyLine);
                     Log.e("Tmap_line_test", String.valueOf(tMapPointStart));
 
-                } catch (Exception e) {
+                } catch ( Exception e ) {
                     e.printStackTrace();
                     Log.e("Tmap_line_error", String.valueOf(tMapPointStart));
                 }
@@ -324,375 +352,181 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }.start();
     }
 
-    //Tmap 현재위치로 이동
-    private final LocationListener mLocationListener = new LocationListener() {
-        public void onLocationChanged(Location location) {
-            if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-                tMapView.setLocationPoint(longitude, latitude);
-                tMapView.setCenterPoint(longitude, latitude);
-            }
-        }
-        public void onProviderDisabled(String provider) {
-        }
-        public void onProviderEnabled(String provider) {
-        }
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-        }
-    };
-    //Tmap 현재 위치 잡음
-    public void setGps() {
-        final LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, // 등록할 위치제공자(실내에선 NETWORK_PROVIDER 권장)
-                1000, // 통지사이의 최소 시간간격 (miliSecond)
-                1, // 통지사이의 최소 변경거리 (m)
-                mLocationListener);
-    }
-
-    //출발지 입력하는 다이얼로그 띄움
-    public void btnLayerFrom(View view) {
-        final Spinner dept_spinner;
-        final Spinner dept_station_spinner;
-//        chkSpinner = "어디서 탑승하시나요?";
-
+    // 출발지 입력하는 다이얼로그 띄움
+    public void layerFromClick(View view)
+    {
         // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
         final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
-        layerForm.setTitle("목적지 검색");
-        layerForm.setContentView(R.layout.map_find); // 다이얼로그 화면 등록
+        layerForm.setContentView(R.layout.map_find_dialog); // 다이얼로그 화면 등록
 
-        //출발 지역 스피너
-        //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
-        adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
-        dept_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
-        dept_spinner.setAdapter(adapter);
+        final Spinner deptSpinner = layerForm.findViewById(R.id.spinner_dept);
+        final Spinner deptStationSpinner = layerForm.findViewById(R.id.spinner_dept_station);
 
-        //출발 지역 스피너
-        dept_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        // 지역 스피너
+        // TODO:다시 선택하더라도 선택된 값이 선택되어야 함
+        regionAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, deptList);
+        deptSpinner.setAdapter(regionAdapter);
+        deptSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //출발 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
-                getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dept_spinner.getItemAtPosition(position)));
-                after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
-                Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
-                after_spinner.setAdapter(after_adapter);
-//                Toast.makeText(MainActivity.this,"선택된 아이템 : "+dept_spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                // 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
+                GetDataTask task = new GetDataTask(MainActivity.this);
+                task.execute("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(deptSpinner.getItemAtPosition(position)));
+
+                placeAdapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, deptStationList);
+                deptStationSpinner.setAdapter(placeAdapter);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
-        //출발 장소 스피너
-        ArrayAdapter adapter2 = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
-        dept_station_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept_station);
-        dept_station_spinner.setAdapter(adapter2);
 
-        layerForm.show(); // 다이얼로그 띄우기
-
-        // Activity 에 Dialog 를 등록하기
-        layerForm.setOwnerActivity(MainActivity.this);
-
-        //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
-        layerForm.setCanceledOnTouchOutside(false); // 다이얼로그 바깥 영역을 클릭시
-
-        //다이얼로그에서 입력 버튼
-        Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
+        // 입력
+        Button btnInput = layerForm.findViewById(R.id.btnInput);
         btnInput.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if ( dept_spinner.getSelectedItem().toString().isEmpty() || dept_spinner.getSelectedItem().toString().equals("어느 지역 인가요?") ) {
-                    Toast.makeText(getApplicationContext(), "지역명을 선택해 주세요.", Toast.LENGTH_SHORT).show();
+            public void onClick(View view)
+            {
+                if ( deptSpinner.getSelectedItem().toString().isEmpty() || deptSpinner.getSelectedItem().toString().equals(getString(R.string.which_region)) ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_select_region, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if ( dept_station_spinner.getSelectedItem().toString().isEmpty() || dept_station_spinner.getSelectedItem().toString().equals("장소가 어디인가요?") ) {
-                    Toast.makeText(getApplicationContext(), "탑승지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                if ( deptStationSpinner.getSelectedItem().toString().isEmpty() || deptStationSpinner.getSelectedItem().toString().equals(getString(R.string.which_place)) ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_select_boarding_place, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                editTextFrom.setText(dept_spinner.getSelectedItem().toString().trim() + " " + dept_station_spinner.getSelectedItem().toString().trim());
-                //TODO: 이 부분에서 Tmap에 출발지 좌표를 찍어줘야 함
-                //해당 지역 + 탑승지로 php에 요청해서 좌표를 받아서 출발지 좌표를 세팅해야 함(destLat, destLon)
+                editTextFrom.setText(deptSpinner.getSelectedItem().toString().trim() + " " + deptStationSpinner.getSelectedItem().toString().trim());
 
-                //만약, 출발지, 도착지가 다 찍혀 있으면 경로를 찍어주는 스레드를 실행함
+                // TODO: 이 부분에서 Tmap에 출발지 좌표를 찍어줘야 함
+                // 해당 지역 + 탑승지로 php에 요청해서 좌표를 받아서 출발지 좌표를 세팅해야 함(destLat, destLon)
+                // 만약, 출발지, 도착지가 다 찍혀 있으면 경로를 찍어주는 스레드를 실행함
 
-
-                layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
+                layerForm.dismiss();   // 다이얼로그를 닫는 메소드
             }
         });
-        //다이얼로그 닫기 버튼
-        Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
+
+        // 취소
+        Button btnClose = layerForm.findViewById(R.id.btnCancel);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
+                layerForm.dismiss();   // 다이얼로그를 닫는 메소드
             }
         });
-    }
-    //도착지 입력하는 다이얼로그 띄우기
-    public void btnLayerTo(View view) {
-        final Spinner dest_spinner;
-        final Spinner dest_station_spinner;
-//        chkSpinner = "어디로 가시나요?";
 
+        layerForm.setOwnerActivity(MainActivity.this);  // Activity에 Dialog를 등록하기
+        layerForm.setCanceledOnTouchOutside(false); // 다이얼로그 바깥 영역을 클릭시 true: 다이얼로그 종료, false : 종료안됨
+        layerForm.show(); // 다이얼로그 띄우기
+    }
+
+    // 도착지 입력하는 다이얼로그 띄움
+    public void layerToClick(View view)
+    {
         // Dialog 다이얼로그 클래스로 다이얼로그를 만든다
         final Dialog layerForm = new Dialog(this); // 다이얼로그 객체 생성
-        layerForm.setTitle("목적지 검색");
-        layerForm.setContentView(R.layout.map_find); // 다이얼로그 화면 등록
+        layerForm.setContentView(R.layout.map_find_dialog); // 다이얼로그 화면 등록
         TextView placeText = layerForm.findViewById(R.id.placeText);
-        placeText.setText("하차지");
+        placeText.setText(getString(R.string.alight_place));
 
-        //출발 지역 스피너
-        //TODO:다시 선택하더라도 선택된 값이 선택되어야 함
-        adapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_list);
-        dest_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept);
-        dest_spinner.setAdapter(adapter);
+        final Spinner deptSpinner = layerForm.findViewById(R.id.spinner_dept);
+        final Spinner deptStationSpinner = layerForm.findViewById(R.id.spinner_dept_station);
 
-        //출발 지역 스피너
-        dest_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        // 지역 스피너
+        // TODO:다시 선택하더라도 선택된 값이 선택되어야 함
+        regionAdapter = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, deptList);
+        deptSpinner.setAdapter(regionAdapter);
+        deptSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //도착 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
-                getData("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(dest_spinner.getItemAtPosition(position)));
-                after_adapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
-                Spinner after_spinner = layerForm.findViewById(R.id.spinner_dept_station);
-                after_spinner.setAdapter(after_adapter);
-//                Toast.makeText(MainActivity.this,"선택된 아이템 : "+dept_spinner.getItemAtPosition(position),Toast.LENGTH_SHORT).show();
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                // 장소 스피너, 지역이 선택되면 그에 해당하는 값을 php에서 가져옴
+                GetDataTask task = new GetDataTask(MainActivity.this);
+                task.execute("http://a.liroo.net/tripool/json_space_list.php", String.valueOf(deptSpinner.getItemAtPosition(position)));
+
+                placeAdapter = new ArrayAdapter(MainActivity.this, R.layout.support_simple_spinner_dropdown_item, deptStationList);
+                deptStationSpinner.setAdapter(placeAdapter);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
-        //출발 장소 스피너
-        ArrayAdapter adapter2 = new ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, (ArrayList) dept_station_list);
-        dest_station_spinner = (Spinner) layerForm.findViewById(R.id.spinner_dept_station);
-        dest_station_spinner.setAdapter(adapter2);
 
-        layerForm.show(); // 다이얼로그 띄우기
-
-        // Activity 에 Dialog 를 등록하기
-        layerForm.setOwnerActivity(MainActivity.this);
-
-        //종료할 것인지 여부 true: 다이얼로그 종료, false : 종료안됨
-        layerForm.setCanceledOnTouchOutside(false); // 다이얼로그 바깥 영역을 클릭시
-
-        //다이얼로그에서 입력 버튼
-        Button btnInput = (Button)layerForm.findViewById(R.id.btnInput);
+        // 입력
+        Button btnInput = layerForm.findViewById(R.id.btnInput);
         btnInput.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                if ( dest_spinner.getSelectedItem().toString().isEmpty() || dest_spinner.getSelectedItem().toString().equals("어느 지역 인가요?") ) {
-                    Toast.makeText(getApplicationContext(), "지역명을 선택해 주세요.", Toast.LENGTH_SHORT).show();
+            public void onClick(View view)
+            {
+                if ( deptSpinner.getSelectedItem().toString().isEmpty() || deptSpinner.getSelectedItem().toString().equals(getString(R.string.which_region)) ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_select_region, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if ( dest_station_spinner.getSelectedItem().toString().isEmpty() || dest_station_spinner.getSelectedItem().toString().equals("장소가 어디인가요?") ) {
-                    Toast.makeText(getApplicationContext(), "하차지를 선택해 주세요.", Toast.LENGTH_SHORT).show();
+                if ( deptStationSpinner.getSelectedItem().toString().isEmpty() || deptStationSpinner.getSelectedItem().toString().equals(getString(R.string.which_place)) ) {
+                    Toast.makeText(getApplicationContext(), R.string.plz_select_alight_place, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                editTextTo.setText(dest_spinner.getSelectedItem().toString().trim() + " " + dest_station_spinner.getSelectedItem().toString().trim());
-                //TODO: 이 부분에서 Tmap에 도착지 좌표를 찍어줘야 함
-                //해당 지역 + 하차지로 php에 요청해서 좌표를 받아서 도착지 좌표를 세팅해야 함(destLat, destLon)
+                editTextTo.setText(deptSpinner.getSelectedItem().toString().trim() + " " + deptStationSpinner.getSelectedItem().toString().trim());
 
-
-                //만약, 출발지, 도착지가 다 찍혀 있으면 경로를 찍어주는 스레드를 실행함
-
+                // TODO: 이 부분에서 Tmap에 도착지 좌표를 찍어줘야 함
+                // 해당 지역 + 하차지로 php에 요청해서 좌표를 받아서 도착지 좌표를 세팅해야 함(destLat, destLon)
+                // 만약, 출발지, 도착지가 다 찍혀 있으면 경로를 찍어주는 스레드를 실행함
 
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
         });
-        //다이얼로그 닫기 버튼
-        Button btnClose = (Button) layerForm.findViewById(R.id.btnCancel);
+
+        // 취소
+        Button btnClose = layerForm.findViewById(R.id.btnCancel);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 layerForm.dismiss();   //다이얼로그를 닫는 메소드입니다.
             }
         });
+
+        layerForm.setOwnerActivity(MainActivity.this);  // Activity에 Dialog를 등록하기
+        layerForm.setCanceledOnTouchOutside(false); // 다이얼로그 바깥 영역을 클릭시 true: 다이얼로그 종료, false : 종료안됨
+        layerForm.show(); // 다이얼로그 띄우기
     }
 
-    //검색결과 DB에서 가져옴
-    public void searchData(String url, final SearchItem item) {
+    // 지역명 세팅
+    public void setData(JSONArray list) throws JSONException
+    {
+        deptList.clear();
+        deptList.add(getString(R.string.which_region));
+        deptStationList.clear();
+        deptStationList.add(getString(R.string.which_place));
 
-        AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
-            }
-            @Override
-            protected void onPostExecute(String result){
-                myJSON=result;
-                try {
-                    JSONObject jsonObj = new JSONObject(myJSON);
-                    json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
-
-                    ArrayList<SearchItem> searchList = new ArrayList<>();
-                    for ( int i=0; i<json_dept_list.length(); i++ ) {
-                        JSONObject obj = json_dept_list.getJSONObject(i);
-                        searchList.add(new SearchItem(obj));
-                    }
-
-                    searchDialog.setVisibility(View.GONE);
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("search_item", item);
-
-                    //검색 결과 페이지로 이동
-                    Intent intent = new Intent(getApplicationContext(), SearchResultActivity.class);
-                    intent.putParcelableArrayListExtra("search_list", searchList);
-                    intent.putExtra("message", bundle);
-//                    intent.putExtra("search_list", String.valueOf(json_dept_list));
-                    startActivity(intent);  //다음 화면으로 넘어가기
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-//                Log.e("json_arrayList", String.valueOf(dept_list));
-//                loading.dismiss();
-            }
-            @Override
-            protected String doInBackground(Object... params) {
-
-                String uri = (String)params[0];
-//                String main_addr = params[1];
-//                String sub_addr = params[2];
-//                String station = params[3];
-
-                BufferedReader bufferedReader = null;
-                try {
-
-                    String data = "dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
-                    data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
-                    data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
-                    data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
-                    data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
-                    data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
-                    data += "&dept_date=" + item.getDeptDate()/100000;        //DB에서 찾을 때는 초단위로 변경
-
-                    URL url = new URL(uri);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                    StringBuilder sb = new StringBuilder();
-
-                    conn.setDoOutput(true);
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    wr.write(data);
-                    wr.flush();
-
-                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-
-                    String json;
-                    while((json = bufferedReader.readLine())!= null){
-                        sb.append(json+"\n");
-                    }
-                    return sb.toString().trim();
-                } catch(Exception e) {
-                    return null;
-                }
-            }
-        };
-        task.execute(url);
-    }
-    //지역, 장소를 json타입으로 php DB에서 가져옴
-    public void getData(String url, final String type){
-        class GetDataJSON extends AsyncTask<String, Void, String>{
-
-            ProgressDialog loading;
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
-            }
-            @Override
-            protected void onPostExecute(String result){
-                myJSON=result;
-                try {
-                    JSONObject jsonObj = new JSONObject(myJSON);
-                    json_dept_list = jsonObj.getJSONArray(TAG_RESULTS);
-                    if ( type.equals("region_list") ) {
-                        setData(json_dept_list);
-                    } else {
-                        setPlaceData(json_dept_list);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-//                Log.e("json_arrayList", String.valueOf(json_dept_list));
-//                loading.dismiss();
-            }
-            @Override
-            protected String doInBackground(String... params) {
-                String uri = params[0];
-                String region = params[1];
-
-                BufferedReader bufferedReader = null;
-                try {
-                    //php로 보낼 데이터 세팅
-                    String data = URLEncoder.encode("region", "UTF-8") + "=" + URLEncoder.encode(region, "UTF-8");
-
-                    URL url = new URL(uri);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    StringBuilder sb = new StringBuilder();
-
-                    conn.setDoOutput(true);
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    wr.write(data);
-                    wr.flush();
-
-                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-                    String json;
-                    while((json = bufferedReader.readLine())!= null){
-                        sb.append(json+"\n");
-                    }
-
-                    return sb.toString().trim();
-
-                }catch(Exception e){
-                    return null;
-                }
-            }
-        }
-        GetDataJSON g = new GetDataJSON();
-        g.execute(url, type);
-    }
-    //출발 지역 세팅
-    public void setData(JSONArray list) throws JSONException {
-        dept_list.clear();
-        dept_list.add("어느 지역 인가요?");
-        dept_station_list.clear();
-        dept_station_list.add("장소가 어디인가요?");
-//        dept_station_list.add(chkSpinner);
-
-
-        for(int i=0;i<list.length();i++){
+        for ( int i=0; i<list.length(); i++ ) {
             JSONObject item = list.getJSONObject(i);
-            String main_addr = item.getString("main_addr");
-            String sub_addr = item.getString("sub_addr");
-            dept_list.add(main_addr+ " " + sub_addr);
-            if ( adapter != null ) {
-                adapter.notifyDataSetChanged();
-            }
-            if ( after_adapter != null ) {
-                after_adapter.notifyDataSetChanged();
-            }
+            String mainAddr = item.getString("main_addr");
+            String subAddr = item.getString("sub_addr");
+            deptList.add(mainAddr+ " " + subAddr);
+        }
+
+        if ( regionAdapter != null ) {
+            regionAdapter.notifyDataSetChanged();
+        }
+        if ( placeAdapter != null ) {
+            placeAdapter.notifyDataSetChanged();
         }
     }
-    //출발 장소 세팅
-    public void setPlaceData(JSONArray list) throws JSONException {
-        dept_station_list.clear();
-        dept_station_list.add("장소가 어디인가요?");
-        for(int i=0;i<list.length();i++){
+
+    // 탑승지 세팅
+    public void setPlaceData(JSONArray list) throws JSONException
+    {
+        deptStationList.clear();
+        deptStationList.add(getString(R.string.which_place));
+
+        for ( int i=0; i<list.length(); i++ ) {
             JSONObject item = list.getJSONObject(i);
             String station = item.getString("place");
-            dept_station_list.add(station);
+            deptStationList.add(station);
         }
-        if ( after_adapter != null ) {
-            after_adapter.notifyDataSetChanged();
+
+        if ( placeAdapter != null ) {
+            placeAdapter.notifyDataSetChanged();
         }
     }
 
@@ -710,7 +544,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void killAll()
     {
         app.clearActivityPool();
-
         finish();
 
         app.killApplication();
@@ -736,15 +569,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
+    {
         int id = menuItem.getItemId();
 
-        if (id == R.id.nav_check_reservation) {
+        if ( id == R.id.nav_check_reservation ) {
             Intent intent = new Intent(getApplicationContext(), CheckReservationActivity.class);
             startActivity(intent);
         }
-        else if (id == R.id.nav_logout) {
+        else if ( id == R.id.nav_history ) {
+            Intent intent = new Intent(getApplicationContext(), HistoryActivity.class);
+            startActivity(intent);
+        }
+        else if ( id == R.id.nav_logout ) {
             app.clearActivityPool();
 
             SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
@@ -752,14 +589,152 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             userEdit.clear();
             userEdit.commit();
 
-            Toast.makeText(getApplicationContext(), "로그아웃 됩니다.", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);  //다음 화면으로 넘어가기
+            Toast.makeText(getApplicationContext(), R.string.do_logout, Toast.LENGTH_SHORT).show();
 
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);  // 다음 화면으로 넘어가기
             finish();
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private static class GetDataTask extends AsyncTask<String, Void, String>
+    {
+        private WeakReference<MainActivity> activityReference;
+        private String region;
+
+        // only retain a weak reference to the activity
+        GetDataTask(MainActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String doInBackground(String... params)
+        {
+            String uri = params[0];
+            region = params[1];
+
+            BufferedReader bufferedReader;
+            try {
+                // php로 보낼 데이터 세팅
+                String data = URLEncoder.encode("region", "UTF-8") + "=" + URLEncoder.encode(region, "UTF-8");
+
+                URL url = new URL(uri);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(data);
+                wr.flush();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String json;
+                while ( (json = bufferedReader.readLine()) != null ) {
+                    sb.append(json+"\n");
+                }
+                return sb.toString().trim();
+            } catch ( Exception e ) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String ret)
+        {
+            MainActivity activity = activityReference.get();
+            if ( activity == null || activity.isFinishing() ) return;
+
+            try {
+                JSONObject jsonObj = new JSONObject(ret);
+                JSONArray jsonDeptList = jsonObj.getJSONArray(TAG_RESULTS);
+                if ( region.equals("region_list") ) {
+                    activity.setData(jsonDeptList);
+                }
+                else {
+                    activity.setPlaceData(jsonDeptList);
+                }
+            } catch ( JSONException e ) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static class SearchTask extends AsyncTask<Object, Void, String>
+    {
+        private WeakReference<MainActivity> activityReference;
+        private SearchItem item;
+
+        // only retain a weak reference to the activity
+        SearchTask(MainActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String doInBackground(Object... params)
+        {
+            String uri = (String)params[0];
+            item = (SearchItem)params[1];
+
+            BufferedReader bufferedReader;
+            try {
+                String data = "dept_main=" + URLEncoder.encode(item.getDeptMain(), "UTF-8");
+                data += "&dept_sub=" + URLEncoder.encode(item.getDeptSub(), "UTF-8");
+                data += "&departure=" + URLEncoder.encode(item.getDeparture(), "UTF-8");
+                data += "&dest_main=" + URLEncoder.encode(item.getDestMain(), "UTF-8");
+                data += "&dest_sub=" + URLEncoder.encode(item.getDestSub(), "UTF-8");
+                data += "&destination=" + URLEncoder.encode(item.getDestination(), "UTF-8");
+                data += "&dept_date=" + item.getDeptDate()/100000;        //DB에서 찾을 때는 초단위로 변경
+
+                URL url = new URL(uri);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(data);
+                wr.flush();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String json;
+                while ( (json = bufferedReader.readLine()) != null ) {
+                    sb.append(json+"\n");
+                }
+                return sb.toString().trim();
+            } catch ( Exception e ) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String ret)
+        {
+            MainActivity activity = activityReference.get();
+            if ( activity == null || activity.isFinishing() ) return;
+
+            try {
+                JSONObject jsonObj = new JSONObject(ret);
+                JSONArray jsonDeptList = jsonObj.getJSONArray(TAG_RESULTS);
+
+                ArrayList<SearchItem> searchList = new ArrayList<>();
+                for ( int i=0; i<jsonDeptList.length(); i++ ) {
+                    JSONObject obj = jsonDeptList.getJSONObject(i);
+                    searchList.add(new SearchItem(obj));
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("search_item", item);
+
+                // 검색 결과 페이지로 이동
+                Intent intent = new Intent(activity, SearchResultActivity.class);
+                intent.putParcelableArrayListExtra("search_result_list", searchList);
+                intent.putExtra("message", bundle);
+                activity.startActivity(intent);  // 다음 화면으로 넘어가기
+            } catch ( JSONException e ) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -1,18 +1,17 @@
-package net.liroo.a.tripool;
+package net.liroo.a.tripool.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.sql.Timestamp;
+import net.liroo.a.tripool.R;
+import net.liroo.a.tripool.obj.SearchItem;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 public class SearchResultAdapter extends BaseAdapter
 {
@@ -70,8 +69,6 @@ public class SearchResultAdapter extends BaseAdapter
 
         //시,분만 표시
         SimpleDateFormat df = new SimpleDateFormat("HH:mm");
-//        Log.e("search_result_date", item.getDeptDate());
-
         Long searchTime = item.getDeptDate() * 1000;        //초->밀리초로 변환
         holder.deptDateText.setText(df.format(searchTime));
 
