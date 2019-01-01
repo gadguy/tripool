@@ -112,5 +112,7 @@
     <string name="evaluation">평가하기</string>
     <string name="driver_evaluation">기사님 평가하기</string>
     <string name="driver_evaluation_complete">기사님 평가 완료</string>
+    <string name="default_notification_channel_id">default_notification_channel_id</string>
+    <string name="default_notification_channel_name">default_notification_channel_name</string>
 
 </resources>
