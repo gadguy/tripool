@@ -2,21 +2,19 @@ package net.liroo.a.tripool;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import net.liroo.a.tripool.adapter.CheckReservationAdapter;
+import net.liroo.a.tripool.obj.SearchItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,26 +23,25 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class CheckReservationActivity extends BaseActivity {
-
+public class CheckReservationActivity extends BaseActivity
+{
     private ArrayList<SearchItem> reservationList;
-    private String phone;
+    private CheckReservationAdapter adapter;
 
-    private ProgressDialog loading;
-    String myJSON;
-    private static final String TAG_RESULTS="result";                       //json으로 가져오는 값의 파라메터
-    JSONArray json_resv_list = new JSONArray();                             //예매 목록, DB에서 가져온 값
-    private String u_id;
+    private String uid, driverPhone;
 
+    private static final String TAG_RESULTS = "result"; // json으로 가져오는 값의 파라메터
     private static final int PERMISSIONS_REQUEST_CALL_PHONE = 1;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check_reservation);
 
@@ -55,18 +52,22 @@ public class CheckReservationActivity extends BaseActivity {
 
         // TODO: 테스트 하기 위한 임시 데이터이므로 데이터 변경 필요
         reservationList = new ArrayList<>();
-//        reservationList.add(new SearchItem());
+        ListView reservationListView = findViewById(R.id.reservationListView);
+        adapter = new CheckReservationAdapter(CheckReservationActivity.this, reservationList);
+        reservationListView.setAdapter(adapter);
 
-        //자동로그인 되어있으면 로그인된 아이디 세팅
+        // 로그인 정보
         SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-        u_id = userInfo.getString("u_id", "");
-        //예약 확인 목록을 DB에서 가져와서 세팅함
-        searchResvData("http://a.liroo.net/tripool/json_resv_list.php");
+        uid = userInfo.getString("u_id", "");
+
+        // 예약 확인 목록
+        GetReservationTask task = new GetReservationTask(this);
+        task.execute("http://a.liroo.net/tripool/json_resv_list.php", uid);
     }
 
     public void callToDriver(String phone)
     {
-        this.phone = phone;
+        this.driverPhone = phone;
 
         // CALL_PHONE 권한 체크 (사용권한이 없을 경우 : -1)
         if ( ContextCompat.checkSelfPermission(CheckReservationActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED ) {
@@ -76,7 +77,7 @@ public class CheckReservationActivity extends BaseActivity {
         else {
             // TODO: 전화번호 설정
             // 사용 권한이 있을 경우
-//            String tel = "tel:" + phone;
+//            String tel = "tel:" + driverPhone;
 //            Intent intent = new Intent(Intent.ACTION_CALL);
 //            intent.setData(Uri.parse(tel));
 //            context.startActivity(intent);
@@ -90,7 +91,7 @@ public class CheckReservationActivity extends BaseActivity {
                 case PERMISSIONS_REQUEST_CALL_PHONE:
                     // TODO: 전화번호 설정
                     // 사용 권한이 있을 경우
-//                    String tel = "tel:" + phone;
+//                    String tel = "tel:" + driverPhone;
 //                    Intent intent = new Intent(Intent.ACTION_CALL);
 //                    intent.setData(Uri.parse(tel));
 //                    context.startActivity(intent);
@@ -102,74 +103,6 @@ public class CheckReservationActivity extends BaseActivity {
         }
     }
 
-
-    //검색결과 DB에서 가져옴
-    public void searchResvData(String url) {
-
-        AsyncTask<Object, Void, String> task = new AsyncTask<Object, Void, String>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-//                loading = ProgressDialog.show(MainActivity.this, "Please Wait", null, true, true);
-            }
-            @Override
-            protected void onPostExecute(String result){
-                myJSON=result;
-//                Log.e("RESV_LIST", result);
-                try {
-                    JSONObject jsonObj = new JSONObject(myJSON);
-                    json_resv_list = jsonObj.getJSONArray(TAG_RESULTS);
-
-//                    reservationList = new ArrayList<>();
-                    for ( int i=0; i<json_resv_list.length(); i++ ) {
-                        JSONObject obj = json_resv_list.getJSONObject(i);
-                        reservationList.add(new SearchItem(obj));
-                    }
-                    //리스트뷰 세팅
-                    CheckReservationAdapter adapter = new CheckReservationAdapter(CheckReservationActivity.this, reservationList);
-                    ListView reservationListView = findViewById(R.id.reservationListView);
-                    reservationListView.setAdapter(adapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-//                loading.dismiss();
-            }
-            @Override
-            protected String doInBackground(Object... params) {
-                String uri = (String)params[0];
-
-                BufferedReader bufferedReader = null;
-                try {
-
-                    String data = "book_id=" + URLEncoder.encode(u_id, "UTF-8");
-
-                    URL url = new URL(uri);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                    StringBuilder sb = new StringBuilder();
-
-                    conn.setDoOutput(true);
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    wr.write(data);
-                    wr.flush();
-
-                    bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-
-                    String json;
-                    while((json = bufferedReader.readLine())!= null){
-                        sb.append(json+"\n");
-                    }
-                    return sb.toString().trim();
-                } catch(Exception e) {
-                    return null;
-                }
-            }
-        };
-        task.execute(url);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -178,5 +111,66 @@ public class CheckReservationActivity extends BaseActivity {
             finish();
         }
         return true;
+    }
+
+    private static class GetReservationTask extends AsyncTask<Object, Void, String>
+    {
+        private WeakReference<CheckReservationActivity> activityReference;
+
+        // only retain a weak reference to the activity
+        GetReservationTask(CheckReservationActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String doInBackground(Object... params)
+        {
+            String uri = (String)params[0];
+            String uid = (String)params[1];
+
+            BufferedReader bufferedReader;
+            try {
+                String data = "book_id=" + URLEncoder.encode(uid, "UTF-8");
+
+                URL url = new URL(uri);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(data);
+                wr.flush();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String json;
+                while ( (json = bufferedReader.readLine()) != null ) {
+                    sb.append(json+"\n");
+                }
+                return sb.toString().trim();
+            } catch ( Exception e ) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String ret)
+        {
+            CheckReservationActivity activity = activityReference.get();
+            if ( activity == null || activity.isFinishing() ) return;
+
+            try {
+                JSONObject jsonObj = new JSONObject(ret);
+                JSONArray jsonResvList = jsonObj.getJSONArray(TAG_RESULTS);
+
+                activity.reservationList.clear();
+                for ( int i=0; i<jsonResvList.length(); i++ ) {
+                    JSONObject obj = jsonResvList.getJSONObject(i);
+                    activity.reservationList.add(new SearchItem(obj));
+                }
+                activity.adapter.notifyDataSetChanged();
+            } catch ( JSONException e ) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -19,8 +19,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <service
+            android:name=".FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".FirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
         <activity
-            android:name=".intro"
+            android:name=".IntroActivity"
             android:noHistory="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
@@ -54,10 +68,6 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".MapActivity"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"/>
-        <activity
             android:name=".SearchResultActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
@@ -77,8 +87,16 @@
             android:name=".AskActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".HistoryActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
 
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="3c8e3fff3053a6bb1ae42fc8b5fbd761"/>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
 
     </application>
 

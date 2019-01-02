@@ -41,13 +41,6 @@
             android:layout_marginRight="8dp"
             android:src="@drawable/intro_dot"/>
 
-        <!--<ImageView-->
-            <!--android:id="@+id/imgIndex3"-->
-            <!--android:layout_width="13dp"-->
-            <!--android:layout_height="13dp"-->
-            <!--android:layout_marginLeft="8dp"-->
-            <!--android:src="@drawable/intro_dot"/>-->
-
     </LinearLayout>
 
     <Button
@@ -56,7 +49,6 @@
         android:layout_height="wrap_content"
         android:background="#117869"
         android:text="@string/start"
-        android:textColor="#ffffff"
-        android:onClick="btnToMain"/>
+        android:textColor="#ffffff"/>
 
 </LinearLayout>

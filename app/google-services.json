@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "840915065964",
+    "firebase_url": "https://tripool.firebaseio.com",
+    "project_id": "tripool",
+    "storage_bucket": "tripool.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840915065964:android:7b194cb2b89750a4",
+        "android_client_info": {
+          "package_name": "net.liroo.a.tripool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "840915065964-1lj69kmevckqu769qrc9te8jtlmmr2vj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD29vamXoh_C8EMb8K4tnbn7jJsxECoF8E"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

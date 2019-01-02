@@ -188,7 +188,7 @@
                 android:layout_marginTop="25dp"
                 android:layout_marginBottom="20dp"
                 android:background="#117869"
-                android:onClick="btnJoin"
+                android:onClick="joinClick"
                 android:text="@string/join_do_now"
                 android:textColor="#fff"/>
 

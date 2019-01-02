@@ -69,7 +69,7 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
                 android:background="#117869"
-                android:onClick="btnLogin"
+                android:onClick="loginClick"
                 android:text="@string/login"
                 android:textColor="#ffffff" />
 
@@ -81,7 +81,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:background="@null"
-                android:onClick="btnSignin"
+                android:onClick="signinClick"
                 android:text="@string/join_do"
                 android:textColor="#777"/>
 

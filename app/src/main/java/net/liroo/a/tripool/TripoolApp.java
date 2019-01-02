@@ -76,7 +76,8 @@ public class TripoolApp extends Application
         addActivity(activity);
     }
 
-    public ArrayList<IBaseActivity> getActivityPool() {
+    public ArrayList<IBaseActivity> getActivityPool()
+    {
         if ( activityPool == null ) {
             return new ArrayList<>();
         }
