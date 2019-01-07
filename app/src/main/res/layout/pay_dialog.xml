@@ -8,64 +8,19 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/cannotPayAlert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         android:background="#fff"
-        android:orientation="vertical"
-        android:visibility="visible">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/payHelpText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/alert"
-                android:textSize="17sp"
-                android:textStyle="bold"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="20dp"
-                android:background="#ddd" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/cannot_pay_help"
-                android:textSize="15sp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:padding="8dp"
-                android:background="#ddd"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/test_period"
-                    android:textSize="13sp"/>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="2018년 07월 30일 ~ 2018년 08월 30일"
-                    android:textSize="13sp"
-                    android:textColor="#117869"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
+            android:text=""
+            android:textSize="15sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,7 +33,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="#b9e5ce"
-                android:text="@string/pay_cancel"/>
+                android:text="취소"/>
 
             <View
                 android:layout_width="1dp"
@@ -86,67 +41,14 @@
                 android:background="#ccc" />
 
             <Button
-                android:id="@+id/nextBtn"
+                android:id="@+id/payBtn"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="#b9e5ce"
-                android:text="@string/next"/>
+                android:text="결제"/>
 
         </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/scheduleIngAlert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/car_schedule_ing"
-            android:textSize="25sp"
-            android:textColor="#fff"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/scheduleFinishAlert"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="30dp"
-        android:gravity="center"
-        android:background="#fff"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginTop="50dp"
-            android:src="@drawable/complete"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="30dp"
-            android:text="@string/car_schedule_finish"
-            android:textSize="20sp"
-            android:textColor="#117869"/>
-
-        <Button
-            android:id="@+id/checkReservationBtn"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="50dp"
-            android:background="#b9e5ce"
-            android:text="@string/check_reservation_detail"/>
 
     </LinearLayout>
 

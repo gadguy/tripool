@@ -185,6 +185,13 @@
             layout="@layout/search_dialog"
             android:visibility="gone" />
 
+        <include
+            android:id="@+id/noticeDialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/notice_dialog"
+            android:visibility="gone" />
+
     </FrameLayout>
 
     <android.support.design.widget.NavigationView

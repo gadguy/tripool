@@ -1,8 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-    android:id="@+id/nav_check_reservation"
-    android:title="@string/check_reservation" />
+        android:id="@+id/nav_notice"
+        android:title="@string/notice" />
+
+    <item
+        android:id="@+id/nav_check_reservation"
+        android:title="@string/check_reservation" />
 
     <item
         android:id="@+id/nav_history"

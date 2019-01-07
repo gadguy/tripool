@@ -67,12 +67,12 @@
     <string name="departure_date">출발일시</string>
     <string name="together_ride_people">동승인원</string>
     <string name="kind_of_car">차량종류</string>
-    <string name="distance">거리 :</string>
+    <string name="distance">이동 거리 :</string>
     <string name="people">인원 :</string>
-    <string name="fare">요금 :</string>
+    <string name="fare">전체 요금 :</string>
     <string name="fee">수수료 :</string>
     <string name="discount">할인 :</string>
-    <string name="discount_amount">할인금액 :</string>
+    <string name="discount_amount">할인 금액 :</string>
     <string name="total_pay_amount">총 결제 금액 :</string>
     <string name="pay_do">결제하기</string>
     <string name="alert">알림</string>
@@ -114,5 +114,9 @@
     <string name="driver_evaluation_complete">기사님 평가 완료</string>
     <string name="default_notification_channel_id">default_notification_channel_id</string>
     <string name="default_notification_channel_name">default_notification_channel_name</string>
+    <string name="notice">공지 사항</string>
+    <string name="notice_date">공지 날짜</string>
+    <string name="notice_title">공지명</string>
+    <string name="notice_read">읽음</string>
 
 </resources>

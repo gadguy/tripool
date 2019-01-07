@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import net.liroo.a.tripool.obj.SearchItem;
@@ -34,8 +34,8 @@ import java.util.Locale;
 // 탑승 준비 페이지
 public class ReadyBoardActivity extends BaseActivity
 {
-    private View payDialog, cannotPayAlert, scheduleIngAlert;
-    private Button cancelBtn, nextBtn, checkReservationBtn;
+    private View payDialog;
+    private Button cancelBtn, payBtn;
 
     private String isMakeRoom, people, luggage;
     private String ownerID, uid;
@@ -59,64 +59,70 @@ public class ReadyBoardActivity extends BaseActivity
         people = getIntent().getStringExtra("search_people");
         luggage = getIntent().getStringExtra("search_luggage");
 
-        // 로그인 정보
-        SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-        uid = userInfo.getString("u_id", "");
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        payDialog = findViewById(R.id.payDialog);
-        cannotPayAlert = findViewById(R.id.cannotPayAlert);
-        cancelBtn = findViewById(R.id.cancelBtn);
-        nextBtn = findViewById(R.id.nextBtn);
-        scheduleIngAlert = findViewById(R.id.scheduleIngAlert);
-        checkReservationBtn = findViewById(R.id.checkReservationBtn);
-
         TextView departureText = findViewById(R.id.departureText);
         TextView destinationText = findViewById(R.id.destinationText);
-        TextView deptDateText = findViewById(R.id.deptDateText);
-        TextView peopleText = findViewById(R.id.peopleText);
-        TextView departurePointText = findViewById(R.id.departurePointText);
 
-        // 검색된 결과값을 화면에 세팅
-        departurePointText.setText(searchItem.getDeptMain() + " " + searchItem.getDeptSub() + " " + searchItem.getDeparture());      // 출발 도 + 시
         departureText.setText(searchItem.getDeparture());       // 출발 장소
         destinationText.setText(searchItem.getDestination());   // 도착 장소
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 mm분 (E)", Locale.getDefault());
-        // 방 만들기에서 넘어온 경우
-        if ( isMakeRoom.equals("make_room") ) {
-            deptDateText.setText(df.format(new Date(searchItem.getDeptDate())));    // 출발 일시
-        }
-        // 리스트 뷰에서 넘어온 경우
-        else {
-            ownerID = searchItem.getOwnerID();
-            deptDateText.setText(df.format(new Date(searchItem.getDeptDate()*1000)));   // 출발 일시
-        }
+        TextView deadlineTimeText = findViewById(R.id.deadlineTimeText);
 
-        peopleText.setText(people + "명");   // 인원수
+        TextView stagingAreaText = findViewById(R.id.stagingAreaText);
+
+        TextView fareText = findViewById(R.id.fareText);
+        TextView distanceText = findViewById(R.id.distanceText);
+
+        TextView discountText = findViewById(R.id.discountText);
+        TextView discountAmountText = findViewById(R.id.discountAmountText);
+
+        TextView amountText = findViewById(R.id.amountText);
+
+        // 로그인 정보
+        SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+        uid = userInfo.getString("u_id", "");
+
+        // 리스트 뷰에서 넘어온 경우
+        if ( !isMakeRoom.equals("make_room") ) {
+            ownerID = searchItem.getOwnerID();
+        }
 
         // tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
         GetFellowTask task = new GetFellowTask(this);
         task.execute("http://a.liroo.net/tripool/json_fellow_count.php", searchItem);
 
-        // 결제하기 버튼 클릭 -> 결제화면으로 이동 (2차 개발)
-        // 지금은 결제하기 팝업창이 뜸
+        payDialog = findViewById(R.id.payDialog);
+        TextView payHelpText = findViewById(R.id.payHelpText);
+        cancelBtn = findViewById(R.id.cancelBtn);
+        payBtn = findViewById(R.id.payBtn);
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm (E)", Locale.getDefault());
+        String date;
+        // 방 만들기에서 넘어온 경우
+        if ( isMakeRoom.equals("make_room") ) {
+            date = df.format(new Date(searchItem.getDeptDate()));    // 출발 일시
+        }
+        // 리스트 뷰에서 넘어온 경우
+        else {
+            date = df.format(new Date(searchItem.getDeptDate()*1000));   // 출발 일시
+        }
+
+        String payHelp = "* From : "+searchItem.getDeparture()+"\n* To : "+searchItem.getDestination();
+        payHelp += "\n* "+date+"\n\n* 예약요금 : 3500원";
+        payHelp += "\n\n예약 하시겠습니까?";
+        payHelpText.setText(payHelp);
+
+        // 결제하기 팝업창
         Button btnClose = findViewById(R.id.btn_pay);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                // 결제화면으로 이동
-//                Intent intent = new Intent(getApplicationContext(), PayActivity.class);
-//                startActivity(intent);  // 다음 화면으로 넘어가기
-
                 payDialog.setVisibility(View.VISIBLE);
-                cannotPayAlert.setVisibility(View.VISIBLE);
-                scheduleIngAlert.setVisibility(View.GONE);
             }
         });
 
@@ -125,56 +131,43 @@ public class ReadyBoardActivity extends BaseActivity
             @Override
             public void onClick(View view) {
                 payDialog.setVisibility(View.GONE);
-                cannotPayAlert.setVisibility(View.VISIBLE);
-                scheduleIngAlert.setVisibility(View.GONE);
             }
         });
 
         // 결제 팝업에서 다음 버튼
-        nextBtn.setOnClickListener(new View.OnClickListener() {
+        payBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
                 isPyaDo = true;
-                cannotPayAlert.setVisibility(View.GONE);
-                scheduleIngAlert.setVisibility(View.VISIBLE);
 
-                // 방만들기로 들어온 상태면 tripool_info의 결제 상태값을 변경해야 함
-                // 혹은 자신이 만든 방이면 결제의 상태값만 update 해야 함
-                if ( isMakeRoom.equals("make_room") || ownerID.equals(uid) ) {
-                    PayUpdateTask task = new PayUpdateTask(ReadyBoardActivity.this);
-                    task.execute("http://a.liroo.net/tripool/trip_control.php", searchItem, isMakeRoom, uid, ownerID);
-                }
-                // 리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
-                else {
-                    // owner_id 저장하기
-                    PayJoinTask task = new PayJoinTask(ReadyBoardActivity.this);
-                    task.execute("http://a.liroo.net/tripool/trip_control.php", searchItem, luggage, uid, ownerID);
-                }
-
-                // TODO : 배차 완료되면 화면 바뀌도록 변경 필요 (현재는 화면 전환 확인하기 위해 자동으로 변경)
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                }, 3000);
-            }
-        });
-
-        // 예약 확인 페이지
-        checkReservationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                // 예약 확인 페이지로 이동
-                Intent intent = new Intent(getApplicationContext(), CheckReservationActivity.class);
+                Intent intent = new Intent(ReadyBoardActivity.this, PurchaseActivity.class);
                 startActivity(intent);
-                finish();
+
+//                // 방만들기로 들어온 상태면 tripool_info의 결제 상태값을 변경해야 함
+//                // 혹은 자신이 만든 방이면 결제의 상태값만 update 해야 함
+//                if ( isMakeRoom.equals("make_room") || ownerID.equals(uid) ) {
+//                    PayUpdateTask task = new PayUpdateTask(ReadyBoardActivity.this);
+//                    task.execute("http://a.liroo.net/tripool/trip_control.php", searchItem, isMakeRoom, uid, ownerID);
+//                }
+//                // 리스트뷰에서 클릭해서 온 상태면 결제 할 때, tripool_info에 insert 하기(결제완료 상태로)
+//                else {
+//                    // owner_id 저장하기
+//                    PayJoinTask task = new PayJoinTask(ReadyBoardActivity.this);
+//                    task.execute("http://a.liroo.net/tripool/trip_control.php", searchItem, luggage, uid, ownerID);
+//                }
+//
+//                // TODO : 배차 완료되면 화면 바뀌도록 변경 필요 (현재는 화면 전환 확인하기 위해 자동으로 변경)
+//                Handler handler = new Handler();
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run()
+//                    {
+//                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                }, 3000);
             }
         });
     }
@@ -182,7 +175,7 @@ public class ReadyBoardActivity extends BaseActivity
     @Override
     public void onBackPressed()
     {
-        if ( payDialog.getVisibility() == View.VISIBLE && cannotPayAlert.getVisibility() == View.VISIBLE ) {
+        if ( payDialog.getVisibility() == View.VISIBLE ) {
             payDialog.setVisibility(View.GONE);
         }
         else {
@@ -285,9 +278,29 @@ public class ReadyBoardActivity extends BaseActivity
                 if ( togetherPeople.equals("null") ) {
                     togetherPeople = "0";
                 }
+                int together = Integer.parseInt(togetherPeople) + Integer.parseInt(activity.people);    // 동승인원수
+                int maxPeople = 0;
+                if ( together < 7 ) {
+                    maxPeople = 6;
+                }
+                else if ( together < 13 ) {
+                    maxPeople = 12;
+                }
+                else {
+                    maxPeople = 19;
+                }
 
                 TextView togetherPeopleText = activity.findViewById(R.id.togetherPeopleText);
-                togetherPeopleText.setText(togetherPeople + "명");    // 동승인원수
+                togetherPeopleText.setText(String.valueOf(together));
+
+                TextView currentPeopleText = activity.findViewById(R.id.currentPeopleText);
+                currentPeopleText.setText(String.valueOf(together));
+
+                ProgressBar peopleProgressBar = activity.findViewById(R.id.peopleProgressBar);
+                peopleProgressBar.setProgress(together);
+
+                TextView maxPeopleText = activity.findViewById(R.id.maxPeopleText);
+                maxPeopleText.setText(String.valueOf(maxPeople));
             } catch ( JSONException e ) {
                 e.printStackTrace();
             }

@@ -45,6 +45,7 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
+import net.liroo.a.tripool.obj.NoticeItem;
 import net.liroo.a.tripool.obj.SearchItem;
 
 import org.json.JSONArray;
@@ -283,6 +284,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             timeText.setText(String.valueOf(hour) + " : 0" + String.valueOf(minute));
         else
             timeText.setText(String.valueOf(hour) + " : " + String.valueOf(minute));
+
+        // 공지사항
+        final View noticeDialog = findViewById(R.id.noticeDialog);
+        TextView noticeText = findViewById(R.id.noticeText);
+        Button noticeCloseBtn = findViewById(R.id.noticeCloseBtn);
+        noticeCloseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                noticeDialog.setVisibility(View.GONE);
+            }
+        });
+
+        GetNoticeTask noticeTask = new GetNoticeTask(this);
+        noticeTask.execute("");
+
+        // For Test
+        NoticeItem item = new NoticeItem("2018.12.02", "Test 서비스 오픈", "1", "http://a.liroo.net/bbs/board.php?bo_table=notice", "현재 서비스가 Test 중이므로 일부 지역 및 일부 여행지에서만 이용 가능합니다 :(\n\n* 전라도 순천\n순천역, 순천만정원, 순천만습지, 와온해변 (총 4곳)");
+        noticeDialog.setVisibility(View.VISIBLE);
+        noticeText.setText(item.getContent());
 
         // 장소 목록을 php에서 가져옴
         GetDataTask task = new GetDataTask(this);
@@ -573,7 +593,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     {
         int id = menuItem.getItemId();
 
-        if ( id == R.id.nav_check_reservation ) {
+        if ( id == R.id.nav_notice ) {
+            Intent intent = new Intent(getApplicationContext(), NoticeActivity.class);
+            startActivity(intent);
+        }
+        else if ( id == R.id.nav_check_reservation ) {
             Intent intent = new Intent(getApplicationContext(), CheckReservationActivity.class);
             startActivity(intent);
         }
@@ -735,6 +759,67 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } catch ( JSONException e ) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static class GetNoticeTask extends AsyncTask<String, Void, String>
+    {
+        private WeakReference<MainActivity> activityReference;
+
+        // only retain a weak reference to the activity
+        GetNoticeTask(MainActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String doInBackground(String... params)
+        {
+            String uri = params[0];
+
+            BufferedReader bufferedReader;
+            try {
+                // php로 보낼 데이터 세팅
+                String data = "";
+//                String data = URLEncoder.encode("region", "UTF-8") + "=" + URLEncoder.encode(region, "UTF-8");
+
+                URL url = new URL(uri);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(data);
+                wr.flush();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String json;
+                while ( (json = bufferedReader.readLine()) != null ) {
+                    sb.append(json+"\n");
+                }
+                return sb.toString().trim();
+            } catch ( Exception e ) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String ret)
+        {
+            MainActivity activity = activityReference.get();
+            if ( activity == null || activity.isFinishing() ) return;
+
+//            try {
+//                JSONObject jsonObj = new JSONObject(ret);
+//                JSONArray jsonDeptList = jsonObj.getJSONArray(TAG_RESULTS);
+//                if ( region.equals("region_list") ) {
+//                    activity.setData(jsonDeptList);
+//                }
+//                else {
+//                    activity.setPlaceData(jsonDeptList);
+//                }
+//            } catch ( JSONException e ) {
+//                e.printStackTrace();
+//            }
         }
     }
 }
