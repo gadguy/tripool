@@ -24,23 +24,43 @@
         android:layout_height="0.5dp"
         android:background="#c1c1c1" />
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="#ddd"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/historyListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="날짜"
+            android:textSize="14sp"/>
 
-        <include
-            android:id="@+id/evaluationDialog"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/evaluation_dialog"
-            android:visibility="gone" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="시간"
+            android:textSize="14sp"/>
 
-    </FrameLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="From - To"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/historyListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

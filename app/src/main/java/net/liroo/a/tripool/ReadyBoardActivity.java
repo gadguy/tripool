@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -123,6 +124,14 @@ public class ReadyBoardActivity extends BaseActivity
             public void onClick(View view)
             {
                 payDialog.setVisibility(View.VISIBLE);
+
+                // 키보드 숨김
+                InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                View focusView = getCurrentFocus();
+                if ( focusView == null ) {
+                    focusView = new View(ReadyBoardActivity.this);
+                }
+                inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
             }
         });
 

@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-public class HistoryItem implements Serializable, Parcelable
+public class ReservationItem implements Serializable, Parcelable
 {
     private static final long serialVersionUID = 3467427543832512425L;
 
@@ -18,7 +18,7 @@ public class HistoryItem implements Serializable, Parcelable
     private boolean isDoEvaluation;
 
     @SuppressWarnings("unchecked")
-    public HistoryItem(JSONObject data)
+    public ReservationItem(JSONObject data)
     {
         try {
             no = data.getString("no");
@@ -41,7 +41,7 @@ public class HistoryItem implements Serializable, Parcelable
         }
     }
 
-    public HistoryItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage, boolean isDoEvaluation)
+    public ReservationItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage, boolean isDoEvaluation)
     {
         try {
             this.no = no;
@@ -99,7 +99,7 @@ public class HistoryItem implements Serializable, Parcelable
         dest.writeBundle(bundle);
     }
 
-    public HistoryItem(Parcel in)
+    public ReservationItem(Parcel in)
     {
         Bundle bundle = in.readBundle();
 
@@ -119,12 +119,12 @@ public class HistoryItem implements Serializable, Parcelable
     @SuppressWarnings("rawtypes")
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator()
     {
-        public HistoryItem createFromParcel(Parcel in) {
-            return new HistoryItem(in);
+        public ReservationItem createFromParcel(Parcel in) {
+            return new ReservationItem(in);
         }
 
-        public HistoryItem[] newArray(int size) {
-            return new HistoryItem[size];
+        public ReservationItem[] newArray(int size) {
+            return new ReservationItem[size];
         }
     };
 }
