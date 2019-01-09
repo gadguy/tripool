@@ -1,14 +1,19 @@
 package net.liroo.a.tripool;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -70,6 +75,24 @@ public class PurchaseActivity extends BaseActivity
                 return false;
             }
         });
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                new AlertDialog.Builder(PurchaseActivity.this)
+                        .setTitle("Alert title")
+                        .setMessage(message)
+                        .setPositiveButton(android.R.string.ok,
+                                new AlertDialog.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                        .setCancelable(false)
+                        .create()
+                        .show();
+                return true;
+            }
+        });
         webView.getSettings().setJavaScriptEnabled(true);
 
         if ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
@@ -95,6 +118,7 @@ public class PurchaseActivity extends BaseActivity
     @Override
     protected void onNewIntent(Intent intent)
     {
+        Log.e("tripool", "asdasdadda");
         String url = intent.toString();
         if ( url.startsWith(APP_SCHEME) ) {
             // "iamportapp://https://pgcompany.com/foo/bar"와 같은 형태로 들어옴

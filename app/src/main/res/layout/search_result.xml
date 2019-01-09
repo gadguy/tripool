@@ -162,6 +162,9 @@
         android:layout_height="50dp"
         android:background="#117869"
         android:text="@string/make_room"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"/>
 
+<!--
+    android:visibility="gone"
+-->
 </LinearLayout>

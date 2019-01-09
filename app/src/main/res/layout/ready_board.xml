@@ -230,7 +230,9 @@
 
                     </LinearLayout>
 
-                    <View
+                    <!-- TMap Area -->
+                    <RelativeLayout
+                        android:id="@+id/map_view"
                         android:layout_width="200dp"
                         android:layout_height="200dp"
                         android:layout_marginTop="15dp"
