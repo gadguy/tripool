@@ -2,6 +2,7 @@ package net.liroo.a.tripool.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import net.liroo.a.tripool.AskActivity;
 import net.liroo.a.tripool.R;
-import net.liroo.a.tripool.obj.SearchItem;
+import net.liroo.a.tripool.ReservationDetailActivity;
+import net.liroo.a.tripool.obj.ReservationItem;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,10 +20,10 @@ import java.util.ArrayList;
 public class CheckReservationAdapter extends BaseAdapter
 {
     private Context context;
-    private ArrayList<SearchItem> data;
+    private ArrayList<ReservationItem> data;
     private LayoutInflater layoutInflater;
 
-    public CheckReservationAdapter(Context context, ArrayList<SearchItem> data)
+    public CheckReservationAdapter(Context context, ArrayList<ReservationItem> data)
     {
         this.context = context;
         this.data = data;
@@ -36,7 +37,7 @@ public class CheckReservationAdapter extends BaseAdapter
     }
 
     @Override
-    public SearchItem getItem(int i) {
+    public ReservationItem getItem(int i) {
         return data.get(i);
     }
 
@@ -49,7 +50,7 @@ public class CheckReservationAdapter extends BaseAdapter
     {
         TextView reservationDeptText, reservationDestText, reservationDateText, readyText;
         TextView reservationDeptTimeText, reservationDestTimeText, peopleText;
-        Button contactBtn, askBtn;
+        Button detailBtn;
     }
 
     @Override
@@ -67,8 +68,7 @@ public class CheckReservationAdapter extends BaseAdapter
             holder.reservationDestTimeText = view.findViewById(R.id.reservationDestTimeText);
             holder.peopleText = view.findViewById(R.id.peopleText);
 
-            holder.contactBtn = view.findViewById(R.id.contactBtn);
-            holder.askBtn = view.findViewById(R.id.askBtn);
+            holder.detailBtn = view.findViewById(R.id.detailBtn);
 
             view.setTag(holder);
         }
@@ -76,7 +76,7 @@ public class CheckReservationAdapter extends BaseAdapter
             holder = (ViewHolder)view.getTag();
         }
 
-        SearchItem item = data.get(index);
+        final ReservationItem item = data.get(index);
         holder.reservationDeptText.setText(item.getDeparture());
         holder.reservationDestText.setText(item.getDestination());
 
@@ -93,18 +93,15 @@ public class CheckReservationAdapter extends BaseAdapter
         // 동승인원
         holder.peopleText.setText(item.getPeople()+"명");
 
-        holder.contactBtn.setOnClickListener(new View.OnClickListener() {
+        holder.detailBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 전화번호 설정
-//                ((CheckReservationActivity)context).callToDriver(phone);
-            }
-        });
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("reservationItem", item);
+                bundle.putBoolean("isHistory", false);
 
-        holder.askBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, AskActivity.class);
+                Intent intent = new Intent(context, ReservationDetailActivity.class);
+                intent.putExtra("message", bundle);
                 context.startActivity(intent);
             }
         });

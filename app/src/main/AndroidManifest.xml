@@ -21,13 +21,13 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name=".FirebaseMessagingService">
+            android:name=".TripoolFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
         <service
-            android:name=".FirebaseInstanceIDService">
+            android:name=".TripoolFirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
@@ -41,6 +41,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="iamportapp" />
             </intent-filter>
         </activity>
         <activity
@@ -74,6 +82,7 @@
         <activity
             android:name=".ReadyBoardActivity"
             android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             android:screenOrientation="portrait"/>
         <activity
             android:name=".PayActivity"
@@ -84,11 +93,23 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".AskActivity"
+            android:name=".HistoryActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".HistoryActivity"
+            android:name=".NoticeActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".WebViewActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".PurchaseActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ReservationDetailActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"/>
 

@@ -13,7 +13,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/history"
+            android:text="@string/notice"
             android:layout_gravity="center"
             style="@style/ToolBarTitleText"/>
 
@@ -35,9 +35,17 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="1.5"
             android:gravity="center"
-            android:text="날짜"
+            android:text="@string/notice_date"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:text="@string/notice_title"
             android:textSize="14sp"/>
 
         <TextView
@@ -45,21 +53,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="시간"
-            android:textSize="14sp"/>
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:text="From - To"
+            android:text="@string/notice_read"
             android:textSize="14sp"/>
 
     </LinearLayout>
 
     <ListView
-        android:id="@+id/historyListView"
+        android:id="@+id/noticeListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

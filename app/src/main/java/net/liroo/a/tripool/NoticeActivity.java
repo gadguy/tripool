@@ -10,8 +10,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import net.liroo.a.tripool.adapter.HistoryAdapter;
-import net.liroo.a.tripool.obj.ReservationItem;
+import net.liroo.a.tripool.adapter.NoticeAdapter;
+import net.liroo.a.tripool.obj.NoticeItem;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -21,50 +21,50 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class HistoryActivity extends BaseActivity
+public class NoticeActivity extends BaseActivity
 {
-    private ArrayList<ReservationItem> historyList;
-    private HistoryAdapter adapter;
-
-    private static final String TAG_RESULTS = "result";   // json으로 가져오는 값의 파라메터
+    private NoticeAdapter adapter;
+    private ArrayList<NoticeItem> data;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.history);
+        setContentView(R.layout.notice);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        historyList = new ArrayList<>();
-        // TODO: 임시 데이터이므로, 서버에서 데이터 가져오면 삭제
-        historyList.add(new ReservationItem("1", "순천", "순천만정원", "순천 순천만정원", "경주", "안압지", "경주 안압지", 1592099999, "1", "1", false));
-        historyList.add(new ReservationItem("1", "순천", "순천만정원", "순천 순천만정원", "경주", "안압지", "경주 안압지", 1592099999, "1", "1", true));
+        data = new ArrayList<>();
 
-        ListView historyListView = findViewById(R.id.historyListView);
-        adapter = new HistoryAdapter(this, historyList);
-        historyListView.setAdapter(adapter);
+        // For Test
+        data.add(new NoticeItem("2018.12.02", "Test 서비스 오픈", "1", "http://a.liroo.net/bbs/board.php?bo_table=notice", "Test 서비스 오픈"));
+        data.add(new NoticeItem("2018.12.10", "서비스 요금 안내", "1", "http://a.liroo.net/bbs/board.php?bo_table=notice", "서비스 요금 안내"));
+        data.add(new NoticeItem("2018.12.15", "서비스 이용 가능 지역 및 장소 안내", "0", "http://a.liroo.net/bbs/board.php?bo_table=notice", "서비스 이용 가능 지역 및 장소 안내"));
 
-        historyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ListView noticeListView = findViewById(R.id.noticeListView);
+        adapter = new NoticeAdapter(this, data);
+        noticeListView.setAdapter(adapter);
+
+        noticeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ReservationItem item = historyList.get(position);
+                NoticeItem item = data.get(position);
 
                 Bundle bundle = new Bundle();
-                bundle.putParcelable("reservationItem", item);
-                bundle.putBoolean("isHistory", true);
+                bundle.putString("title", item.getTitle());
+                bundle.putString("url", item.getContentURL());
 
-                Intent intent = new Intent(HistoryActivity.this, ReservationDetailActivity.class);
+                Intent intent = new Intent(NoticeActivity.this, WebViewActivity.class);
                 intent.putExtra("message", bundle);
                 startActivity(intent);
             }
         });
 
-        // 이용내역 목록
-        GetHistoryTask task = new GetHistoryTask(this);
+        // 공지사항 목록
+        NoticeTask task = new NoticeTask(this);
         task.execute("");
     }
 
@@ -78,12 +78,12 @@ public class HistoryActivity extends BaseActivity
         return true;
     }
 
-    private static class GetHistoryTask extends AsyncTask<Object, Void, String>
+    private static class NoticeTask extends AsyncTask<Object, Void, String>
     {
-        private WeakReference<HistoryActivity> activityReference;
+        private WeakReference<NoticeActivity> activityReference;
 
         // only retain a weak reference to the activity
-        GetHistoryTask(HistoryActivity context) {
+        NoticeTask(NoticeActivity context) {
             activityReference = new WeakReference<>(context);
         }
 
@@ -127,7 +127,7 @@ public class HistoryActivity extends BaseActivity
         @Override
         protected void onPostExecute(String ret)
         {
-            HistoryActivity activity = activityReference.get();
+            NoticeActivity activity = activityReference.get();
             if ( activity == null || activity.isFinishing() ) return;
 
 //            try {

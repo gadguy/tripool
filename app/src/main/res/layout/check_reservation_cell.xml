@@ -190,23 +190,12 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/contactBtn"
-                android:layout_width="0dp"
+                android:id="@+id/detailBtn"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_weight="1"
                 android:layout_marginRight="5dp"
                 android:background="#117869"
-                android:text="@string/contact_driver"
-                android:textColor="#ffffff"/>
-
-            <Button
-                android:id="@+id/askBtn"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="5dp"
-                android:background="#117869"
-                android:text="@string/ask"
+                android:text="자세히 보기"
                 android:textColor="#ffffff"/>
 
         </LinearLayout>
