@@ -43,6 +43,7 @@ public class ReadyBoardActivity extends BaseActivity
     private boolean isPyaDo;
 
     private static final String TAG_RESULTS = "result"; // json으로 가져오는 값의 파라메터
+    private static final int BOARD_PURCHASE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -150,8 +151,12 @@ public class ReadyBoardActivity extends BaseActivity
             {
                 isPyaDo = true;
 
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("search_item", searchItem);
+
                 Intent intent = new Intent(ReadyBoardActivity.this, PurchaseActivity.class);
-                startActivity(intent);
+                intent.putExtra("message", bundle);
+                startActivityForResult(intent, BOARD_PURCHASE);
 
 //                // 방만들기로 들어온 상태면 tripool_info의 결제 상태값을 변경해야 함
 //                // 혹은 자신이 만든 방이면 결제의 상태값만 update 해야 함
@@ -179,6 +184,18 @@ public class ReadyBoardActivity extends BaseActivity
 //                }, 3000);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if ( resultCode == RESULT_OK ) {
+            switch ( requestCode ) {
+                case BOARD_PURCHASE:
+                    finish();
+                    break;
+            }
+        }
     }
 
     @Override

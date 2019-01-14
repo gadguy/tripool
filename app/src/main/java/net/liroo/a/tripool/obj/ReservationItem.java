@@ -60,6 +60,25 @@ public class ReservationItem implements Serializable, Parcelable
         }
     }
 
+    public ReservationItem(SearchItem item)
+    {
+        try {
+            this.no = "";
+            this.deptMain = item.getDeptMain();
+            this.deptSub = item.getDeptSub();
+            this.departure = item.getDeparture();
+            this.destMain = item.getDestMain();
+            this.destSub = item.getDestSub();
+            this.destination = item.getDestination();
+            this.deptDate = item.getDeptDate();
+            this.people = item.getPeople();
+            this.luggage = item.getLuggage();
+            this.isDoEvaluation = false;
+        } catch ( Exception e ) {
+
+        }
+    }
+
     public String getDeptMain() { return deptMain; }
     public String getDeptSub() { return deptSub; }
     public String getDeparture() { return departure; }

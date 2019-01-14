@@ -9,9 +9,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -20,12 +20,15 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import net.liroo.a.tripool.obj.PaymentScheme;
+import net.liroo.a.tripool.obj.ReservationItem;
+import net.liroo.a.tripool.obj.SearchItem;
 
 import java.net.URISyntaxException;
 
 public class PurchaseActivity extends BaseActivity
 {
     private WebView webView;
+    private SearchItem searchItem;
 
     private final String APP_SCHEME = "iamportapp://";
 
@@ -34,6 +37,13 @@ public class PurchaseActivity extends BaseActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.webview);
+
+        Bundle bundle = getIntent().getBundleExtra("message");
+        searchItem = bundle.getParcelable("search_item");
+        if ( searchItem == null ) {
+            finish();
+            return;
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -77,14 +87,13 @@ public class PurchaseActivity extends BaseActivity
         });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
-            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
                 new AlertDialog.Builder(PurchaseActivity.this)
-                        .setTitle("Alert title")
                         .setMessage(message)
                         .setPositiveButton(android.R.string.ok,
                                 new AlertDialog.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-
+                                        result.confirm();
                                     }
                                 })
                         .setCancelable(false)
@@ -94,6 +103,7 @@ public class PurchaseActivity extends BaseActivity
             }
         });
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new WebInterface(), "TripoolApp");
 
         if ( android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
@@ -118,7 +128,6 @@ public class PurchaseActivity extends BaseActivity
     @Override
     protected void onNewIntent(Intent intent)
     {
-        Log.e("tripool", "asdasdadda");
         String url = intent.toString();
         if ( url.startsWith(APP_SCHEME) ) {
             // "iamportapp://https://pgcompany.com/foo/bar"와 같은 형태로 들어옴
@@ -145,6 +154,34 @@ public class PurchaseActivity extends BaseActivity
             return true;
         }
         return false;
+    }
+
+    private class WebInterface
+    {
+        @JavascriptInterface
+        public void purchaseComplete() {
+            setResult(RESULT_OK);
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("reservationItem", new ReservationItem(searchItem));
+            bundle.putBoolean("isHistory", false);
+
+            Intent intent = new Intent(PurchaseActivity.this, ReservationDetailActivity.class);
+            intent.putExtra("message", bundle);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if ( webView.canGoBack() ) {
+            webView.goBack();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 
     @Override
