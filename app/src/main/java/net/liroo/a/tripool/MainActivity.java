@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -41,6 +43,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
@@ -221,10 +224,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         tMapView = new TMapView(this);
         tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
         ViewGroup linearLayoutTmap = findViewById(R.id.map_view);
+//        tMapView.setCenterPoint(126.988205, 37.551135);
+//        tMapView.setCenterPoint(126.985302, 37.570841);
+        tMapView.setLocationPoint(126.985302, 37.570841);
+
         tMapView.setIconVisibility(true);   //현재위치로 표시될 아이콘을 표시할지 여부를 설정
+
+
+//        TMapMarkerItem markerItem1 = new TMapMarkerItem();
+//
+//        TMapPoint tMapPoint1 = new TMapPoint(37.570841, 126.985302); // SKT타워
+//        // 마커 아이콘
+//        Bitmap bitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.point);
+//
+//        markerItem1.setIcon(bitmap); // 마커 아이콘 지정
+//        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+//        markerItem1.setTMapPoint( tMapPoint1 ); // 마커의 좌표 지정
+//        markerItem1.setName("SKT타워"); // 마커의 타이틀 지정
+//        tMapView.addMarkerItem("markerItem1", markerItem1); // 지도에 마커 추가
+
         linearLayoutTmap.addView(tMapView);
 
-//        setGps(); // 지도에서 현재위치를 표시
+        setGps(); // 지도에서 현재위치를 표시
 //        drawLine(deptLat, deptLon, destLat, destLon);   // 길찾기 정보 그리기
 
         // 검색시 필요한 날짜 및 시간

@@ -10,10 +10,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.skt.Tmap.TMapView;
 
 import net.liroo.a.tripool.obj.SearchItem;
 
@@ -44,6 +47,8 @@ public class ReadyBoardActivity extends BaseActivity
 
     private static final String TAG_RESULTS = "result"; // json으로 가져오는 값의 파라메터
     private static final int BOARD_PURCHASE = 1;
+
+    private TMapView tMapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -112,6 +117,17 @@ public class ReadyBoardActivity extends BaseActivity
         else {
             date = df.format(new Date(searchItem.getDeptDate()*1000));   // 출발 일시
         }
+
+        // Tmap 지도 api
+        tMapView = new TMapView(this);
+        tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
+        ViewGroup linearLayoutTmap = findViewById(R.id.map_view);
+        //TODO: 일단 전남 순천 낙안읍성으로 위치 표시, 추후에 검색된 값을 가져와서 표시해야함
+        tMapView.setLocationPoint(127.338955, 34.907182);
+        tMapView.setCenterPoint(127.338955, 34.907182);
+        tMapView.setIconVisibility(true);   //현재위치로 표시될 아이콘을 표시할지 여부를 설정
+        linearLayoutTmap.addView(tMapView);
+
 
         String payHelp = "* From : "+searchItem.getDeparture()+"\n* To : "+searchItem.getDestination();
         payHelp += "\n* "+date+"\n\n* 예약요금 : 3500원";

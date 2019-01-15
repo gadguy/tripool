@@ -6,10 +6,19 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+
+import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapMarkerItem;
+import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
+import com.skt.Tmap.TMapView;
+//import com.skt.Tmap.TMapView;
 
 import net.liroo.a.tripool.obj.ReservationItem;
 
@@ -27,6 +36,8 @@ public class ReservationDetailActivity extends BaseActivity
     private View evaluationDialog;
     private TextView reservationDateText;
     private RatingBar evaluationRatingBar;
+
+    private TMapView tMapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,6 +65,17 @@ public class ReservationDetailActivity extends BaseActivity
         else {
             toolbarText.setText("이용 내역");
         }
+
+        // Tmap 지도 api
+        tMapView = new TMapView(this);
+        tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
+        ViewGroup linearLayoutTmap = findViewById(R.id.map_view);
+        //TODO: 일단 전남 순천 낙안읍성으로 위치 표시, 추후에 검색된 값을 가져와서 표시해야함
+        tMapView.setLocationPoint(127.338955, 34.907182);
+        tMapView.setCenterPoint(127.338955, 34.907182);
+        tMapView.setIconVisibility(true);   //현재위치로 표시될 아이콘을 표시할지 여부를 설정
+        linearLayoutTmap.addView(tMapView);
+
 
         ProgressBar peopleProgressBar = findViewById(R.id.peopleProgressBar);
 

@@ -41,8 +41,9 @@ public class HistoryActivity extends BaseActivity
 
         historyList = new ArrayList<>();
         // TODO: 임시 데이터이므로, 서버에서 데이터 가져오면 삭제
-        historyList.add(new ReservationItem("1", "순천", "순천만정원", "순천 순천만정원", "경주", "안압지", "경주 안압지", 1592099999, "1", "1", false));
-        historyList.add(new ReservationItem("1", "순천", "순천만정원", "순천 순천만정원", "경주", "안압지", "경주 안압지", 1592099999, "1", "1", true));
+        historyList.add(new ReservationItem("1", "순천", "드라마세트장", "순천 드라마세트장", "순천", "순천역", "순천 순천역", 1547037000, "2", "2", false));
+        historyList.add(new ReservationItem("1", "순천", "낙안읍성", "순천 낙안읍성", "순천", "순천역", "순천 순천역", 1547078400, "2", "2", true));
+//        historyList.add(new ReservationItem("1", "순천", "순천만정원", "순천 순천만정원", "경주", "안압지", "경주 안압지", 1547078400, "1", "1", true));
 
         ListView historyListView = findViewById(R.id.historyListView);
         adapter = new HistoryAdapter(this, historyList);
