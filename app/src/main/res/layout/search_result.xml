@@ -156,13 +156,16 @@
         android:divider="#999999"
         android:dividerHeight="1dp"/>
 
+    <!-- 시나리오 변경으로 인해 숨김  -->
     <Button
         android:id="@+id/btn_make_room"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#117869"
         android:text="@string/make_room"
-        android:textColor="#ffffff"/>
+        android:textColor="#ffffff"
+        android:visibility="gone"
+        />
 
 <!--
     android:visibility="gone"

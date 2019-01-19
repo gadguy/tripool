@@ -772,6 +772,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("search_item", item);
 
+//                Log.e("search_item", String.valueOf(jsonDeptList));
+
                 // 검색 결과 페이지로 이동
                 Intent intent = new Intent(activity, SearchResultActivity.class);
                 intent.putParcelableArrayListExtra("search_result_list", searchList);
