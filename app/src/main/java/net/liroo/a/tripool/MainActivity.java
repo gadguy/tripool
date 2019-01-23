@@ -207,8 +207,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(year, month, day, hour, minute);
                 long deptDate = calendar.getTimeInMillis();
+                String distance = "";
 
-                SearchItem item = new SearchItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString());
+                SearchItem item = new SearchItem(no, deptMain, deptSub, departure, destMain, destSub, destination, deptDate, peopleInput.getText().toString(), carrierInput.getText().toString(), distance);
                 SearchTask task = new SearchTask(MainActivity.this);
                 task.execute("http://a.liroo.net/tripool/json_search_result.php", item);
             }

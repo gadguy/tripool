@@ -81,8 +81,17 @@ public class ReadyBoardActivity extends BaseActivity
 
         TextView stagingAreaText = findViewById(R.id.stagingAreaText);
 
+        //요금 산출
         TextView fareText = findViewById(R.id.fareText);
+        //일단 100m 당 70원으로 산출함 (이동거리(km) * 1000)으로해서 m 단위로 환산 -> 100m로 나눠서 70원 곱하기
+        int fare = ((Integer.parseInt(searchItem.getDistance()) * 1000) / 100) * 70;
+
+        fareText.setText(fare);             // 요금
+
+
+
         TextView distanceText = findViewById(R.id.distanceText);
+        distanceText.setText(searchItem.getDistance());       // 이동거리
 
         TextView discountText = findViewById(R.id.discountText);
         TextView discountAmountText = findViewById(R.id.discountAmountText);

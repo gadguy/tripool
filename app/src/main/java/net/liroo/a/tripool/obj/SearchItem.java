@@ -16,7 +16,7 @@ public class SearchItem implements Serializable, Parcelable
     private String no, deptMain, deptSub, departure, destMain, destSub, destination;
     private Long deptDate;
     private String luggage, people, vehicleType, totalState, state, distance, takeTime, price, totalPrice, commission, discount, discountType;
-    private String bookID, ownerID;
+    private String bookID, ownerID, car_no;
 
     @SuppressWarnings("unchecked")
     public SearchItem(JSONObject data)
@@ -34,12 +34,13 @@ public class SearchItem implements Serializable, Parcelable
             luggage = data.getString("luggage");
             bookID = data.getString("book_id");
             ownerID = data.getString("owner_id");
+            distance = data.getString("distance");
         } catch ( Exception e ) {
 
         }
     }
 
-    public SearchItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage)
+    public SearchItem(String no, String deptMain, String deptSub, String departure, String destMain, String destSub, String destination, long deptDate, String people, String luggage, String distance)
     {
         try {
             this.no = no;
@@ -52,6 +53,7 @@ public class SearchItem implements Serializable, Parcelable
             this.deptDate = deptDate;
             this.people = people;
             this.luggage = luggage;
+            this.distance = distance;
         } catch ( Exception e ) {
 
         }
@@ -68,6 +70,7 @@ public class SearchItem implements Serializable, Parcelable
     public String getLuggage() { return luggage; }
     public String getBookID() { return bookID; }
     public String getOwnerID() { return ownerID; }
+    public String getDistance() { return distance; }
 
     public void setLuggage(String luggage) { this.luggage = luggage;}
     public void setPeople(String people) { this.people = people;}
@@ -93,6 +96,7 @@ public class SearchItem implements Serializable, Parcelable
         bundle.putString("luggage", luggage);
         bundle.putString("bookID", bookID);
         bundle.putString("ownerID", ownerID);
+        bundle.putString("distance", distance);
 
         dest.writeBundle(bundle);
     }
@@ -113,6 +117,7 @@ public class SearchItem implements Serializable, Parcelable
         luggage = bundle.getString("luggage");
         bookID = bundle.getString("bookID");
         ownerID = bundle.getString("ownerID");
+        distance = bundle.getString("distance");
     }
 
     @SuppressWarnings("rawtypes")

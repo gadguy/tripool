@@ -88,24 +88,27 @@ public class SearchResultActivity extends BaseActivity
                 intent.putExtra("is_make_room", "click_room");
                 intent.putExtra("search_people", searchItem.getPeople());
                 intent.putExtra("search_luggage", searchItem.getLuggage());
+
+
                 startActivityForResult(intent, RESERVATION_FINISH);
             }
         });
 
         // 방만들기 버튼
-        Button makeBtn = findViewById(R.id.btn_make_room);
-        makeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                // 클릭하면 검색된 정보로 DB에 insert하고 해당 정보를 바탕으로 한 탑승준비 페이지로 이동
-                SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
-                String uid = userInfo.getString("u_id", "");
-
-                MakeTask task = new MakeTask(SearchResultActivity.this);
-                task.execute("http://a.liroo.net/tripool/trip_control.php", "add", searchItem, uid);
-            }
-        });
+        // 현재 사용하지 않음
+//        Button makeBtn = findViewById(R.id.btn_make_room);
+//        makeBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view)
+//            {
+//                // 클릭하면 검색된 정보로 DB에 insert하고 해당 정보를 바탕으로 한 탑승준비 페이지로 이동
+//                SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+//                String uid = userInfo.getString("u_id", "");
+//
+//                MakeTask task = new MakeTask(SearchResultActivity.this);
+//                task.execute("http://a.liroo.net/tripool/trip_control.php", "add", searchItem, uid);
+//            }
+//        });
     }
 
     @Override
