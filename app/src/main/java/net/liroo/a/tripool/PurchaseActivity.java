@@ -113,7 +113,7 @@ public class PurchaseActivity extends BaseActivity
         }
 
         if ( getIntent().getData() == null ) {
-            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php");
+            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?amount="+300);
         }
         else {
             // isp 인증 후 복귀했을 때 결제 후속조치

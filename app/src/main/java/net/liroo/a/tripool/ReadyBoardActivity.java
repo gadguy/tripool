@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,9 +85,10 @@ public class ReadyBoardActivity extends BaseActivity
         //요금 산출
         TextView fareText = findViewById(R.id.fareText);
         //일단 100m 당 70원으로 산출함 (이동거리(km) * 1000)으로해서 m 단위로 환산 -> 100m로 나눠서 70원 곱하기
-        int fare = ((Integer.parseInt(searchItem.getDistance()) * 1000) / 100) * 70;
+//        int fare = ((Integer.parseInt(searchItem.getDistance()) * 1000) / 100) * 70;
+        Log.e("tripool", searchItem.getDistance());
 
-        fareText.setText(fare);             // 요금
+//        fareText.setText(fare);             // 요금
 
 
 

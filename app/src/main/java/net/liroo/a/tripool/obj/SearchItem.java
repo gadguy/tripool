@@ -70,7 +70,10 @@ public class SearchItem implements Serializable, Parcelable
     public String getLuggage() { return luggage; }
     public String getBookID() { return bookID; }
     public String getOwnerID() { return ownerID; }
-    public String getDistance() { return distance; }
+    public String getDistance() {
+        if ( distance != null ) return distance;
+        return distance;
+    }
 
     public void setLuggage(String luggage) { this.luggage = luggage;}
     public void setPeople(String people) { this.people = people;}
