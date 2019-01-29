@@ -94,7 +94,7 @@
                             android:layout_height="10dp"
                             android:layout_gravity="bottom"
                             android:indeterminateOnly="false"
-                            android:max="19"
+                            android:max="25"
                             android:paddingTop="1.5dp"
                             android:progress="4"
                             android:progressDrawable="@drawable/custom_progressbar" />
@@ -205,7 +205,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="wrap_content"

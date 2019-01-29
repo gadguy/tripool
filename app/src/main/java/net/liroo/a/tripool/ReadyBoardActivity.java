@@ -82,23 +82,20 @@ public class ReadyBoardActivity extends BaseActivity
 
         TextView stagingAreaText = findViewById(R.id.stagingAreaText);
 
-        //요금 산출
         TextView fareText = findViewById(R.id.fareText);
-        //일단 100m 당 70원으로 산출함 (이동거리(km) * 1000)으로해서 m 단위로 환산 -> 100m로 나눠서 70원 곱하기
-//        int fare = ((Integer.parseInt(searchItem.getDistance()) * 1000) / 100) * 70;
-        Log.e("tripool", searchItem.getDistance());
-
-//        fareText.setText(fare);             // 요금
-
-
+        // 요금 산출
+        // 일단 100m 당 70원으로 산출함 (이동거리(km) * 1000)으로해서 m 단위로 환산 -> 100m로 나눠서 70원 곱하기
+        float fare = ((Float.parseFloat(searchItem.getDistance()) * 1000) / 100) * 70;
+        fareText.setText(String.valueOf((int)fare) + "원");             // 요금
 
         TextView distanceText = findViewById(R.id.distanceText);
-        distanceText.setText(searchItem.getDistance());       // 이동거리
+        distanceText.setText(searchItem.getDistance() + "km");       // 이동거리
 
         TextView discountText = findViewById(R.id.discountText);
         TextView discountAmountText = findViewById(R.id.discountAmountText);
 
         TextView amountText = findViewById(R.id.amountText);
+        amountText.setText(String.valueOf((int)fare) + "원");
 
         // 로그인 정보
         SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
@@ -112,6 +109,10 @@ public class ReadyBoardActivity extends BaseActivity
         // tripool_info에서 같은 출발지, 도착지, 출발 시간중에서 인원수를 카운트해서 가져와야 함 -> 동승자 수에 표기하기(결제를 완료한 상태만 가져오기)
         GetFellowTask task = new GetFellowTask(this);
         task.execute("http://a.liroo.net/tripool/json_fellow_count.php", searchItem);
+
+        // 포인트 정보 가져오기
+        GetPointTask pointTask = new GetPointTask(this);
+        pointTask.execute("http://a.liroo.net/tripool/json_point_control.php", uid);
 
         payDialog = findViewById(R.id.payDialog);
         TextView payHelpText = findViewById(R.id.payHelpText);
@@ -332,15 +333,15 @@ public class ReadyBoardActivity extends BaseActivity
                     togetherPeople = "0";
                 }
                 int together = Integer.parseInt(togetherPeople) + Integer.parseInt(activity.people);    // 동승인원수
-                int maxPeople = 0;
-                if ( together < 7 ) {
-                    maxPeople = 6;
+                int maxPeople;
+                if ( together < 9 ) {
+                    maxPeople = 8;
                 }
-                else if ( together < 13 ) {
-                    maxPeople = 12;
+                else if ( together < 17 ) {
+                    maxPeople = 16;
                 }
                 else {
-                    maxPeople = 19;
+                    maxPeople = 25;
                 }
 
                 TextView togetherPeopleText = activity.findViewById(R.id.togetherPeopleText);
@@ -501,6 +502,67 @@ public class ReadyBoardActivity extends BaseActivity
             try {
                 JSONObject jsonObj = new JSONObject(ret);
                 JSONArray jsonList = jsonObj.getJSONArray(TAG_RESULTS);
+            } catch ( JSONException e ) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static class GetPointTask extends AsyncTask<Object, Void, String>
+    {
+        private WeakReference<ReadyBoardActivity> activityReference;
+
+        // only retain a weak reference to the activity
+        GetPointTask(ReadyBoardActivity context) {
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected String doInBackground(Object... params)
+        {
+            String uri = (String)params[0];
+            String uid = (String)params[1];
+
+            BufferedReader bufferedReader;
+            try {
+                String data = "mode=" + URLEncoder.encode("get", "UTF-8");
+                data += "&dept_main=" + URLEncoder.encode(uid, "UTF-8");
+
+                URL url = new URL(uri);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(data);
+                wr.flush();
+
+                bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String json;
+                while ( (json = bufferedReader.readLine()) != null ) {
+                    sb.append(json+"\n");
+                }
+                return sb.toString().trim();
+            } catch ( Exception e ) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String ret)
+        {
+            ReadyBoardActivity activity = activityReference.get();
+            if ( activity == null || activity.isFinishing() ) return;
+
+            Log.e("tripool", "point : "+ret);
+
+            try {
+                JSONObject jsonObj = new JSONObject(ret);
+                if ( jsonObj.get(TAG_RESULTS) != null && !jsonObj.get(TAG_RESULTS).equals(null) ) {
+                    JSONArray jsonList = jsonObj.getJSONArray(TAG_RESULTS);
+                }
+
+
             } catch ( JSONException e ) {
                 e.printStackTrace();
             }

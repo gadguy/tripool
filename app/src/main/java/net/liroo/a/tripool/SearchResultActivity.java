@@ -1,8 +1,6 @@
 package net.liroo.a.tripool;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +9,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,7 +85,6 @@ public class SearchResultActivity extends BaseActivity
                 intent.putExtra("is_make_room", "click_room");
                 intent.putExtra("search_people", searchItem.getPeople());
                 intent.putExtra("search_luggage", searchItem.getLuggage());
-
 
                 startActivityForResult(intent, RESERVATION_FINISH);
             }

@@ -53,7 +53,7 @@
                         android:layout_height="10dp"
                         android:layout_gravity="bottom"
                         android:indeterminateOnly="false"
-                        android:max="19"
+                        android:max="25"
                         android:paddingTop="1.5dp"
                         android:progress="4"
                         android:progressDrawable="@drawable/custom_progressbar" />
