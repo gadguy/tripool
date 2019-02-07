@@ -439,17 +439,20 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-                        <CheckBox
+                        <TextView
+                            android:id="@+id/pointText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="포인트 사용 (0점) : "/>
+                            android:text="포인트 사용 (0점) : " />
 
                         <EditText
+                            android:id="@+id/pointField"
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:gravity="center"
-                            android:inputType="number"/>
+                            android:inputType="number"
+                            android:text="0"/>
 
                     </LinearLayout>
 

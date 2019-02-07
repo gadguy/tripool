@@ -8,14 +8,15 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.skt.Tmap.TMapView;
 
@@ -41,10 +42,15 @@ public class ReadyBoardActivity extends BaseActivity
 {
     private View payDialog;
     private Button cancelBtn, payBtn;
+    private TextView payHelpText;
+    private EditText pointField;
 
     private String isMakeRoom, people, luggage;
     private String ownerID, uid;
     private boolean isPyaDo;
+
+    private float fare;
+    private int myPoint, payAmount;
 
     private static final String TAG_RESULTS = "result"; // json으로 가져오는 값의 파라메터
     private static final int BOARD_PURCHASE = 1;
@@ -85,7 +91,7 @@ public class ReadyBoardActivity extends BaseActivity
         TextView fareText = findViewById(R.id.fareText);
         // 요금 산출
         // 일단 100m 당 70원으로 산출함 (이동거리(km) * 1000)으로해서 m 단위로 환산 -> 100m로 나눠서 70원 곱하기
-        float fare = ((Float.parseFloat(searchItem.getDistance()) * 1000) / 100) * 70;
+        fare = ((Float.parseFloat(searchItem.getDistance()) * 1000) / 100) * 70;
         fareText.setText(String.valueOf((int)fare) + "원");             // 요금
 
         TextView distanceText = findViewById(R.id.distanceText);
@@ -96,6 +102,8 @@ public class ReadyBoardActivity extends BaseActivity
 
         TextView amountText = findViewById(R.id.amountText);
         amountText.setText(String.valueOf((int)fare) + "원");
+
+        pointField = findViewById(R.id.pointField);
 
         // 로그인 정보
         SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
@@ -115,20 +123,9 @@ public class ReadyBoardActivity extends BaseActivity
         pointTask.execute("http://a.liroo.net/tripool/json_point_control.php", uid);
 
         payDialog = findViewById(R.id.payDialog);
-        TextView payHelpText = findViewById(R.id.payHelpText);
+        payHelpText = findViewById(R.id.payHelpText);
         cancelBtn = findViewById(R.id.cancelBtn);
         payBtn = findViewById(R.id.payBtn);
-
-        SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm (E)", Locale.getDefault());
-        String date;
-        // 방 만들기에서 넘어온 경우
-        if ( isMakeRoom.equals("make_room") ) {
-            date = df.format(new Date(searchItem.getDeptDate()));    // 출발 일시
-        }
-        // 리스트 뷰에서 넘어온 경우
-        else {
-            date = df.format(new Date(searchItem.getDeptDate()*1000));   // 출발 일시
-        }
 
         // Tmap 지도 api
         tMapView = new TMapView(this);
@@ -140,20 +137,12 @@ public class ReadyBoardActivity extends BaseActivity
         tMapView.setIconVisibility(true);   //현재위치로 표시될 아이콘을 표시할지 여부를 설정
         linearLayoutTmap.addView(tMapView);
 
-
-        String payHelp = "* From : "+searchItem.getDeparture()+"\n* To : "+searchItem.getDestination();
-        payHelp += "\n* "+date+"\n\n* 예약요금 : 3500원";
-        payHelp += "\n\n예약 하시겠습니까?";
-        payHelpText.setText(payHelp);
-
         // 결제하기 팝업창
         Button btnClose = findViewById(R.id.btn_pay);
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                payDialog.setVisibility(View.VISIBLE);
-
                 // 키보드 숨김
                 InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
                 View focusView = getCurrentFocus();
@@ -161,6 +150,32 @@ public class ReadyBoardActivity extends BaseActivity
                     focusView = new View(ReadyBoardActivity.this);
                 }
                 inputMethodManager.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+
+                int inputPoint = Integer.parseInt(pointField.getText().toString());
+                if ( inputPoint > myPoint ) {
+                    Toast.makeText(getApplicationContext(), "포인트가 부족합니다", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    payAmount = (int)fare - inputPoint;
+
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm (E)", Locale.getDefault());
+                    String date;
+                    // 방 만들기에서 넘어온 경우
+                    if ( isMakeRoom.equals("make_room") ) {
+                        date = df.format(new Date(searchItem.getDeptDate()));    // 출발 일시
+                    }
+                    // 리스트 뷰에서 넘어온 경우
+                    else {
+                        date = df.format(new Date(searchItem.getDeptDate()*1000));   // 출발 일시
+                    }
+
+                    String payHelp = "* From : "+searchItem.getDeparture()+"\n* To : "+searchItem.getDestination();
+                    payHelp += "\n* "+date+"\n\n* 예약요금 : " + String.valueOf(payAmount) + "원";
+                    payHelp += "\n\n예약 하시겠습니까?";
+                    payHelpText.setText(payHelp);
+
+                    payDialog.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -181,6 +196,7 @@ public class ReadyBoardActivity extends BaseActivity
 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("search_item", searchItem);
+                bundle.putInt("payAmount", payAmount);
 
                 Intent intent = new Intent(ReadyBoardActivity.this, PurchaseActivity.class);
                 intent.putExtra("message", bundle);
@@ -554,15 +570,14 @@ public class ReadyBoardActivity extends BaseActivity
             ReadyBoardActivity activity = activityReference.get();
             if ( activity == null || activity.isFinishing() ) return;
 
-            Log.e("tripool", "point : "+ret);
-
             try {
                 JSONObject jsonObj = new JSONObject(ret);
-                if ( jsonObj.get(TAG_RESULTS) != null && !jsonObj.get(TAG_RESULTS).equals(null) ) {
-                    JSONArray jsonList = jsonObj.getJSONArray(TAG_RESULTS);
-                }
 
+                String point = String.valueOf(jsonObj.get(TAG_RESULTS));
+                activity.myPoint = Integer.parseInt(point);
 
+                TextView pointText = activity.findViewById(R.id.pointText);
+                pointText.setText("포인트 사용 (" + point + "점) : ");
             } catch ( JSONException e ) {
                 e.printStackTrace();
             }

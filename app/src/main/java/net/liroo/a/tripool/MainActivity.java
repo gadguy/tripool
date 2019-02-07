@@ -4,14 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -43,7 +40,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.skt.Tmap.TMapData;
-import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
@@ -769,6 +765,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     JSONObject obj = jsonDeptList.getJSONObject(i);
                     searchList.add(new SearchItem(obj));
                 }
+
+                // Dialog 초기화
+                activity.peopleInput.setText("");
+                activity.carrierInput.setText("");
+                activity.searchDialog.setVisibility(View.GONE);
 
                 Bundle bundle = new Bundle();
                 bundle.putParcelable("search_item", item);

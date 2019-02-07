@@ -29,6 +29,7 @@ public class PurchaseActivity extends BaseActivity
 {
     private WebView webView;
     private SearchItem searchItem;
+    private int payAmount;
 
     private final String APP_SCHEME = "iamportapp://";
 
@@ -40,6 +41,7 @@ public class PurchaseActivity extends BaseActivity
 
         Bundle bundle = getIntent().getBundleExtra("message");
         searchItem = bundle.getParcelable("search_item");
+        payAmount = bundle.getInt("payAmount");
         if ( searchItem == null ) {
             finish();
             return;
@@ -113,7 +115,7 @@ public class PurchaseActivity extends BaseActivity
         }
 
         if ( getIntent().getData() == null ) {
-            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?amount="+300);
+            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?amount=" + String.valueOf(payAmount));
         }
         else {
             // isp 인증 후 복귀했을 때 결제 후속조치
