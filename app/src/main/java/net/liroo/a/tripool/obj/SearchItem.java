@@ -59,6 +59,7 @@ public class SearchItem implements Serializable, Parcelable
         }
     }
 
+    public String getNo() { return no; }
     public String getDeptMain() { return deptMain; }
     public String getDeptSub() { return deptSub; }
     public String getDeparture() { return departure; }

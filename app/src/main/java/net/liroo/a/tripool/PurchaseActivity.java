@@ -1,9 +1,11 @@
 package net.liroo.a.tripool;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,10 +30,12 @@ import java.net.URISyntaxException;
 public class PurchaseActivity extends BaseActivity
 {
     private WebView webView;
-    private SearchItem searchItem;
-    private int payAmount;
+    private int payAmount, chk_no;
+    private String uid;
 
     private final String APP_SCHEME = "iamportapp://";
+
+    private SearchItem searchItem;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -42,10 +46,14 @@ public class PurchaseActivity extends BaseActivity
         Bundle bundle = getIntent().getBundleExtra("message");
         searchItem = bundle.getParcelable("search_item");
         payAmount = bundle.getInt("payAmount");
+        chk_no = Integer.parseInt(searchItem.getNo());
         if ( searchItem == null ) {
             finish();
             return;
         }
+        // 로그인 정보
+        SharedPreferences userInfo = getSharedPreferences("user_info", Activity.MODE_PRIVATE);
+        uid = userInfo.getString("u_id", "");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -115,7 +123,7 @@ public class PurchaseActivity extends BaseActivity
         }
 
         if ( getIntent().getData() == null ) {
-            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?amount=" + String.valueOf(payAmount));
+            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?chk_amount=" + String.valueOf(payAmount) + "&chk_no="+chk_no+"&u_id="+uid);
         }
         else {
             // isp 인증 후 복귀했을 때 결제 후속조치

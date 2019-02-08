@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,6 +93,8 @@ public class ReadyBoardActivity extends BaseActivity
         // 요금 산출
         // 일단 100m 당 70원으로 산출함 (이동거리(km) * 1000)으로해서 m 단위로 환산 -> 100m로 나눠서 70원 곱하기
         fare = ((Float.parseFloat(searchItem.getDistance()) * 1000) / 100) * 70;
+
+
         fareText.setText(String.valueOf((int)fare) + "원");             // 요금
 
         TextView distanceText = findViewById(R.id.distanceText);
@@ -101,6 +104,8 @@ public class ReadyBoardActivity extends BaseActivity
         TextView discountAmountText = findViewById(R.id.discountAmountText);
 
         TextView amountText = findViewById(R.id.amountText);
+        //10원단위 절삭
+        fare = ((int)fare / 100) * 100;
         amountText.setText(String.valueOf((int)fare) + "원");
 
         pointField = findViewById(R.id.pointField);
@@ -132,6 +137,7 @@ public class ReadyBoardActivity extends BaseActivity
         tMapView.setSKTMapApiKey("021ce310-85c0-4bec-97ca-78ae3e046731");
         ViewGroup linearLayoutTmap = findViewById(R.id.map_view);
         //TODO: 일단 전남 순천 낙안읍성으로 위치 표시, 추후에 검색된 값을 가져와서 표시해야함
+
         tMapView.setLocationPoint(127.338955, 34.907182);
         tMapView.setCenterPoint(127.338955, 34.907182);
         tMapView.setIconVisibility(true);   //현재위치로 표시될 아이콘을 표시할지 여부를 설정
@@ -348,6 +354,8 @@ public class ReadyBoardActivity extends BaseActivity
                 if ( togetherPeople.equals("null") ) {
                     togetherPeople = "0";
                 }
+                //동승인원수 체크
+                Log.e("fellow_result", String.valueOf(ret));
                 int together = Integer.parseInt(togetherPeople) + Integer.parseInt(activity.people);    // 동승인원수
                 int maxPeople;
                 if ( together < 9 ) {
@@ -542,7 +550,7 @@ public class ReadyBoardActivity extends BaseActivity
             BufferedReader bufferedReader;
             try {
                 String data = "mode=" + URLEncoder.encode("get", "UTF-8");
-                data += "&dept_main=" + URLEncoder.encode(uid, "UTF-8");
+                data += "&u_id=" + URLEncoder.encode(uid, "UTF-8");
 
                 URL url = new URL(uri);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -575,6 +583,8 @@ public class ReadyBoardActivity extends BaseActivity
 
                 String point = String.valueOf(jsonObj.get(TAG_RESULTS));
                 activity.myPoint = Integer.parseInt(point);
+                //포인트체크
+//                Log.e("point_result", String.valueOf(ret));
 
                 TextView pointText = activity.findViewById(R.id.pointText);
                 pointText.setText("포인트 사용 (" + point + "점) : ");
