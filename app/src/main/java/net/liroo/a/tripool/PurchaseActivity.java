@@ -25,13 +25,18 @@ import net.liroo.a.tripool.obj.PaymentScheme;
 import net.liroo.a.tripool.obj.ReservationItem;
 import net.liroo.a.tripool.obj.SearchItem;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 public class PurchaseActivity extends BaseActivity
 {
     private WebView webView;
     private int payAmount, chk_no;
     private String uid;
+
+//    private Long dept_date;
+    private String dept_date;
 
     private final String APP_SCHEME = "iamportapp://";
 
@@ -47,6 +52,8 @@ public class PurchaseActivity extends BaseActivity
         searchItem = bundle.getParcelable("search_item");
         payAmount = bundle.getInt("payAmount");
         chk_no = Integer.parseInt(searchItem.getNo());
+//        dept_date = Long.parseLong(String.valueOf(searchItem.getDeptDate()));
+        dept_date = String.valueOf(searchItem.getDeptDate());
         if ( searchItem == null ) {
             finish();
             return;
@@ -123,7 +130,21 @@ public class PurchaseActivity extends BaseActivity
         }
 
         if ( getIntent().getData() == null ) {
-            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?chk_amount=" + String.valueOf(payAmount) + "&chk_no="+chk_no+"&u_id="+uid);
+//            String chk_uid = null;
+//            try {
+//                chk_uid = URLEncoder.encode(uid, "UTF-8");
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+            webView.loadUrl("http://a.liroo.net/tripool/payments/req_payment.php?" +
+                    "chk_amount=" + String.valueOf(payAmount) +
+                    "&chk_no=" + chk_no +
+                    "&u_id=" + uid +
+//                    "&dept_date="+dept_date +
+                    "&dept_date=" + searchItem.getDeptDate() +
+                    "&people=" + searchItem.getPeople() +
+                    "&luggage=" + searchItem.getLuggage()
+                    );
         }
         else {
             // isp 인증 후 복귀했을 때 결제 후속조치

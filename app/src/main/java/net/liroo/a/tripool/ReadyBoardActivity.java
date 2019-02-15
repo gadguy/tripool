@@ -172,7 +172,8 @@ public class ReadyBoardActivity extends BaseActivity
                     }
                     // 리스트 뷰에서 넘어온 경우
                     else {
-                        date = df.format(new Date(searchItem.getDeptDate()*1000));   // 출발 일시
+//                        date = df.format(new Date(searchItem.getDeptDate()*1000));   // 출발 일시
+                        date = df.format(new Date(searchItem.getDeptDate()));   // 출발 일시
                     }
 
                     String payHelp = "* From : "+searchItem.getDeparture()+"\n* To : "+searchItem.getDestination();
